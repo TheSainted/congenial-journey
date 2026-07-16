@@ -1,0 +1,20 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  DefinePropsTypeDeclarationTypeAliasTS: <recursive value of class VueFileSourceComponent>,
+ },
+ props: [
+  {
+   class: "VueScriptSetupInputProperty",
+   name: "optional",
+   type: "string",
+   required: false,
+  },
+  {
+   class: "VueScriptSetupInputProperty",
+   name: "required",
+   type: "string",
+   required: true,
+  },
+ ],
+}

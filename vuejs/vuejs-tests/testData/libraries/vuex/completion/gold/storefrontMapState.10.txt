@@ -1,0 +1,5 @@
+categoriesMap (typeText=null)
+filtersMap (typeText=null)
+notFoundCategoryIds (typeText='any[]')
+products (typeText='any[]')
+searchProductsStats (typeText=null)

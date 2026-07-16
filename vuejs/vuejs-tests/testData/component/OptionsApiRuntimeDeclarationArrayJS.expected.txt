@@ -1,0 +1,16 @@
+{
+ class: "VueNamedSourceComponent",
+ name: "TestComponent",
+ props: [
+  {
+   class: "VueStringLiteralInputProperty",
+   name: "optional",
+   required: false,
+  },
+  {
+   class: "VueStringLiteralInputProperty",
+   name: "required",
+   required: false,
+  },
+ ],
+}

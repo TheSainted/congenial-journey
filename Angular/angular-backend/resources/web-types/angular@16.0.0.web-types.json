@@ -1,0 +1,55 @@
+{
+  "$schema": "../../../../community/platform/polySymbols/web-types-gen/resources/web-types.json",
+  "name": "@angular/core",
+  "framework": "angular",
+  "version": "16.0.0",
+  "description-markup": "markdown",
+  "default-icon": "icons/angular2.svg",
+  "contexts-config": {
+    "angular-version": {
+      "V_16": {
+        "enable-when": {
+          "node-packages": [
+            "@angular/core"
+          ]
+        }
+      }
+    }
+  },
+  "contributions": {
+    "html": {
+      "attributes": [
+        {
+          "name": "ngCspNonce",
+          "doc-url": "https://angular.dev/best-practices/security#content-security-policy",
+          "description": "Use the ngCspNonce attribute on the root application element as `<app ngCspNonce=\"randomNonceGoesHere\"></app>`. The attribute should be used if you have access to server-side templating that can add the nonce both to the header and the index.html when constructing the response.",
+          "value": {
+            "required": true,
+            "kind": "plain"
+          },
+          "ng-host-binding": false
+        },
+        {
+          "name": "ngSkipHydration",
+          "doc-url": "https://angular.dev/guide/hydration#how-to-skip-hydration-for-particular-components",
+          "description": "You can add the `ngSkipHydration` attribute to a component's tag in order to skip hydrating the entire component. This is useful for component, which may not work properly with hydration enabled due to issues, like [Direct DOM Manipulation](https://angular.dev/guide/hydration#direct-dom-manipulation).",
+          "value": {
+            "kind": "no-value"
+          },
+          "ng-host-binding": false
+        }
+      ]
+    },
+    "css": {
+      "pseudo-elements": [
+        {
+          "name": "ng-deep",
+          "doc-url": "https://angular.io/guide/component-styles#deprecated-deep--and-ng-deep",
+          "deprecated": true,
+          "description": "Applying the `::ng-deep` pseudo-class to any CSS rule completely disables view-encapsulation for that rule. Any style with `::ng-deep` applied becomes a global style. In order to scope the specified style to the current component and all its descendants, be sure to include the `:host` selector before `::ng-deep`. If the `::ng-deep` combinator is used without the `:host` pseudo-class selector, the style can bleed into other components.",
+          "ij-text-attributes-key": "NG.DEEP_PSEUDO"
+        }
+      ]
+    }
+  }
+}

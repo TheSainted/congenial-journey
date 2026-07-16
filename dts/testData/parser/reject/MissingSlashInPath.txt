@@ -1,0 +1,13 @@
+DTS file
+  DtsEntryImpl(ENTRY)
+    DtsRefNodeImpl(REF_NODE)
+      DtsPHandleImpl(P_HANDLE)
+        PsiElement(&)('&')
+        PsiElement({)('{')
+        PsiErrorElement:path expected, got 'path'
+          PsiElement(name)('path')
+        PsiElement(})('}')
+      PsiWhiteSpace(' ')
+      PsiElement({)('{')
+      PsiElement(})('}')
+    PsiElement(;)(';')

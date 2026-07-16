@@ -1,0 +1,55 @@
+/**
+ * @see #foo
+ * @see C#foo()
+ * @see #<warning descr="Unresolved variable or type 'foo2'">foo2</warning>
+ * @see C#<warning descr="Unresolved variable or type 'foo2'">foo2</warning>
+ */
+class C {
+  /**
+   * @see #foo
+   * @see C#foo()
+   * @see #<warning descr="Unresolved variable or type 'foo2'">foo2</warning>
+   * @see C#<warning descr="Unresolved variable or type 'foo2'">foo2</warning>
+   */
+  function foo():C {}
+}
+
+class D {
+  function foo2() {}
+  function foo4():D {}
+}
+
+<error descr="Package should be first statement in file">package</error> {
+  <warning descr="Unused import">import yyy.CCC;</warning>
+  class JSDoc {
+    /**
+     * @see #foo3
+     * @see #foo3()
+     * @see #<warning descr="Unresolved variable or type 'foo4'">foo4</warning>()
+     * @see #<warning descr="Unresolved variable or type 'foo4'">foo4</warning>
+     */
+    function foo3() {}
+
+    [Bindable]
+    /**
+     * @param x
+     */
+    function foo5(x) {
+        x = 1;
+    }
+  }
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'yyy' does not correspond to file path ''">yyy</error> {
+  public class <error descr="Class 'CCC' should be defined in file 'CCC.js2'">CCC</error> {}
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'tt' does not correspond to file path ''">tt</error> {
+  public class <error descr="Class 'Foo' should be defined in file 'Foo.js2'">Foo</error> {
+    /**
+     * @see tt.Bar#baz
+     * @see Bar#baz
+     */
+     function xxx() {}
+  }
+}

@@ -1,0 +1,41 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  DefineEmitsObjectLiteral: <recursive value of class VueFileSourceComponent>,
+ },
+ emits: [
+  {
+   class: "VueScriptSetupCallSignatureEvent",
+   name: "add",
+   type: "(ctx: number) => void",
+   params: [
+    {
+     name: "ctx",
+     type: "number",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "add", ctx: number) => void",
+  },
+  {
+   class: "VueScriptSetupCallSignatureEvent",
+   name: "change",
+   type: "(ctx: string) => void",
+   params: [
+    {
+     name: "ctx",
+     type: "string",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "change", ctx: string) => void",
+  },
+ ],
+ slots: [
+  {
+   class: "VueAnySlot",
+   name: "Unknown slot",
+   pattern: \.*\,
+  },
+ ],
+}

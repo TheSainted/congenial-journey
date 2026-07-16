@@ -1,0 +1,104 @@
+<idea-plugin allow-bundled-update="true">
+  <id>intellij.prettierJS</id>
+  <name>Prettier</name>
+  <description><![CDATA[
+    <p>Provides <a href="https://prettier.io/">Prettier</a> support to all JetBrains IDEs that
+    <a href="https://www.jetbrains.com/products/#lang=js&type=ide">support JavaScript</a>.
+
+    <h2>Features</h2>
+    <ul>
+      <li><code>.js</code>, <code>.ts</code>, <code>.jsx</code>, <code>.tsx</code>, <code>.vue</code>, and other file formatting according to Prettier rules
+      <li>an option to run Prettier on save
+    </ul>
+
+    <h2>Getting started</h2>
+    <p>For information on getting started, head over to the <a href="https://www.jetbrains.com/help/">documentation</a> for your IDE.
+      For WebStorm, you can check out this section in the
+      <a href="https://www.jetbrains.com/help/webstorm/prettier.html">documentation</a>.
+  ]]></description>
+  <vendor>JetBrains</vendor>
+  <category>JavaScript Frameworks and Tools</category>
+
+  <depends>com.intellij.modules.javascript</depends>
+  <depends>com.intellij.modules.platform</depends>
+  <depends>com.intellij.modules.json</depends>
+
+  <resource-bundle>messages.PrettierBundle</resource-bundle>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="com.intellij.prettierjs.codeStyleInstaller"
+                    interface="com.intellij.prettierjs.codeStyle.PrettierCodeStyleInstaller"
+                    dynamic="true"/>
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <codeStyleSettingsModifier
+      implementation="com.intellij.prettierjs.codeStyle.PrettierCodeStyleSettingsModifier"
+      order="first, before org.editorconfig.EditorConfigCodeStyleSettingsModifier"/>
+    <dependencySupport kind="javascript" coordinate="npm:prettier" displayName="Prettier"/>
+    <projectConfigurable
+      parentId="Settings.JavaScript"
+      id="settings.javascript.prettier"
+      bundle="messages.PrettierBundle"
+      key="configurable.PrettierConfigurable.display.name"
+      instance="com.intellij.prettierjs.PrettierConfigurable"/>
+    <directoryProjectConfigurator implementation="com.intellij.prettierjs.PrettierProjectConfigurator"/>
+    <actionOnSaveInfoProvider id="PrettierOnSaveInfoProvider"
+                              implementation="com.intellij.prettierjs.PrettierConfigurable$PrettierOnSaveInfoProvider"
+                              order="after FormatOnSaveInfoProvider, after EsLintOnSaveInfoProvider, before BuildOnSaveInfoProvider, before FileWatcherOnSaveInfoProvider, before UploadOnSaveInfoProvider"/>
+    <actionOnSave id="PrettierActionOnSave"
+                  implementation="com.intellij.prettierjs.PrettierActionOnSave"
+                  order="after FormatOnSaveAction, after ESLintActionOnSave"/>
+    <platform.lang.lsWidget.itemsProvider implementation="com.intellij.prettierjs.lsWidget.PrettierWidgetItemsProvider"/>
+
+    <fileType name="JSON" language="JSON" fileNames=".prettierrc"/>
+    <lang.substitutor language="JSON" implementationClass="com.intellij.prettierjs.config.PrettierConfigLanguageSubstitutor"/>
+    <iconProvider implementation="com.intellij.prettierjs.config.PrettierConfigIconProvider"/>
+    <directoryProjectConfigurator implementation="com.intellij.prettierjs.PrettierCompatibleCodeStyleInstaller"/>
+    <javascript.json.schema.provider implementation="com.intellij.prettierjs.config.PrettierConfigJsonSchemaInJsProvider"/>
+    <postFormatProcessor implementation="com.intellij.prettierjs.PrettierPostFormatProcessor"/>
+    <copyPastePostProcessor implementation="com.intellij.prettierjs.PrettierCopyPastePostProcessor" order="last"/>
+
+    <registryKey key="prettier.service.node.arguments" defaultValue=""
+                 description="Command line options for the Prettier service process. Separate multiple arguments with a space. If an argument contains a space, wrap the argument in double quotes. To escape a double quote, use the \\&quot; sequence."/>
+    <registryKey key="prettier.use.async.formatting.service" defaultValue="true"
+                 description="Enable or disable the Prettier asynchronous formatting service. When enabled, the post format processor is disabled."/>
+    <registryKey key="prettier.on.paste.timeout.ms" defaultValue="500"
+                 description="Timeout in milliseconds for Prettier formatting during paste"/>
+    <registryKey key="prettier.service.expiration.timeout.ms"
+                 defaultValue="300000"
+                 description="The IDE will stop the Prettier service process if it is not used for the specified period of time (in milliseconds)"/>
+    <formattingService id="PrettierFormattingService" implementation="com.intellij.prettierjs.PrettierFormattingService"/>
+
+    <notificationGroup id="Prettier"
+                       displayType="BALLOON"
+                       isLogByDefault="false"
+                       bundle="messages.PrettierBundle"
+                       key="notification.group"/>
+
+    <prettierjs.codeStyleInstaller implementation="com.intellij.prettierjs.codeStyle.JSPrettierCodeStyleInstaller"/>
+    <prettierjs.codeStyleInstaller implementation="com.intellij.prettierjs.codeStyle.HtmlPrettierCodeStyleInstaller"/>
+    <eslint.ruleMappersFactory implementation="com.intellij.prettierjs.eslint.PrettierEslintRuleMappersFactory"/>
+    <implicitUsageProvider implementation="com.intellij.prettierjs.codeInsight.PrettierConfigImplicitUsageProvider"/>
+    <statistics.counterUsagesCollector implementationClass="com.intellij.prettierjs.PrettierConfigurationCollector"/>
+  </extensions>
+  <actions>
+    <action id="ReformatWithPrettierAction" class="com.intellij.prettierjs.ReformatWithPrettierAction">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+      <keyboard-shortcut keymap="$default" first-keystroke="ctrl alt shift P"/>
+      <keyboard-shortcut keymap="Mac OS X" first-keystroke="meta alt shift P"/>
+      <keyboard-shortcut keymap="Mac OS X 10.5+" first-keystroke="meta alt shift P"/>
+    </action>
+    <action id="PrettierImportCodeStyleAction" class="com.intellij.prettierjs.PrettierImportCodeStyleAction">
+      <add-to-group group-id="EditorPopupMenu" anchor="last"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+    </action>
+  </actions>
+  <extensions defaultExtensionNs="JavaScript.JsonSchema">
+    <ProviderFactory implementation="com.intellij.prettierjs.config.PrettierConfigJsonSchemaProviderFactory"/>
+  </extensions>
+  <extensions defaultExtensionNs="com.intellij.json">
+    <jsonSchemaEnabler implementation="com.intellij.prettierjs.config.PrettierJsonSchemaInJsEnabler"/>
+  </extensions>
+</idea-plugin>

@@ -1,0 +1,28 @@
+package
+{
+    import xxx.MySprite;
+
+    public class TypeEvalFails
+    {
+
+        public function HelloWorld()
+        {
+            var items:Array = new Array();
+            items[0] = new Demo();
+            items[0].sprite.addChild(new MySprite());
+        }
+    }
+}
+
+import xxx.MySprite;
+
+class Demo
+{
+    public var sprite:MySprite = new MySprite();
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'xxx' does not correspond to file path ''">xxx</error> {
+  public class <error descr="Class 'MySprite' should be defined in file 'MySprite.js2'">MySprite</error> {
+      public function addChild(s:MySprite) {}
+  }
+}

@@ -1,0 +1,105 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  DefineModelsTS: <recursive value of class VueFileSourceComponent>,
+ },
+ props: [
+  {
+   class: "VueScriptSetupModelInputProperty",
+   name: "count",
+   type: "number",
+   required: false,
+  },
+  {
+   class: "VueScriptSetupModelInputProperty",
+   name: "countLocal",
+   type: "number",
+   required: false,
+  },
+  {
+   class: "VueScriptSetupModelInputProperty",
+   name: "countRequired",
+   type: "number | boolean[]",
+   required: true,
+  },
+  {
+   class: "VueScriptSetupModelInputProperty",
+   name: "countType",
+   type: "string",
+   required: false,
+  },
+  {
+   class: "VueScriptSetupModelInputProperty",
+   name: "modelValue",
+   type: "string",
+   required: true,
+  },
+ ],
+ emits: [
+  {
+   class: "VueScriptSetupModelEvent",
+   name: "update:count",
+   type: "(value: (number | undefined)) => void",
+   params: [
+    {
+     name: "value",
+     type: "number",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "update:count", value: (number | undefined)) => void",
+  },
+  {
+   class: "VueScriptSetupModelEvent",
+   name: "update:countLocal",
+   type: "(value: (number | undefined)) => void",
+   params: [
+    {
+     name: "value",
+     type: "number",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "update:countLocal", value: (number | undefined)) => void",
+  },
+  {
+   class: "VueScriptSetupModelEvent",
+   name: "update:countRequired",
+   type: "(value: (number | boolean[])) => void",
+   params: [
+    {
+     name: "value",
+     type: "number | boolean[]",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "update:countRequired", value: (number | boolean[])) => void",
+  },
+  {
+   class: "VueScriptSetupModelEvent",
+   name: "update:countType",
+   type: "(value: (string | undefined)) => void",
+   params: [
+    {
+     name: "value",
+     type: "string",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "update:countType", value: (string | undefined)) => void",
+  },
+  {
+   class: "VueScriptSetupModelEvent",
+   name: "update:modelValue",
+   type: "(value: string) => void",
+   params: [
+    {
+     name: "value",
+     type: "string",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "update:modelValue", value: string) => void",
+  },
+ ],
+}

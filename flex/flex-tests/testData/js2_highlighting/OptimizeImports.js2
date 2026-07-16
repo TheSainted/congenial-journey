@@ -1,0 +1,47 @@
+<warning descr="Unused import">import some.unusedimport.withstar.*;</warning>
+<warning descr="Unused import">import some.unusedimp<caret>ort.UnusedClass;</warning>
+<warning descr="Unused import">import some.unusedimport.UnusedFunction;</warning>
+import some.usedimport.UsedClass;
+import some.usedimport.UsedFunction;
+var i:UsedClass = UsedFunction();
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'yyy' does not correspond to file path ''">yyy</error> {
+  import some.usedimport.withstar.*;
+  class <error descr="Class 'XXX' should be defined in file 'XXX.js2'">XXX</error> extends UsedClass2 {}
+}
+
+<error descr="Package should be first statement in file">package</error> {
+  import detect.me.ClassNotDetected;
+  import mypackage.Label;
+  <warning descr="Unused import">import mx.core.UIComponent;</warning>
+  import mx.core.UIComponent;
+  import flash.display.DisplayObject
+
+  public class <error descr="Class 'Test' should be defined in file 'Test.js2'">Test</error> extends Label {
+    public function print(s):void{ print(s+ClassNotDetected.PROPERTY); }
+
+    public function testMe():void {
+        var x:*;
+        for each (var chld:UIComponent in x) var a:* = chld as DisplayObject;
+        print(a);
+    }
+  }
+}
+
+<error descr="Package should be first statement in file">package</error> {
+  import nspackage.aaa.ns;
+  use namespace ns
+}
+
+<error descr="Package should be first statement in file">package</error> {
+  import my.utils.proxy;
+  import mypackage.getDefinitionByName;
+
+  class <error descr="Class 'Foo' should be defined in file 'Foo.js2'">Foo</error> {
+    proxy var i:int;
+    static function xxx() {
+      var x:Class = Class(getDefinitionByName("foo"));
+      x.prototype = null;
+    }
+  }
+}

@@ -1,0 +1,8 @@
+name ('prop')
+WHITE_SPACE (' ')
+= ('=')
+WHITE_SPACE (' ')
+< ('<')
+> ('>')
+WHITE_SPACE ('\n\n')
+/delete-node/ ('/delete-node/')

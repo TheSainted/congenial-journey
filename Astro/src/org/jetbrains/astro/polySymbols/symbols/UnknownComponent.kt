@@ -1,0 +1,65 @@
+// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+package org.jetbrains.astro.polySymbols.symbols
+
+import com.intellij.lang.typescript.getNavigationFromService
+import com.intellij.model.Pointer
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.NlsSafe
+import com.intellij.polySymbols.PolySymbol
+import com.intellij.polySymbols.PolySymbol.DocHidePatternProperty
+import com.intellij.polySymbols.PolySymbol.HideFromCompletionProperty
+import com.intellij.polySymbols.PolySymbolKind
+import com.intellij.polySymbols.PolySymbolQualifiedName
+import com.intellij.polySymbols.patterns.PolySymbolPattern
+import com.intellij.polySymbols.patterns.PolySymbolPatternFactory
+import com.intellij.polySymbols.query.PolySymbolListSymbolsQueryParams
+import com.intellij.polySymbols.query.PolySymbolNameMatchQueryParams
+import com.intellij.polySymbols.query.PolySymbolQueryStack
+import com.intellij.polySymbols.query.PolySymbolScope
+import com.intellij.polySymbols.query.PolySymbolWithPattern
+import com.intellij.psi.PsiElement
+import com.intellij.psi.createSmartPointer
+import org.jetbrains.astro.polySymbols.UI_FRAMEWORK_COMPONENT_NAMESPACES
+
+class UnknownComponent(override val source: PsiElement, override val name: @NlsSafe String) : PolySymbolWithPattern, ComponentPolySymbol,
+                                                                                              PolySymbolScope {
+  override val pattern: PolySymbolPattern = PolySymbolPatternFactory.createRegExMatch(".*")
+
+  override val kind: PolySymbolKind
+    get() = UI_FRAMEWORK_COMPONENT_NAMESPACES
+
+  override val priority: PolySymbol.Priority
+    get() = PolySymbol.Priority.LOWEST
+
+  override fun getMatchingSymbols(
+    qualifiedName: PolySymbolQualifiedName,
+    params: PolySymbolNameMatchQueryParams,
+    stack: PolySymbolQueryStack,
+  ): List<PolySymbol> = emptyList()
+
+  override fun getSymbols(
+    kind: PolySymbolKind,
+    params: PolySymbolListSymbolsQueryParams,
+    stack: PolySymbolQueryStack,
+  ): List<PolySymbol> = emptyList()
+
+  @PolySymbol.Property(HideFromCompletionProperty::class)
+  val hideFromCompletion: Boolean
+    get() = true
+
+  @PolySymbol.Property(DocHidePatternProperty::class)
+  val docHidePattern: Boolean
+    get() = true
+
+  override fun createPointer(): Pointer<UnknownComponent> {
+    val filePtr = source.createSmartPointer()
+    return Pointer {
+      filePtr.dereference()?.let { UnknownComponent(it, name) }
+    }
+  }
+
+  override fun computeNavigationElement(project: Project): PsiElement? {
+    val offsetInSourceElement = source.text.indexOf(name)
+    return getNavigationFromService(project, source, null, offsetInSourceElement)?.firstOrNull()
+  }
+}

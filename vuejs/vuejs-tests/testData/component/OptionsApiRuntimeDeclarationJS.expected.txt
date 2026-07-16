@@ -1,0 +1,30 @@
+{
+ class: "VueNamedSourceComponent",
+ name: "TestComponent",
+ props: [
+  {
+   class: "VuePsiNamedElementInputProperty",
+   name: "optional",
+   type: "string",
+   required: false,
+  },
+  {
+   class: "VuePsiNamedElementInputProperty",
+   name: "optionalUnion",
+   type: "string | number",
+   required: false,
+  },
+  {
+   class: "VuePsiNamedElementInputProperty",
+   name: "required",
+   type: "string",
+   required: true,
+  },
+  {
+   class: "VuePsiNamedElementInputProperty",
+   name: "requiredUnion",
+   type: "string | number",
+   required: true,
+  },
+ ],
+}

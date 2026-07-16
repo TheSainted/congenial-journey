@@ -1,0 +1,93 @@
+class Foo {
+    var _x;
+
+    function foo(event:int):
+
+    <error descr="Unresolved type event">event</error>
+    {
+        _x = <error descr="Unresolved variable or type val">val</error>;
+    }
+    function bar():void {
+        var x:Array = [];
+        var y:Array = [];
+        x[y[1]].val = 1;
+        x[1].val = 1;
+        var z:BitString = new BitString()
+        z.val = 1;
+        var t:Number = x[0];
+        var t2:Foo = x[1];
+
+        var y2:/*Object*/ Array = [];
+        var t3:Number = <error descr="Initializer type Object is not assignable to variable type Number">y2[0]</error>;
+        var args:Array = arguments;
+    }
+}
+
+class BitString {
+    public var len:int = 0;
+    public var val:int = 0;
+}
+
+var x:BitString = new BitString();
+(BitString(x)).len = 1;
+(BitString)(x).len = 1;
+
+class Base {
+    function f():void {
+    }
+}
+
+class Derived extends Base {
+override
+    <error descr="Static function cannot have override modifier">static</error>
+    function f():void {
+    }
+}
+
+var x66:String = <error>new Object()</error>
+switch(1) {
+    default:
+    <error descr="Only one default clause is allowed in switch">default:</error>
+}
+
+namespace foo = <error descr="Namespace initializer should be string literal or another namespace reference">x66.length</error>;
+namespace bar = foo;
+
+for (<error descr="Unresolved variable or type i">i</error> = 0; <error descr="Unresolved variable or type i">i</error> < 10; <error descr="Unresolved variable or type i">i</error>++) {
+}
+
+function getStyle(x:String):String { return ""; }
+var test:String = (int(getStyle("left")) - 1).toString();
+var v:Vector.<int> = new <int>[0,1,2<warning descr="Unneeded comma">,</warning>];
+var v2 = [0,1,2<warning descr="Unneeded comma">,</warning>];
+
+<error descr="Package should be first statement in file">package</error> {
+  public class <error descr="Class 'Vector' should be defined in file 'Vector.js2'">Vector$object</error> {}
+}
+
+var x2:RegExp = /(\w*)=(.*?)(\s+|>)/gimxs;
+
+<warning descr="Access modifier allowed for class members only">protected</warning> function foo78() {}
+<warning descr="Access modifier allowed for class members only">protected</warning> function bar78() {
+  var f:Function = foo78;
+}
+
+interface IFoo {}
+class Bar {
+  function foo():IFoo { return null; }
+  function bar() {
+    if (foo() == this) {}
+  }
+}
+
+class Baz extends Bar implements IFoo {
+  private var clazz:Class;
+  override function foo():IFoo { return this; }
+
+  public static function foo() {
+    var fo = new <error descr="Instance member is not accessible">clazz</error>();
+    var fo2 = prototype == Baz.prototype;
+  }
+}
+
+<error descr="Unresolved variable or type debugger">debugger</error>;

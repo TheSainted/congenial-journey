@@ -1,0 +1,24 @@
+//comment
+
+//comment
+prop; //comment
+
+//comment
+node { }; //comment
+//comment
+invalid //comment
+//comment
+
+node {
+    //comment
+    //comment
+
+    //comment
+    prop; //comment
+
+    //comment
+    node { }; //comment
+    //comment
+    invalid //comment
+    //comment
+};

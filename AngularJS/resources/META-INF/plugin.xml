@@ -1,0 +1,113 @@
+<idea-plugin url="https://github.com/JetBrains/intellij-plugins/tree/master/AngularJS">
+  <id>com.intellij.angularjs</id>
+  <name>AngularJS</name>
+  <vendor>JetBrains</vendor>
+  <category>JavaScript Frameworks and Tools</category>
+  <description><![CDATA[
+    <p>Provides support for <a href="https://angularjs.org/">AngularJS</a>
+      to all JetBrains IDEs that <a href="https://www.jetbrains.com/products/#lang=js&type=ide">support JavaScript</a>.</p>
+    <h2>Features</h2>
+    <ul>
+      <li>Code completion for AngularJS APIs in JavaScript or TypeScript files
+      <li>Code completion for components, built-in and custom directives, and methods in templates
+      <li>Navigation from the component, custom directives, and event handlers to their definition
+      <li>Collection of code snippets for AngularJS
+    </ul>
+    <h2>Getting started</h2>
+    <p>For information on getting started, head over to the <a href="https://www.jetbrains.com/help/">documentation</a> for your IDE.
+      For WebStorm, you can check out these section: <a href="https://www.jetbrains.com/help/webstorm/angularjs.html">AngularJS</a>.
+    ]]></description>
+  <vendor>JetBrains</vendor>
+
+  <depends>JavaScript</depends>
+  <depends>com.intellij.modules.ultimate</depends>
+  <depends>com.intellij.modules.platform</depends>
+  <depends>HtmlTools</depends>
+  <depends optional="true" config-file="angularjs-css-support.xml">com.intellij.css</depends>
+  <depends optional="true" config-file="angularjs-diagram.xml">com.intellij.diagram</depends>
+  <depends>intellij.webpack</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <dependencySupport kind="javascript" coordinate="npm:angular" displayName="AngularJS"/>
+
+    <findUsagesHandlerFactory implementation="org.angularjs.findUsages.AngularJSFindUsagesHandlerFactory" order="before JavaScript"/>
+    <codeInsight.template.postfixTemplateProvider language="AngularJS"
+                                                  implementationClass="com.intellij.codeInsight.template.postfix.templates.EmptyPostfixTemplateProvider"/>
+
+    <lang.surroundDescriptor language="AngularJS"
+                             implementationClass="org.angularjs.refactoring.surround.AngularJSExpressionSurroundDescriptor"/>
+
+    <xml.attributeDescriptorsProvider implementation="org.angularjs.codeInsight.attributes.AngularJSAttributeDescriptorsProvider"
+                                      order="first"/>
+    <xml.tagNameProvider implementation="org.angularjs.codeInsight.tags.AngularJSTagDescriptorsProvider"/>
+    <xml.elementDescriptorProvider implementation="org.angularjs.codeInsight.tags.AngularJSTagDescriptorsProvider" order="last"/>
+    <xml.xmlExtension implementation="org.angularjs.codeInsight.AngularJSHtmlExtension" order="before react, before poly-symbols-react"
+                      id="AngularJS"/>
+
+    <defaultLiveTemplates file="liveTemplates/AngularJS"/>
+
+    <typedHandler implementation="org.angularjs.editor.AngularJSBracesInterpolationTypedHandler"/>
+    <lang.braceMatcher language="AngularJS" implementationClass="com.intellij.lang.javascript.highlighting.JSBraceMatcher"/>
+    <stubIndex implementation="org.angularjs.index.AngularDirectivesIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularDirectivesDocIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularControllerIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularModuleIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularFilterIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularSymbolIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularUiRouterStatesIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularUiRouterGenericStatesIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularTemplateUrlIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularGenericModulesIndex"/>
+    <fileBasedIndex implementation="org.angularjs.index.AngularTemplateCacheIndex"/>
+    <stubIndex implementation="org.angularjs.index.AngularInjectionDelimiterIndex"/>
+    <fileBasedIndex implementation="org.angularjs.index.AngularUiRouterViewsIndex"/>
+    <fileBasedIndex implementation="org.angularjs.index.AngularAppIndex"/>
+
+    <gotoSymbolContributor implementation="org.angularjs.navigation.AngularGotoSymbolContributor"/>
+    <lang.documentationProvider language="HTML" implementationClass="org.angularjs.AngularJSDocumentationProvider"/>
+    <lang.documentationProvider language="JavaScript" implementationClass="org.angularjs.AngularJSDocumentationProvider" order="first"/>
+    <lang.parserDefinition language="AngularJS" implementationClass="org.angularjs.lang.parser.AngularJSParserDefinition"/>
+    <lang.syntaxHighlighter language="AngularJS" implementationClass="org.angularjs.lang.AngularJSSyntaxHighlighter"/>
+    <psi.referenceContributor language="JavaScript" implementation="org.angularjs.codeInsight.refs.AngularJSReferencesContributor"/>
+    <psi.referenceContributor language="HtmlCompatible" implementation="org.angularjs.codeInsight.refs.AngularJSXmlReferencesContributor"/>
+    <highlightErrorFilter implementation="org.angularjs.lang.AngularJSErrorFilter"/>
+    <annotator language="AngularJS" implementationClass="org.angularjs.codeInsight.AngularJSMessageFormatAnnotator"/>
+    <annotator language="AngularJS" implementationClass="com.intellij.lang.javascript.validation.JSAnnotator"/>
+    <fileType name="HTML" extensions="ng"/>
+    <stubElementRegistryExtension implementation="org.angularjs.lang.stubs.AngularJSStubRegistryExtension"/>
+
+    <!--suppress PluginXmlValidity -->
+    <multiHostInjector implementation="org.angularjs.editor.AngularJSInjector"
+                       order="before JSConfigurationInjector, after TemporaryPlacesInjector"
+                       id="AngularInjector"/>
+    <completion.contributor language="AngularJS" implementationClass="org.angularjs.codeInsight.AngularJSCompletionContributor"
+                            id="AngularJSCompletionContributor"
+                            order="before JSPatternBasedCompletionContributor, before JSCompletionContributor"/>
+
+    <completion.contributor language="JavaScript" implementationClass="org.angularjs.codeInsight.AngularJSDICompletionContributor"
+                            id="AngularJSDICompletionContributor"
+                            order="before JSPatternBasedCompletionContributor, before JSCompletionContributor"/>
+
+    <completion.contributor language="JavaScript" implementationClass="org.angularjs.codeInsight.AngularJavaScriptCompletionContributor"
+                            id="AngularJavaScriptCompletionContributor"
+                            order="before JSPatternBasedCompletionContributor, before JSCompletionContributor"/>
+
+    <completion.contributor language="HTML" implementationClass="org.angularjs.codeInsight.AngularJSXmlCompletionContributor"
+                            id="AngularJSXmlCompletionContributor" order="before xmlNonFirst"/>
+
+    <renamePsiElementProcessor implementation="org.angularjs.refactoring.AngularJSDirectiveRenameProcessor"/>
+    <targetElementEvaluator language="JavaScript" implementationClass="org.angularjs.AngularJSTargetElementEvaluator"/>
+    <elementDescriptionProvider order="first"
+                                implementation="org.angularjs.refactoring.AngularJSDirectiveRenameProcessor$AngularJSDirectiveElementDescriptor"/>
+
+    <referencesSearch implementation="org.angularjs.findUsages.AngularJSReferenceSearcher"/>
+  </extensions>
+
+  <extensions defaultExtensionNs="JavaScript">
+    <intentionAndInspectionFilter language="AngularJS" implementationClass="org.angularjs.codeInsight.AngularJSInspectionFilter"/>
+    <frameworkIndexingHandler implementation="org.angularjs.index.AngularJSIndexingHandler" version="66"/>
+    <dialectSpecificHandlersFactory language="AngularJS" implementationClass="org.angularjs.codeInsight.AngularJSSpecificHandlersFactory"/>
+    <highlightingHandlersFactory language="AngularJS" implementationClass="org.angularjs.inspections.AngularJSHighlightingHandlersFactory"/>
+  </extensions>
+
+</idea-plugin>

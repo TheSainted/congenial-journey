@@ -1,0 +1,1195 @@
+{
+  "$schema": "../../../../community/platform/polySymbols/web-types-gen/resources/web-types.json",
+  "name": "@angular",
+  "framework": "angular",
+  "version": "0.0.0",
+  "description-markup": "markdown",
+  "default-icon": "icons/angular2.svg",
+  "contributions": {
+    "html": {
+      "elements": [
+        {
+          "name": "ng-container",
+          "description": "The `<ng-container>` can be used to hold directives without creating an HTML element.",
+          "doc-url": "https://angular.io/api/core/ng-container"
+        },
+        {
+          "name": "ng-content",
+          "description": "The `<ng-content>` element specifies where to project content inside a component template.",
+          "doc-url": "https://angular.io/api/core/ng-content",
+          "exclusive-contributions": [
+            "/html/attributes"
+          ],
+          "attributes": [
+            {
+              "description": "Only select elements from the projected content that match the given through attribute value CSS selector",
+              "name": "select"
+            }
+          ]
+        },
+        {
+          "name": "ng-template",
+          "doc-url": "https://angular.io/api/core/ng-template",
+          "description": "With `<ng-template>`, you can define template content that is only being rendered by Angular when you, whether directly or indirectly, specifically instruct it to do so, allowing you to have full control over how and when the content is displayed."
+        },
+        {
+          "name": "Template tag extensions",
+          "extension": true,
+          "pattern": {
+            "or": [
+              "template",
+              "ng-template"
+            ]
+          },
+          "attributes": [
+            {
+              "name": "Template binding",
+              "virtual": true,
+              "pattern": {
+                "template": [
+                  "let-",
+                  "#...",
+                  {
+                    "regex": ".*"
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Angular directive element selector",
+          "ng-binding-pattern": true,
+          "pattern": {
+            "items": "/js/ng-directive-element-selectors"
+          }
+        }
+      ],
+      "attributes": [
+        {
+          "name": "i18n",
+          "description": "Use the `i18n` attribute to mark element text for translation.",
+          "doc-url": "https://angular.io/guide/i18n-common-prepare",
+          "priority": "high",
+          "value": {
+            "required": false
+          },
+          "ng-host-binding": false
+        },
+        {
+          "name": "ngNonBindable",
+          "description": "`ngNonBindable` deactivates interpolation, directives, and bindings within the HTML text and children of the host element. Host element bindings and directives are not affected.",
+          "doc-url": "https://angular.io/guide/attribute-directives#deactivating-angular-processing-with-ngnonbindable",
+          "priority": "high",
+          "value": {
+            "kind": "no-value"
+          },
+          "ng-host-binding": false
+        },
+        {
+          "name": "ngProjectAs",
+          "description": "Project content as a different element. Attribute value is a selector, which is going to be used instead of actual element contents for slot selection.",
+          "doc-url": "https://angular.io/guide/content-projection#projecting-content-in-more-complex-environments",
+          "priority": "high",
+          "value": {
+            "required": true,
+            "type": "string"
+          },
+          "ng-host-binding": false
+        },
+        {
+          "name": "Angular directive attribute selector",
+          "ng-binding-pattern": true,
+          "value": {
+            "required": false
+          },
+          "pattern": {
+            "items": "/js/ng-directive-attribute-selectors"
+          }
+        },
+        {
+          "name": "Event binding",
+          "virtual": true,
+          "value": {
+            "kind": "expression",
+            "type": "void"
+          },
+          "ng-binding-pattern": true,
+          "pattern": {
+            "items": "/html/ng-event-bindings",
+            "or": [
+              [
+                "(",
+                "#item:event",
+                ")"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "on-"
+                  ]
+                },
+                "#...",
+                "#item:event"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "data-"
+                  ]
+                },
+                "#...",
+                "on-",
+                "#...",
+                "#item:event"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "data-"
+                  ]
+                },
+                "#...",
+                "(",
+                "#item:event",
+                ")"
+              ]
+            ]
+          }
+        },
+        {
+          "name": "Property binding",
+          "virtual": true,
+          "ng-binding-pattern": true,
+          "pattern": {
+            "items": "/html/ng-property-bindings",
+            "or": [
+              [
+                "[",
+                "#item",
+                "]"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "bind-"
+                  ]
+                },
+                "#...",
+                "#item"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "data-"
+                  ]
+                },
+                "#...",
+                "bind-",
+                "#...",
+                "#item"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "data-"
+                  ]
+                },
+                "#...",
+                "[",
+                "#item",
+                "]"
+              ]
+            ]
+          }
+        },
+        {
+          "name": "Banana box binding",
+          "virtual": true,
+          "value": {
+            "required": true,
+            "type": "of-match",
+            "kind": "expression"
+          },
+          "ng-binding-pattern": true,
+          "pattern": {
+            "items": "/js/ng-directive-in-outs",
+            "or": [
+              [
+                "[(",
+                "#item",
+                ")]"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "bindon-"
+                  ]
+                },
+                "#...",
+                "#item"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "data-"
+                  ]
+                },
+                "#...",
+                "bindon-",
+                "#...",
+                "#item"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "data-"
+                  ]
+                },
+                "#...",
+                "[(",
+                "#item",
+                ")]"
+              ]
+            ]
+          },
+          "js": {
+            "ng-directive-in-outs": [
+              {
+                "name": "Unknown input/output",
+                "priority": "lowest",
+                "pattern": ".+",
+                "doc-hide-pattern": true,
+                "ng-error-symbol": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "Template binding",
+          "virtual": true,
+          "value": {
+            "required": true,
+            "kind": "expression"
+          },
+          "ng-binding-pattern": true,
+          "ng-host-binding": false,
+          "pattern": {
+            "items": "/js/ng-structural-directives",
+            "or": [
+              [
+                "*",
+                "#item:Structural Directive"
+              ],
+              [
+                {
+                  "priority": "lowest",
+                  "template": [
+                    "data-"
+                  ]
+                },
+                "#...",
+                "*",
+                "#item:Structural Directive"
+              ]
+            ]
+          },
+          "js": {
+            "ng-structural-directives": [
+              {
+                "name": "Unknown structural directive",
+                "attribute-value": {
+                  "required": false
+                },
+                "priority": "lowest",
+                "pattern": ".+",
+                "doc-hide-pattern": true,
+                "ng-error-symbol": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "One-time binding",
+          "virtual": true,
+          "ng-binding-pattern": true,
+          "pattern": {
+            "items": "/js/ng-one-time-bindings"
+          },
+          "value": {
+            "kind": "plain",
+            "type": "of-match"
+          }
+        },
+        {
+          "name": "Attribute bindings",
+          "pattern": {
+            "items": "/js/ng-directive-attributes"
+          },
+          "value": {
+            "kind": "plain",
+            "type": "of-match"
+          }
+        },
+        {
+          "name": "Reference variable declaration",
+          "virtual": true,
+          "ng-host-binding": false,
+          "pattern": {
+            "items": "ng-reference-declaration",
+            "priority": "lowest",
+            "or": [
+              [
+                "#",
+                "#...",
+                "#item"
+              ],
+              [
+                "ref-",
+                "#...",
+                "#item"
+              ]
+            ]
+          },
+          "ng-reference-declaration": {
+            "name": "Reference variable",
+            "pattern": ".*",
+            "doc-hide-pattern": true,
+            "ij-no-psi-refs": true,
+            "hide-from-completion": true
+          },
+          "value": {
+            "required": false,
+            "kind": "plain",
+            "type": "symbol"
+          },
+          "values": {
+            "pattern": {
+              "items": "/js/ng-directive-exports-as"
+            }
+          },
+          "js": {
+            "ng-directive-exports-as": [
+              {
+                "name": "Unknown directive exportAs identifier",
+                "priority": "lowest",
+                "pattern": ".+",
+                "doc-hide-pattern": true,
+                "ng-error-symbol": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "Animation trigger assignment",
+          "virtual": true,
+          "pattern": {
+            "template": [
+              "@",
+              {
+                "regex": ".+"
+              }
+            ]
+          },
+          "value": {
+            "required": false
+          },
+          "hide-from-completion": true
+        },
+        {
+          "name": "i18n attribute translation",
+          "description": "Use the `i18n-*` attribute to mark attribute text strings for translation.",
+          "doc-url": "https://angular.io/guide/i18n-common-prepare",
+          "virtual": true,
+          "ng-binding-pattern": true,
+          "ng-host-binding": false,
+          "pattern": {
+            "items": "/html/ng-i18n-attributes",
+            "template": [
+              "i18n-",
+              "#...",
+              "#item:name of the attribute to translate"
+            ]
+          },
+          "value": {
+            "kind": "plain",
+            "type": "string",
+            "required": false
+          },
+          "ng-i18n-attributes": [
+            {
+              "name": "Absent attribute name",
+              "priority": "lowest",
+              "proximity": 0,
+              "pattern": ".+",
+              "doc-hide-pattern": true,
+              "ng-error-symbol": true,
+              "hide-from-completion": true
+            }
+          ]
+        }
+      ],
+      "ng-property-bindings": [
+        {
+          "name": "Class binding",
+          "attribute-value": {
+            "required": true,
+            "type": "boolean",
+            "kind": "expression"
+          },
+          "ng-binding-pattern": true,
+          "pattern": {
+            "items": "/css/classes",
+            "template": [
+              {
+                "priority": "lowest",
+                "template": [
+                  "class."
+                ]
+              },
+              "#...",
+              "#item:CSS Class"
+            ]
+          },
+          "css": {
+            "classes": [
+              {
+                "name": "Unknown CSS class",
+                "priority": "low",
+                "pattern": ".+",
+                "doc-hide-pattern": true,
+                "ng-error-symbol": true,
+                "hide-from-completion": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "Style binding",
+          "attribute-value": {
+            "required": true,
+            "type": "string",
+            "kind": "expression"
+          },
+          "ng-binding-pattern": true,
+          "pattern": {
+            "items": "/css/properties",
+            "template": [
+              {
+                "priority": "lowest",
+                "template": [
+                  "style."
+                ]
+              },
+              "#...",
+              "#item:CSS Property",
+              {
+                "items": [
+                  "/css/length-units",
+                  "/css/time-units",
+                  "/css/angle-units",
+                  "/css/resolution-units",
+                  "/css/frequency-units",
+                  "/css/flex-units"
+                ],
+                "priority": "lowest",
+                "required": false,
+                "template": [
+                  ".",
+                  "#...",
+                  "#item:unit"
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "Attribute binding",
+          "attribute-value": {
+            "required": true,
+            "type": "of-match",
+            "kind": "expression"
+          },
+          "ng-binding-pattern": true,
+          "pattern": {
+            "items": {
+              "path": "/html/attributes",
+              "includeVirtual": false
+            },
+            "template": [
+              {
+                "priority": "lowest",
+                "template": [
+                  "attr."
+                ]
+              },
+              "#...",
+              "#item:HTML Attribute"
+            ]
+          },
+          "attributes": [
+            {
+              "name": "Namespaced attribute",
+              "pattern": ".+:.+",
+              "doc-hide-pattern": true
+            },
+            {
+              "name": "Custom data attribute",
+              "pattern": "data-.+",
+              "doc-hide-pattern": true,
+              "hide-from-completion": true
+            }
+          ]
+        },
+        {
+          "name": "Property binding",
+          "attribute-value": {
+            "required": true,
+            "type": "of-match",
+            "kind": "expression"
+          },
+          "pattern": {
+            "or": [
+              {
+                "items": "/js/properties",
+                "priority": "high"
+              },
+              {
+                "items": "/js/ng-directive-inputs",
+                "priority": "high"
+              },
+              {
+                "items": "/js/ng-custom-property",
+                "priority": "normal"
+              },
+              {
+                "delegate": "/js/ng-unknown-property",
+                "priority": "lowest"
+              }
+            ]
+          },
+          "js": {
+            "ng-unknown-property": [
+              {
+                "name": "Unknown property",
+                "priority": "low",
+                "pattern": ".+",
+                "doc-hide-pattern": true,
+                "ng-error-symbol": true,
+                "hide-from-completion": true
+              }
+            ]
+          }
+        },
+        {
+          "name": "Animation trigger assignment",
+          "attribute-value": {
+            "required": false
+          },
+          "pattern": {
+            "template": [
+              "@",
+              {
+                "regex": ".+"
+              }
+            ]
+          },
+          "hide-from-completion": true
+        }
+      ],
+      "ng-event-bindings": [
+        {
+          "name": "Event Binding",
+          "ng-binding-pattern": true,
+          "pattern": {
+            "or": [
+              {
+                "items": [
+                  "/js/events",
+                  "/js/ng-directive-outputs"
+                ],
+                "priority": "high",
+                "template": [
+                  "#item:event"
+                ]
+              },
+              {
+                "items": "/js/ng-custom-events",
+                "priority": "normal",
+                "template": [
+                  "#item:event"
+                ]
+              }
+            ]
+          }
+        }
+      ]
+    },
+    "js": {
+      "ng-custom-events": [
+        {
+          "name": "Extended key events",
+          "priority": "normal",
+          "pattern": {
+            "template": [
+              {
+                "or": [
+                  {
+                    "regex": "keyup",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "keydown",
+                    "case-sensitive": false
+                  }
+                ]
+              },
+              {
+                "items": {
+                  "path": "key-event-modifiers",
+                  "name-conversion": {
+                    "canonical-names": "lowercase",
+                    "match-names": [
+                      "lowercase"
+                    ],
+                    "name-variants": [
+                      "as-is"
+                    ]
+                  }
+                },
+                "template": [
+                  ".",
+                  "#...",
+                  "#item:key event modifier"
+                ],
+                "priority": "high",
+                "repeat": true,
+                "unique": true,
+                "required": false
+              },
+              {
+                "items": {
+                  "path": "key-names"
+                },
+                "template": [
+                  ".",
+                  "#...",
+                  "#item:key name"
+                ],
+                "repeat": false,
+                "required": true
+              }
+            ]
+          },
+          "key-event-modifiers": [
+            {
+              "name": "alt"
+            },
+            {
+              "name": "control"
+            },
+            {
+              "name": "meta"
+            },
+            {
+              "name": "shift"
+            },
+            {
+              "name": "code",
+              "key-names": [
+                {
+                  "name": "Custom key code",
+                  "pattern": ".*",
+                  "priority": "lowest",
+                  "doc-hide-pattern": true,
+                  "hide-from-completion": true
+                },
+                {
+                  "name": "Key code",
+                  "priority": "high",
+                  "pattern": {
+                    "or": [
+                      {
+                        "regex": "space",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "dot",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "escape",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "enter",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "tab",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "arrowDown",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "arrowLeft",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "arrowRight",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "arrowUp",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "end",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "home",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "pageDown",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "pageUp",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "backspace",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "delete",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "insert",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "contextMenu",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "help",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "printScreen",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "altRight",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "backquote",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "backslash",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "bracketLeft",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "bracketRight",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "capsLock",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "comma",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "controlLeft",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "controlRight",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "equal",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "intlBackslash",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "intlRo",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "intlYen",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "lang1",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "lang2",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "mediaTrackNext",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "mediaTrackPrevious",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "metaLeft",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "metaRight",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "minus",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "numLock",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "numpadAdd",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "numpadComma",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "numpadDecimal",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "numpadDivide",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "numpadMultiply",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "numpadSubtract",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "osLeft",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "period",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "quote",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "scrollLock",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "semicolon",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "shiftLeft",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "shiftRight",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "slash",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "unidentified",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "volumeDown",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "volumeMute",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "volumeUp",
+                        "case-sensitive": false
+                      },
+                      {
+                        "regex": "wakeUp",
+                        "case-sensitive": false
+                      },
+                      {
+                        "template": [
+                          {
+                            "or": [
+                              {
+                                "regex": "digit",
+                                "case-sensitive": false
+                              },
+                              {
+                                "regex": "numpad",
+                                "case-sensitive": false
+                              }
+                            ]
+                          },
+                          {
+                            "regex": "[0-9]"
+                          }
+                        ]
+                      },
+                      {
+                        "template": [
+                          {
+                            "regex": "key",
+                            "case-sensitive": false
+                          },
+                          {
+                            "regex": "[A-Z]",
+                            "case-sensitive": false
+                          }
+                        ]
+                      },
+                      {
+                        "template": [
+                          {
+                            "regex": "f",
+                            "case-sensitive": false
+                          },
+                          {
+                            "regex": "[0-9]|1[0-9]|2[0-4]",
+                            "case-sensitive": false
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          ],
+          "key-names": [
+            {
+              "name": "Extended event special key",
+              "pattern": {
+                "or": [
+                  {
+                    "regex": "space",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "dot",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "esc",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "escape",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "enter",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "tab",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "arrowDown",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "arrowLeft",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "arrowRight",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "arrowUp",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "end",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "home",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "pageDown",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "pageUp",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "backspace",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "delete",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "insert",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "contextMenu",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "help",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "printScreen",
+                    "case-sensitive": false
+                  },
+                  {
+                    "regex": "os",
+                    "case-sensitive": false
+                  }
+                ]
+              }
+            },
+            {
+              "name": "Extended event standard key",
+              "description": "Key name: `f1`-`f20`, `a`-`z`, `0`-`9`, `` ` ``, `~`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `(`, `)`, `_`, `+`, `-`, `[`, `]`, `{`, `}`, `|`, `;`, `:`, `,` or `?`.",
+              "priority": "low",
+              "pattern": {
+                "regex": "f1[1-9]|f20|f[1-9]|[a-z]|[0-9]|[\\`~\\!@#\\$%\\^\\&\\*\\(\\)_+\\-\\[\\]\\{\\}\\|;:,\\?]",
+                "case-sensitive": false
+              },
+              "doc-hide-pattern": true,
+              "hide-from-completion": true
+            }
+          ]
+        },
+        {
+          "name": "Namespaced event",
+          "pattern": ".+:.+",
+          "doc-hide-pattern": true,
+          "hide-from-completion": true
+        },
+        {
+          "name": "Animation callback",
+          "pattern": "@.+",
+          "doc-hide-pattern": true
+        }
+      ],
+      "ng-template-binding-keywords": [
+        {
+          "name": "as"
+        },
+        {
+          "name": "let"
+        }
+      ],
+      "ng-component-lifecycle-hooks": [
+        {
+          "name": "ngOnInit",
+          "doc-url": "https://angular.dev/guide/components/lifecycle#ngoninit",
+          "description": "The `ngOnInit` method runs after Angular has initialized all the components inputs with their initial values. A component's `ngOnInit` runs exactly once.\n\nThis step happens _before_ the component's own template is initialized. This means that you can update the component's state based on its initial input values."
+        },
+        {
+          "name": "ngOnChanges",
+          "doc-url": "https://angular.dev/guide/components/lifecycle#ngonchanges",
+          "description": "The `ngOnChanges` method runs after any component inputs have changed.\n\nThis step happens _before_ the component's own template is checked. This means that you can update the component's state based on its initial input values.\n\nDuring initialization, the first `ngOnChanges` runs before `ngOnInit`.",
+          "parameters": [
+            {
+              "name": "changes",
+              "type": "import('@angular/core').SimpleChanges<__CLASS_NAME__>"
+            }
+          ]
+        },
+        {
+          "name": "ngDoCheck",
+          "doc-url": "https://angular.dev/guide/components/lifecycle#ngdocheck",
+          "description": "The `ngDoCheck` method runs before every time Angular checks a component's template for changes.\n\nYou can use this lifecycle hook to manually check for state changes outside of Angular's normal change detection, manually updating the component's state.\n\nThis method runs very frequently and can significantly impact your page's performance. Avoid defining this hook whenever possible, only using it when you have no alternative.\n\nDuring initialization, the first `ngDoCheck` runs after `ngOnInit`."
+        },
+        {
+          "name": "ngAfterContentInit",
+          "doc-url": "https://angular.dev/guide/components/lifecycle#ngaftercontentinit",
+          "description": "The `ngAfterContentInit` method runs once after all the children nested inside the component (its _content_) have been initialized.\n\nYou can use this lifecycle hook to read the results of content queries. While you can access the initialized state of these queries, attempting to change any state in this method results in an `ExpressionChangedAfterItHasBeenCheckedError`"
+        },
+        {
+          "name": "ngAfterContentChecked",
+          "doc-url": "https://angular.dev/guide/components/lifecycle#ngaftercontentchecked",
+          "description": "The `ngAfterContentChecked` method runs every time the children nested inside the component (its _content_) have been checked for changes.\n\nThis method runs very frequently and can significantly impact your page's performance. Avoid defining this hook whenever possible, only using it when you have no alternative.\n\nWhile you can access the updated state of content queries here, attempting to change any state in this method results in an `ExpressionChangedAfterItHasBeenCheckedError`."
+        },
+        {
+          "name": "ngAfterViewInit",
+          "doc-url": "https://angular.dev/guide/components/lifecycle#ngafterviewinit",
+          "description": "The `ngAfterViewInit` method runs once after all the children in the component's template (its _view_) have been initialized.\n\nYou can use this lifecycle hook to read the results of view queries. While you can access the initialized state of these queries, attempting to change any state in this method results in an `ExpressionChangedAfterItHasBeenCheckedError`"
+        },
+        {
+          "name": "ngAfterViewChecked",
+          "doc-url": "angular.dev/guide/components/lifecycle#ngafterviewchecked",
+          "description": "The `ngAfterViewChecked` method runs every time the children in the component's template (its _view_) have been checked for changes.\n\nThis method runs very frequently and can significantly impact your page's performance. Avoid defining this hook whenever possible, only using it when you have no alternative.\n\nWhile you can access the updated state of view queries here, attempting to change any state in this method results in an `ExpressionChangedAfterItHasBeenCheckedError`."
+        },
+        {
+          "name": "ngOnDestroy",
+          "doc-url": "https://angular.dev/guide/components/lifecycle#ngondestroy",
+          "description": "The `ngOnDestroy` method runs once just before a component is destroyed. Angular destroys a component when it is no longer shown on the page, such as being hidden by `@if` or upon navigating to another page."
+        }
+      ],
+      "implicit-field-through-initializer-method-call-usages": [
+        {
+          "name": "effect",
+          "import": "@angular/core"
+        },
+        {
+          "name": "afterRenderEffect",
+          "import": "@angular/core"
+        },
+        {
+          "name": "createEffect",
+          "import": "@ngrx/effects"
+        }
+      ]
+    }
+  }
+}

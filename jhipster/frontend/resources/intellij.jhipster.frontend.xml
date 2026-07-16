@@ -1,0 +1,10 @@
+<idea-plugin>
+  <dependencies>
+    <module name="intellij.platform.frontend"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <!-- Frontend-specific extensions -->
+    <navbar implementation="com.intellij.jhipster.JdlNavbarExtension"/>
+  </extensions>
+</idea-plugin>

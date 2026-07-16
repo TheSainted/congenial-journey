@@ -1,0 +1,62 @@
+package org.jetbrains.qodana.staticAnalysis.script
+
+import com.jetbrains.qodana.sarif.model.Run
+import com.jetbrains.qodana.sarif.model.SarifReport
+import kotlinx.coroutines.NonCancellable
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.job
+import kotlinx.coroutines.supervisorScope
+import kotlinx.coroutines.withContext
+import org.jetbrains.annotations.VisibleForTesting
+import org.jetbrains.qodana.staticAnalysis.inspections.runner.QodanaGlobalInspectionContext
+import org.jetbrains.qodana.staticAnalysis.inspections.runner.QodanaRunContext
+import org.jetbrains.qodana.staticAnalysis.inspections.runner.startup.QodanaRunContextFactory
+import org.jetbrains.qodana.staticAnalysis.sarif.SarifReportContributor
+import org.jetbrains.qodana.staticAnalysis.sarif.fillComponents
+import org.jetbrains.qodana.staticAnalysis.sarif.getOrCreateRun
+import org.jetbrains.qodana.staticAnalysis.sarif.maybeApplyFixes
+import org.jetbrains.qodana.staticAnalysis.stat.CoverageFeatureEventsCollector
+
+abstract class QodanaSingleRunScript(
+  @VisibleForTesting val runContextFactory: QodanaRunContextFactory,
+  override val analysisKind: AnalysisKind,
+) : QodanaScript {
+
+  abstract suspend fun execute(
+    report: SarifReport,
+    runContext: QodanaRunContext,
+    inspectionContext: QodanaGlobalInspectionContext,
+  )
+
+  protected open suspend fun createGlobalInspectionContext(runContext: QodanaRunContext) = runContext.createGlobalInspectionContext()
+
+  final override suspend fun execute(report: SarifReport): QodanaScriptResult {
+    val run: () -> Run = { report.getOrCreateRun() } // we may substitute the run on the fly
+    return supervisorScope {
+      val runContext = runContextFactory.openRunContext(this)
+
+      fillComponents(run().tool, runContext.qodanaProfile)
+      runContext.appendRunDetails(run(), analysisKind)
+      runContext.writeProfiles(runContext.qodanaProfile)
+      runContext.writeProjectDescriptionBeforeWork()
+
+      val inspectionContext = createGlobalInspectionContext(runContext)
+      try {
+        execute(report, runContext, inspectionContext)
+      }
+      finally {
+        withContext(NonCancellable) {
+          runContext.writeProjectDescriptionAfterWork()
+          inspectionContext.closeQodanaContext()
+        }
+      }
+
+      maybeApplyFixes(run(), runContext)
+      SarifReportContributor.runContributors(run(), runContext.project, runContext.config)
+      val scriptResult = QodanaScriptResult.create(inspectionContext)
+      CoverageFeatureEventsCollector.logCoverageStatistics(runContext, scriptResult.coverageStats)
+      this.coroutineContext.job.cancelChildren()
+      scriptResult
+    }
+  }
+}

@@ -1,0 +1,9 @@
+DTSI file
+  DtsEntryImpl(ENTRY)
+    DtsCompilerDirectiveImpl(COMPILER_DIRECTIVE)
+      PsiElement(/delete-node/)('/delete-node/')
+      PsiWhiteSpace(' ')
+      DtsPHandleImpl(P_HANDLE)
+        PsiElement(&)('&')
+        PsiElement(name)('label')
+    PsiElement(;)(';')

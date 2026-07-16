@@ -1,0 +1,3 @@
+address (typeText=null; priority=100.0; bold; typeGreyed)
+age (typeText='number'; priority=100.0; bold; typeGreyed)
+name (typeText='string'; priority=100.0; bold; typeGreyed)

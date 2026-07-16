@@ -1,0 +1,26 @@
+package {
+  public class <error descr="Class 'Vector' should be defined in file 'Vector.js2'"><error descr="More than one externally visible symbol defined in file">Vector</error></error> {}
+  class <error descr="Class 'Vector' should be defined in file 'Vector.js2'"><error descr="More than one externally visible symbol defined in file">Vector$object</error></error> {
+    native function pop():*;
+    native function push(... rest):uint;
+  }
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'foo' does not correspond to file path ''">foo</error> {
+  public class <error descr="Class 'Foo' should be defined in file 'Foo.js2'">Foo</error> {
+    public static function createIt():Vector.<foo.Foo> {
+      return null;
+    }
+  }
+}
+
+function trace(... r) {}
+var v:Vector.<String> = new Vector.<String>();
+v.push("a");
+trace(v.pop());
+
+import foo.Foo;
+var v2:Vector.<Foo> = Foo.createIt();
+
+import foo.Foo;
+var v3:Vector.<Foo> = new Vector.<Foo>

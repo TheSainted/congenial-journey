@@ -1,0 +1,135 @@
+package org.jetbrains.qodana.jvm.coverage
+
+import com.intellij.openapi.application.PluginPathManager
+import com.intellij.testFramework.TestDataPath
+import org.jetbrains.qodana.staticAnalysis.inspections.config.QodanaProfileConfig
+import org.jetbrains.qodana.staticAnalysis.inspections.config.QodanaScriptConfig
+import org.jetbrains.qodana.staticAnalysis.inspections.coverageData.COVERAGE_DATA
+import org.jetbrains.qodana.staticAnalysis.script.scoped.SCOPED_SCRIPT_NAME
+import org.jetbrains.qodana.staticAnalysis.testFramework.QodanaRunnerTestCase
+import org.junit.Test
+import java.nio.file.Path
+import java.nio.file.Paths
+import kotlin.io.path.writeText
+
+@TestDataPath($$"$CONTENT_ROOT/test-data/QodanaScopedScriptRunnerTest")
+class QodanaScopedScriptRunnerTest : QodanaRunnerTestCase() {
+  override val testData: Path = Paths.get(PluginPathManager.getPluginHomePath("qodana"), "jvm", "coverage", "test-data")
+
+  override fun setUp() {
+    super.setUp()
+    System.setProperty(COVERAGE_DATA, getTestDataPath("coverage").toString())
+  }
+
+  override fun tearDown() {
+    System.clearProperty(COVERAGE_DATA)
+    super.tearDown()
+  }
+
+  @Test
+  fun testWithoutChangesData() {
+    val scope = qodanaConfig.projectPath.resolve("scope")
+
+    updateQodanaConfig {
+      it.copy(
+        script = QodanaScriptConfig(SCOPED_SCRIPT_NAME, mapOf("scope-file" to scope.toString())),
+        profile = QodanaProfileConfig.named("qodana.single:JvmCoverageInspection"),
+      )
+    }
+
+    scope.writeText("""
+      {
+        "files" : [ {
+          "path" : "test-module/A.java",
+          "added" : [ ],
+          "deleted" : [ ]
+        } ]
+      }
+    """.trimIndent())
+
+    try {
+      System.setProperty("qodana.skip.coverage.issues.reporting", "true")
+      runAnalysis()
+    }
+    finally {
+      System.clearProperty("qodana.skip.coverage.issues.reporting")
+    }
+    assertSarifResults()
+  }
+
+  @Test
+  fun testXmlReport() {
+    val scope = qodanaConfig.projectPath.resolve("scope")
+
+    updateQodanaConfig {
+      it.copy(
+        script = QodanaScriptConfig(SCOPED_SCRIPT_NAME, mapOf("scope-file" to scope.toString())),
+        profile = QodanaProfileConfig.named("qodana.single:JvmCoverageInspection"),
+      )
+    }
+
+    scope.writeText("""
+      {
+        "files" : [ {
+          "path" : "test-module/A.java",
+          "added" : [ {
+            "firstLine" : 5,
+            "count" : 1
+          }, 
+          {
+             "firstLine" : 11,
+             "count" : 4
+          }],
+          "deleted" : [ ]
+        } ]
+      }
+    """.trimIndent())
+
+    try {
+      System.setProperty("qodana.skip.coverage.issues.reporting", "true")
+      runAnalysis()
+    }
+    finally {
+      System.clearProperty("qodana.skip.coverage.issues.reporting")
+    }
+    assertSarifResults()
+  }
+
+  @Test
+  fun testFirstStepComputesNothing() {
+    val scope = qodanaConfig.projectPath.resolve("scope")
+
+    updateQodanaConfig {
+      it.copy(
+        script = QodanaScriptConfig(SCOPED_SCRIPT_NAME, mapOf("scope-file" to scope.toString())),
+        profile = QodanaProfileConfig.named("qodana.single:JvmCoverageInspection"),
+      )
+    }
+
+    scope.writeText("""
+      {
+        "files" : [ {
+          "path" : "test-module/A.java",
+          "added" : [ {
+            "firstLine" : 5,
+            "count" : 1
+          }, 
+          {
+             "firstLine" : 11,
+             "count" : 4
+          }],
+          "deleted" : [ ]
+        } ]
+      }
+    """.trimIndent())
+
+    try {
+      System.setProperty("qodana.skip.coverage.computation", "true")
+      runAnalysis()
+    }
+    finally {
+      System.clearProperty("qodana.skip.coverage.computation")
+    }
+    assertSarifResults()
+  }
+}

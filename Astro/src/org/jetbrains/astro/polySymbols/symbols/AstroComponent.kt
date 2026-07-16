@@ -1,0 +1,51 @@
+// Copyright 2000-2023 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+package org.jetbrains.astro.polySymbols.symbols
+
+import com.intellij.model.Pointer
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.io.FileUtil
+import com.intellij.openapi.util.text.StringUtil
+import com.intellij.polySymbols.PolySymbol
+import com.intellij.polySymbols.PolySymbolKind
+import com.intellij.polySymbols.utils.PolySymbolScopeWithCache
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.createSmartPointer
+import org.jetbrains.astro.polySymbols.ASTRO_COMPONENTS
+import org.jetbrains.astro.polySymbols.AstroProximity
+import org.jetbrains.astro.polySymbols.AstroProximityProperty
+import org.jetbrains.astro.polySymbols.UI_FRAMEWORK_COMPONENT_PROPS
+
+class AstroComponent(file: PsiFile) : ComponentPolySymbol,
+                                      PolySymbolScopeWithCache<PsiFile, Unit>(file.project, file, Unit) {
+
+  override val source: PsiElement
+    get() = dataHolder
+
+  override val kind: PolySymbolKind
+    get() = ASTRO_COMPONENTS
+
+  override val name: String
+    get() = StringUtil.capitalize(FileUtil.getNameWithoutExtension(dataHolder.name))
+
+  @PolySymbol.Property(AstroProximityProperty::class)
+  val astroProximity: AstroProximity
+    get() = AstroProximity.OUT_OF_SCOPE
+
+  override fun provides(kind: PolySymbolKind): Boolean =
+    kind == UI_FRAMEWORK_COMPONENT_PROPS
+
+  override fun initialize(consumer: (PolySymbol) -> Unit, cacheDependencies: MutableSet<Any>) {
+    consumer(AstroComponentWildcardAttribute)
+    cacheDependencies.add(dataHolder)
+  }
+
+  override fun createPointer(): Pointer<AstroComponent> {
+    val filePtr = dataHolder.createSmartPointer()
+    return Pointer {
+      filePtr.dereference()?.let { AstroComponent(it) }
+    }
+  }
+
+  override fun computeNavigationElement(project: Project): PsiElement = source
+}

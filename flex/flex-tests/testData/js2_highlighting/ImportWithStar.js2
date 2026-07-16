@@ -1,0 +1,8 @@
+package <error descr="Package name 'aaa' does not correspond to file path ''">aaa</error> {
+  public class ImportWithStar {}
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'bbb' does not correspond to file path ''">bbb</error> {
+  import aaa.*;
+  function <error descr="Function 'xxx' should be defined in file 'xxx.js2'">xxx</error>():ImportWithStar {}
+}

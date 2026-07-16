@@ -1,0 +1,15 @@
+package <error descr="Package name 'AAA' does not correspond to file path ''">AAA</error> {
+public class <error descr="Class 'A' should be defined in file 'A.js2'">A</error> {
+  protected var field;
+}
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'BBB' does not correspond to file path ''">BBB</error> {
+import AAA.A;
+
+class <error descr="Class 'C' should be defined in file 'C.js2'">C</error> extends A {
+  function aaa() {
+    field = 1;
+  }
+}
+}

@@ -1,0 +1,33 @@
+HILFile: a.hil
+  ILTemplateHolder
+    ILTemplateIfBlockExpression
+      IfCondition
+        PsiElement(TEMPLATE_START)('%{~')
+        PsiWhiteSpace(' ')
+        PsiElement(if)('if')
+        PsiWhiteSpace(' ')
+        ILBinaryExpression
+          ILMethodCallExpression
+            ILVariable
+              PsiElement(ID)('test')
+            ILParameterList
+              PsiElement(()('(')
+              PsiElement())(')')
+          PsiWhiteSpace(' ')
+          PsiElement(>)('>')
+          PsiWhiteSpace(' ')
+          ILUnaryExpression
+            PsiElement(-)('-')
+            ILLiteral
+              PsiElement(NUMBER)('1')
+        PsiWhiteSpace(' ')
+        PsiElement(})('~}')
+      PsiWhiteSpace(' ')
+      ILTemplateBlockBody
+        ILLiteral
+          PsiElement(NUMBER)('123')
+      PsiWhiteSpace(' ')
+      EndIf
+        PsiElement(TEMPLATE_START)('%{')
+        PsiElement(endif)('endif')
+        PsiElement(})('}')

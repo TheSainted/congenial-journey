@@ -1,0 +1,133 @@
+// Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+package org.angular2;
+
+import com.intellij.lang.javascript.psi.JSElement;
+import com.intellij.lang.javascript.psi.ecma6.ES6Decorator;
+import com.intellij.polySymbols.testFramework.WebTestUtil;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.testFramework.UsefulTestCase;
+import com.intellij.testFramework.fixtures.CodeInsightTestFixture;
+import com.intellij.testFramework.fixtures.IdeaTestExecutionPolicy;
+import com.intellij.util.ObjectUtils;
+import com.intellij.util.containers.ContainerUtil;
+import org.angular2.web.Angular2ErrorSymbolProperty;
+import org.jetbrains.annotations.NotNull;
+
+import java.io.File;
+import java.util.List;
+
+import static com.intellij.lang.javascript.completion.JSLookupPriority.KEYWORDS_PRIORITY;
+import static com.intellij.lang.javascript.completion.JSLookupPriority.NON_CONTEXT_KEYWORDS_PRIORITY;
+import static com.intellij.lang.javascript.completion.JSLookupPriority.TOP_LEVEL_SYMBOLS_FROM_OTHER_FILES;
+import static com.intellij.testFramework.UsefulTestCase.assertInstanceOf;
+import static junit.framework.TestCase.assertEquals;
+
+public final class Angular2TestUtil {
+
+  public static String getBaseTestDataPath(Class<?> clazz) {
+    String contribPath = getContribPath();
+    return contribPath + "/Angular/angular-tests/test/" + clazz.getPackage().getName().replace('.', '/') + "/data/";
+  }
+
+  public static String getBaseTestDataPath() {
+    String contribPath = getContribPath();
+    return contribPath + "/Angular/angular-tests/testData/";
+  }
+
+  public static String getLexerTestDirPath() {
+    return getBaseTestDataPath();
+  }
+
+  private static String getContribPath() {
+    File f = new File("testData");
+    if (f.exists()) {
+      File parent = f.getAbsoluteFile().getParentFile();
+      if (parent.getName().equals("Angular")) {
+        return parent.getParent();
+      }
+    }
+    final String homePath = IdeaTestExecutionPolicy.getHomePathWithPolicy();
+    if (new File(homePath, "contrib/.gitignore").isFile()) {
+      return homePath + File.separatorChar + "contrib";
+    }
+    return homePath;
+  }
+
+  public static String getDirectiveDefinitionText(PsiElement resolve) {
+    return ObjectUtils.notNull(PsiTreeUtil.getParentOfType(resolve, ES6Decorator.class), resolve.getParent()).getText();
+  }
+
+  @SuppressWarnings("unchecked")
+  public static <T extends JSElement> T checkVariableResolve(final String signature,
+                                                             final String varName,
+                                                             final Class<T> varClass,
+                                                             @NotNull CodeInsightTestFixture fixture) {
+    PsiElement resolve = resolveReference(signature, fixture);
+    assertInstanceOf(resolve, varClass);
+    assertEquals(varName, varClass.cast(resolve).getName());
+    return (T)resolve;
+  }
+
+  public static void enableAstLoadingFilter(@NotNull UsefulTestCase testCase) {
+    WebTestUtil.enableAstLoadingFilter(testCase);
+  }
+
+  public static void moveToOffsetBySignature(@NotNull String signature, @NotNull CodeInsightTestFixture fixture) {
+    WebTestUtil.moveToOffsetBySignature(fixture, signature);
+  }
+
+  public static int findOffsetBySignature(String signature, final PsiFile psiFile) {
+    return WebTestUtil.findOffsetBySignature(psiFile, signature);
+  }
+
+  @NotNull
+  public static PsiElement resolveReference(@NotNull String signature, @NotNull CodeInsightTestFixture fixture) {
+    return WebTestUtil.resolveReference(fixture, signature);
+  }
+
+  public static void assertUnresolvedReference(@NotNull String signature, @NotNull CodeInsightTestFixture fixture) {
+    assertUnresolvedReference(signature, fixture, false, false);
+  }
+
+  public static void assertUnresolvedReference(@NotNull String signature, @NotNull CodeInsightTestFixture fixture,
+                                               Boolean okWithNoRef, Boolean allowSelfReference) {
+    var symbols = WebTestUtil.multiResolvePolySymbolReference(fixture, signature);
+    if (!symbols.isEmpty() && ContainerUtil.and(symbols, s -> s.get(Angular2ErrorSymbolProperty.INSTANCE) == Boolean.TRUE)) {
+      return;
+    }
+    WebTestUtil.assertUnresolvedReference(fixture, signature, okWithNoRef, allowSelfReference);
+  }
+
+  public static List<String> renderLookupItems(@NotNull CodeInsightTestFixture fixture,
+                                               boolean renderPriority,
+                                               boolean renderTypeText) {
+    return renderLookupItems(fixture, renderPriority, renderTypeText, false);
+  }
+
+  public static List<String> renderLookupItems(@NotNull CodeInsightTestFixture fixture,
+                                               boolean renderPriority,
+                                               boolean renderTypeText,
+                                               boolean filterOutGlobalSymbols) {
+    return renderLookupItems(fixture, renderPriority, renderTypeText, false, filterOutGlobalSymbols);
+  }
+
+  public static List<String> renderLookupItems(@NotNull CodeInsightTestFixture fixture,
+                                               boolean renderPriority,
+                                               boolean renderTypeText,
+                                               boolean renderTailText,
+                                               boolean filterOutGlobalSymbols) {
+    return WebTestUtil.renderLookupItems(fixture, renderPriority,
+                                         renderTypeText, renderTailText, false, false, renderPriority, lookupElementInfo -> {
+        if (!filterOutGlobalSymbols || "$any".equals(lookupElementInfo.getLookupString())) {
+          return true;
+        }
+        var priority = (int)lookupElementInfo.getPriority();
+        return priority != NON_CONTEXT_KEYWORDS_PRIORITY.getPriorityValue()
+               && priority != KEYWORDS_PRIORITY.getPriorityValue()
+               && priority != TOP_LEVEL_SYMBOLS_FROM_OTHER_FILES.getPriorityValue()
+               && priority != 0;
+      });
+  }
+}

@@ -1,0 +1,4 @@
+/ {
+    prop = "";
+    <error descr="Duplicate property name">prop</error> = "";
+};

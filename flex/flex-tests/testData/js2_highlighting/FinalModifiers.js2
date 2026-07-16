@@ -1,0 +1,24 @@
+package <error descr="Package name 'foo' does not correspond to file path ''">foo</error> {
+public <error descr="Interface cannot be final">final</error> interface <error descr="Class 'Target' should be defined in file 'Target.js2'">Target</error> {
+    <error descr="Interface members cannot be final">fi<caret>nal</error> function doIt();
+}
+}
+
+class Foo {
+  final function foo() {}
+  <error descr="Final modifier can be applied only to classes and class methods">final</error> var x;
+  <error descr="Final modifier can be applied only to classes and class methods">final</error> const x2 = 1;
+}
+
+final class Foo_ {
+  function foo() {}
+}
+
+class Foo2 extends Foo {
+  <error descr="Cannot override final method from Foo">override</error> function foo() {}
+}
+
+class Foo2_ extends <error descr="Cannot extend final class 'Foo_'">Foo_</error> {
+  <error descr="Cannot override final method from Foo_">override</error> function foo() {}
+}
+<error descr="Final modifier can be applied only to classes and class methods">final</error> function zz() {}

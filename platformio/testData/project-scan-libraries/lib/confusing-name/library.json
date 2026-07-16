@@ -1,0 +1,6 @@
+{
+  "name": "Confusing Named Library",
+  "build": {
+    "srcFilter": "+<*.cpp>-<*.c>"
+  }
+}

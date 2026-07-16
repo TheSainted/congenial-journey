@@ -1,0 +1,28 @@
+TftplFile
+  ILTemplateHolder
+    ILTemplateIfBlockExpression
+      IfCondition
+        PsiElement(TEMPLATE_START)('%{')
+        PsiWhiteSpace(' ')
+        PsiElement(if)('if')
+        PsiWhiteSpace(' ')
+        ILLiteral
+          PsiElement(true)('true')
+        PsiWhiteSpace(' ')
+        PsiElement(})('}')
+      ILTemplateBlockBody
+        TftplDataLanguageSegmentImpl(DATA_LANGUAGE_TOKEN_UNPARSED)
+          PsiElement(DATA_LANGUAGE_TOKEN_UNPARSED)(' { yes } ')
+      ElseCondition
+        PsiElement(TEMPLATE_START)('%{')
+        PsiWhiteSpace(' ')
+        PsiElement(else)('else')
+        PsiWhiteSpace(' ')
+        PsiElement(})('}')
+      ILTemplateBlockBody
+        TftplDataLanguageSegmentImpl(DATA_LANGUAGE_TOKEN_UNPARSED)
+          PsiElement(DATA_LANGUAGE_TOKEN_UNPARSED)(' { no } ')
+      EndIf
+        PsiElement(TEMPLATE_START)('%{')
+        PsiElement(endif)('endif')
+        PsiElement(})('}')

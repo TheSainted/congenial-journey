@@ -1,0 +1,12 @@
+<idea-plugin package="org.jetbrains.qodana.jvm.dev">
+  <dependencies>
+    <module name="intellij.java.dev"/>
+  </dependencies>
+  <extensions defaultExtensionNs="com.intellij">
+    <localInspection language="JAVA" shortName="JavaAnnotator"
+                     groupKey="inspection.general.tools.group.name" groupBundle="messages.InspectionsBundle"
+                     bundle="messages.QodanaBundle" key="inspection.java.annotator"
+                     enabledByDefault="false" level="ERROR"
+                     implementationClass="org.jetbrains.qodana.jvm.dev.JavaAnnotatorInspection"/>
+  </extensions>
+</idea-plugin>

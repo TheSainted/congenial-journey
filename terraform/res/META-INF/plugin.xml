@@ -1,0 +1,654 @@
+<idea-plugin package="org.intellij.terraform">
+  <id>org.intellij.plugins.hcl</id>
+  <name>Terraform and HCL</name>
+  <vendor>JetBrains</vendor>
+
+  <description><![CDATA[
+   <p>
+      Improved <a href="https://www.terraform.io/">Terraform</a> and <a href="https://opentofu.org/">OpenTofu</a> support is tailored for developers, SREs, and DevOps teams, supporting
+      infrastructure management with features like syntax highlighting, code completion, and real-time error checking.
+      Streamline your infrastructure as code (IaC) workflow and boost productivity with comprehensive tooling designed to make development
+      and deployment more efficient.
+   </p>
+
+   <p>Features:</p>
+   <ul>
+     <li>Autocompletion, including for third-party providers from the Terraform Registry.</li>
+     <li><a href="https://github.com/hashicorp/hcl">HCL</a>, <a href="https://github.com/hashicorp/hil">HIL</a>, <a href="https://developer.hashicorp.com/terraform/language/functions/templatefile">TFTPL</a> syntax highlighting and validation</li>
+     <li>Integrated documentation, including for third-party providers from the Terraform Registry.</li>
+     <li>Find Usages / Go to definition for resources, providers, variables, and their properties</li>
+     <li>Rename refactoring</li>
+     <li>Introduce Variable refactoring (for string property values)</li>
+     <li>Several inspections</li>
+     <li>Report usage of deprecated properties</li>
+     <li>Unresolved reference checks (in interpolations)</li>
+     <li>Check required/missing properties in resource/provider</li>
+     <li><a href="https://www.terraform.io/docs/configuration/interpolation.html">Predefined Terraform methods</a> autocompletion in interpolations</li>
+     <li>Better properties validation (type checking)</li>
+     <li>Working with dependent modules</li>
+     <li>Type-specific autocompletion in interpolations</li>
+   </ul>
+    ]]></description>
+
+  <change-notes><![CDATA[
+  2025.3
+  <ul>
+    <li>
+      Add ephemeral block completion for OpenTofu.
+    </li>
+    <li>
+      “Test” in settings now suggests installing OpenTofu if it’s missing from PATH.
+    </li>
+    <li>
+      Terragrunt syntax support in the Terraform plugin.
+    </li>
+    <li>
+      Merged HCL and Terraform code style settings into a single configuration.
+    </li>
+    <li>
+      Terraform executable invalid path fix.
+    </li>
+    <li>
+      Fixed quick doc scrolling to the wrong position when hovering on an argument.
+    </li>
+  </ul>
+
+  2025.2
+  <ul>
+    <li>
+      Added support for <em>for_each</em> in import blocks, enhancing configurability and flexibility.
+    </li>
+    <li>
+      Introduced Keycloak provider compatibility, expanding the range of supported providers.
+    </li>
+    <li>
+      Improved <strong>code formatting</strong> for Terraform files, now enabled by default to ensure consistent and clean formatting.
+    </li>
+    <li>
+      Resolved binary detection issues on Windows when multiple Terraform executables were present, ensuring reliable tool selection.
+    </li>
+    <li>
+      Terraform tools: Initialize, Format Files, Generate Providers Metadata are now accessible directly from the in-file context menu, streamlining infrastructure operations.
+    </li>
+    <li>
+      Improved provider-defined functions support, including fixed highlighting issues, added go-to declaration documentation.
+    </li>
+    <li>
+      Enhanced Terraform file recognition, ensuring accurate handling of configuration templates.
+    </li>
+    <li>
+      Added support for the provider_meta block, enabling richer provider configurations.
+    </li>
+    <li>
+      Object variables now benefit from auto-completion, simplifying variable usage in configurations.
+    </li>
+    <li>
+      Resolved bugs in the Terraform reformat file feature, improving formatting reliability.
+    </li>
+    <li>
+      Improved syntax highlighting for better readability of provider-defined functions.
+    </li>
+    <li>
+      Added support for Google Cloud beta resources, reducing confusion with the stable Google provider.
+    </li>
+    <li>
+      Terraform plugin now supports <em>ephemeral</em> block.
+    </li>
+  </ul>
+    2025.1
+    <ul>
+      <li>
+        Added support for <strong>provider-defined functions</strong>, ensuring a more robust and feature-complete experience when working with Terraform configurations.
+      </li>
+      <li>
+        Improved actions in Terraform files, enhancing the overall usability and working experience with actions in Terraform files.
+      </li>
+      <li>
+        Interactive gutter actions for OpenTofu’s .tofu configuration files were added: Init, Validate, Plan, Apply, and Destroy, putting your infrastructure commands at your fingertips.
+      </li>
+      <li>
+        Improved the user experience for automatically detecting the Terraform executable, simplifying initial setup and configuration.
+      </li>
+      <li>
+        Resolved the provider version update issue that was specific to Windows machines, ensuring a seamless workflow across platforms.
+      </li>
+    </ul>
+    2024.3
+    <ul>
+      <li>
+        Introduced support for OpenTofu, an open-source, community-driven alternative to Terraform. The IDE now supports .tofu files
+        when OpenTofu is selected, enhancing Infrastructure as Code development with autocompletion for encryption methods, key providers,
+        and inspections for unknown references, ensuring a more secure and efficient setup.
+      </li>
+      <li>
+        Terraform Run Configuration actions are now available through Search Everywhere, streamlining access and usability.
+      </li>
+      <li>
+        Added inspection to detect unused variables and locals in Terraform files, helping keep code cleaner and more maintainable.
+      </li>
+      <li>
+        Usage indicators now highlight variable usage across Terraform files, aiding visibility and navigation of variable dependencies.
+      </li>
+      <li>
+        Added warnings for unused resources, helping developers identify and manage redundant or inactive code.
+      </li>
+      <li>
+        Refined Terraform controls in Gutter (Init, Validate, Plan, Apply, Destroy) for a more predictable and intuitive configuration experience.
+      </li>
+      <li>
+        Improved Terraform Run Configuration form with streamlined options and settings, enhancing user experience.
+      </li>
+      <li>
+        A new option to create Terraform files directly from the Create File menu has been added, making it easier to start new configurations.
+      </li>
+      <li>
+        Git author name inlay hints are now available in Terraform files, aiding collaboration and author tracking within code.
+      </li>
+      <li>
+        The search for variables now prioritizes tfvars files, making variable management more efficient and reducing search noise.
+      </li>
+    </ul>
+    2024.2
+    <ul>
+      <li>AI Full Line Completion for Terraform is now available, running locally on your machine without using external services. It is disabled by default but can be enabled for use. We appreciate your feedback to help improve the model (note that we do not learn from your data).</li>
+      <li>Basic operations, syntax highlighting, and code completion for Terraform are now available immediately, without waiting for indexing. You can start working right away.</li>
+      <li>Enhanced the quick help view for HCL in Terraform, making it more readable and informative.</li>
+      <li>Added a documentation tooltip that appears when hovering over a Terraform resource or attribute.</li>
+      <li>Enhanced performance of the Documentation tool window for faster updates and better visibility of progress.</li>
+      <li>Included the ability to use terraform fmt as an alternative to the default formatter.</li>
+      <li>Added support for composite extensions for .tfpl files. This allows automatic detection of the data language for templates based on composite extensions. For example, if a file has the extension .js.tftpl, the file will be recognized with JavaScript as the data language and tftpl as the primary language.</li>
+      <li>Added support for Terraform resource imports, allowing users to add and manage imported resources directly within the IDE, with automatic detection and matching of resource addresses.</li>
+      <li>Provided support for resolving and finding usages for included variables in Terraform projects. This feature allows users to see the final values of variables, navigate through variable references, and view environment-specific values. Additionally, it provides convenient navigation and refactoring options, enabling users to add or change values across all environments and generate necessary binding variables efficiently.</li>
+      <li>Added support for working with projects in the WSL context. If a project is located in WSL and opened from JetBrains IDE, the Terraform installed in the WSL distribution where the project resides is used.</li>
+      <li>Included support for optional parameters in Terraform variable definitions and module usage, including code completion and documentation.</li>
+      <li>Introduced "Deep search for variables" option in Settings | Advanced Settings to enable searching for variables in nested directories (with the ability to disable this behavior).</li>
+      <li>Added the ability to use Move Statement Up/Down for multiple selected blocks.</li>
+      <li>You can now specify tfvars in the Run configuration.</li>
+      <li>Terraform code completion for providers and HCL now scales with the tooltip window, fixing the issue of truncated documentation and enhancing the usefulness of quick documentation.</li>
+      <li>Added highlighting for corresponding parentheses in HCL, enhancing code readability and convenience.</li>
+      <li>The default path to the Terraform executable is now used if the path field is left empty in Settings. Additionally, you can now use the <b>Test</b> button to check the presence and version of Terraform.</li>
+    </ul>
+    2024.1
+    <ul>
+      <li>Improves code completion for a wide range of third-party Terraform providers from the Terraform Registry, supporting efficient coding.</li>
+      <li>Integrates support for the latest documentation of providers directly in the IDE, enabling quick learning and exploration.</li>
+      <li>Adds support for the Terraform Template Language (TFTPL), improving workflows for configuration files, scripts, and program codes.</li>
+      <li>Offers an option to integrate TFTPL files with preferred programming languages for improved templating flexibility.</li>
+      <li>Recommends running "terraform init" to initialize the working directory, improving code autocompletion and inspections with local, up-to-date metadata.</li>
+      <li>Enables moving expressions, lines, or blocks of code up or down within a file.</li>
+      <li>Support for the "Removed" block has been added.</li>
+      <li>Now automatically adds comment markers when a new line is inserted within a comment block.</li>
+      <li>HCL syntax checks improved.</li>
+      <li>Added support for the lifecycle meta-argument.</li>
+    </ul>
+    2023.3
+    <ul>
+      <li>Support for import block</li>
+      <li>Support for loop that produces objects</li>
+      <li>Completion in the nested attributes blocks</li>
+      <li>Updated metadata</li>
+    </ul>
+    2023.2
+    <ul>
+      <li>Fixed performance issues in the editor</li>
+      <li>Improved performance of variable suggestions</li>
+      <li>Support for access_policy block</li>
+    </ul>
+    2023.1
+    <ul>
+      <li>New metadata bundled for all official and most popular providers
+          from <a href="https://registry.terraform.io">Terraform Registry</a></li>
+      <li>Terraform intentions and quickfixes now provide intention preview</li>
+    </ul>
+    ]]>
+  </change-notes>
+
+  <content namespace="jetbrains">
+    <module name="intellij.terraform/watchers"/>
+    <module name="intellij.terraform/copyright"/>
+    <module name="intellij.terraform.template"/>
+  </content>
+
+  <dependencies>
+    <plugin id="com.intellij.modules.lang"/>
+    <module name="intellij.spellchecker"/>
+    <module name="intellij.platform.vcs.impl"/>
+  </dependencies>
+
+  <resource-bundle>messages.HCLBundle</resource-bundle>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType name="HCL" language="HCL" extensions="hcl;nomad" implementationClass="org.intellij.terraform.hcl.HclFileType"
+              fieldName="INSTANCE"/>
+    <lang.parserDefinition language="HCL" implementationClass="org.intellij.terraform.hcl.HCLParserDefinition"/>
+
+    <lang.syntaxHighlighterFactory language="HCL" implementationClass="org.intellij.terraform.hcl.HCLSyntaxHighlighterFactory"/>
+    <colorSettingsPage implementation="org.intellij.terraform.hcl.HCLColorsPage"/>
+
+    <!-- CodeInsight -->
+    <completion.contributor language="HCL" implementationClass="org.intellij.terraform.config.codeinsight.TfConfigCompletionContributor"/>
+    <lang.foldingBuilder language="HCL" implementationClass="org.intellij.terraform.hcl.editor.HCLFoldingBuilder"/>
+    <lang.commenter language="HCL" implementationClass="org.intellij.terraform.hcl.editor.HCLCommenter"/>
+    <lang.psiStructureViewFactory language="HCL" implementationClass="org.intellij.terraform.hcl.structureView.HCLStructureViewFactory"/>
+    <lang.braceMatcher language="HCL" implementationClass="org.intellij.terraform.hcl.codeinsight.HCLBraceMatcher"/>
+    <lang.findUsagesProvider language="HCL" implementationClass="org.intellij.terraform.hcl.findUsages.HCLFindUsagesProvider"/>
+    <usageTypeProvider implementation="org.intellij.terraform.config.findUsages.HCLUsageTypeProvider"/>
+    <breadcrumbsInfoProvider implementation="org.intellij.terraform.hcl.editor.HCLBreadcrumbsInfoProvider"/>
+    <navbar implementation="org.intellij.terraform.hcl.editor.HCLNavBarExtension"/>
+    <qualifiedNameProvider implementation="org.intellij.terraform.hcl.navigation.HCLQualifiedNameProvider"/>
+
+    <codeInsight.typeInfo language="HIL" implementationClass="org.intellij.terraform.hcl.codeinsight.hint.HCL2TypeProvider"/>
+    <codeInsight.typeInfo language="HCL" implementationClass="org.intellij.terraform.hcl.codeinsight.hint.HCL2TypeProvider" id="hcl2"/>
+    <codeInsight.typeInfo language="HCL" implementationClass="org.intellij.terraform.hcl.codeinsight.hint.HCLTypeProvider"
+                          order="after hcl2"/>
+
+    <!-- Annotators -->
+    <annotator language="HCL" implementationClass="org.intellij.terraform.hcl.codeinsight.HCLLiteralAnnotator"/>
+
+    <!-- Manipulator for injections support -->
+    <lang.elementManipulator forClass="org.intellij.terraform.hcl.psi.HCLIdentifier"
+                             implementationClass="org.intellij.terraform.hcl.psi.HCLIdentifierManipulator"/>
+    <lang.elementManipulator forClass="org.intellij.terraform.hcl.psi.HCLVariable"
+                             implementationClass="org.intellij.terraform.hcl.psi.HCLVariableManipulator"/>
+    <lang.elementManipulator forClass="org.intellij.terraform.hcl.psi.HCLNumberLiteral"
+                             implementationClass="org.intellij.terraform.hcl.psi.HCLNumberManipulator"/>
+    <lang.elementManipulator forClass="org.intellij.terraform.hcl.psi.HCLStringLiteral"
+                             implementationClass="org.intellij.terraform.hcl.psi.HCLStringLiteralManipulator"/>
+    <lang.elementManipulator forClass="org.intellij.terraform.hcl.psi.HCLHeredocContent"
+                             implementationClass="org.intellij.terraform.hcl.psi.HCLHeredocContentManipulator"/>
+
+    <!-- Refactoring support -->
+    <lang.refactoringSupport language="HCL" implementationClass="org.intellij.terraform.hcl.psi.HCLRefactoringSupportProvider"/>
+    <lang.refactoringSupport language="HCL-Terraform" implementationClass="org.intellij.terraform.hcl.psi.HCLRefactoringSupportProvider"/>
+    <renameInputValidator implementation="org.intellij.terraform.hcl.refactoring.HCLElementRenameValidator"/>
+    <renameInputValidator implementation="org.intellij.terraform.config.refactoring.TfElementRenameValidator"/>
+    <renameInputValidator implementation="org.intellij.terraform.config.refactoring.TfProhibitElementRenameValidator"/>
+    <vetoRenameCondition implementation="org.intellij.terraform.config.refactoring.TfVetoRenameCondition"/>
+
+    <!-- Formatter -->
+    <langCodeStyleSettingsProvider implementation="org.intellij.terraform.hcl.formatter.HclLanguageCodeStyleSettingsProvider"/>
+    <lang.formatter language="HCL" implementationClass="org.intellij.terraform.hcl.formatter.HCLFormattingBuilderModel"/>
+    <formattingService implementation="org.intellij.terraform.hcl.formatter.TfAsyncFormattingService"/>
+    <lang.quoteHandler language="HCL" implementationClass="org.intellij.terraform.hcl.formatter.HCLQuoteHandler"/>
+
+    <!-- Handles autoinsert '}' after '${' in string literals (Issue https://github.com/VladRassokhin/intellij-hcl/issues/63>)-->
+    <typedHandler implementation="org.intellij.terraform.config.editor.TfInterpolationStartTypedHandler"/>
+
+    <!--Spellchecking -->
+    <spellchecker.support language="HCL" implementationClass="org.intellij.terraform.hcl.spellchecker.HCLSpellcheckerStrategy"/>
+    <spellchecker.bundledDictionaryProvider implementation="org.intellij.terraform.TfBundledDictionaryProvider"/>
+    <extendWordSelectionHandler implementation="org.intellij.terraform.hcl.editor.HCLHILStringLiteralSelectionHandler"/>
+
+    <!-- Fixture for todos indexing -->
+    <indexPatternBuilder implementation="org.intellij.terraform.hcl.search.HCLIndexPatternBuilder"/>
+
+    <!-- Terraform Interpolation language -->
+    <lang.parserDefinition language="HIL" implementationClass="org.intellij.terraform.hil.HILParserDefinition"/>
+
+    <lang.syntaxHighlighterFactory language="HIL" implementationClass="org.intellij.terraform.hil.HILSyntaxHighlighterFactory"/>
+    <colorSettingsPage implementation="org.intellij.terraform.hil.HILColorPage"/>
+
+    <!-- Annotators -->
+    <annotator language="HIL" implementationClass="org.intellij.terraform.hil.codeinsight.HILVariableAnnotator"/>
+    <annotator language="HCL" implementationClass="org.intellij.terraform.hil.codeinsight.HILVariableAnnotator"/>
+
+    <!-- CodeInsight -->
+    <lang.braceMatcher language="HIL" implementationClass="org.intellij.terraform.hil.codeinsight.HILBraceMatcher"/>
+    <lang.quoteHandler language="HIL" implementationClass="org.intellij.terraform.hil.formatter.HILQuoteHandler"/>
+    <lang.foldingBuilder language="HIL" implementationClass="org.intellij.terraform.hil.formatter.HILFoldingBuilder"/>
+    <psi.referenceContributor language="HIL" implementation="org.intellij.terraform.hil.psi.ILReferenceContributor"/>
+    <psi.referenceContributor language="HCL" implementation="org.intellij.terraform.hil.psi.ILReferenceContributor"/>
+    <completion.contributor language="HIL" implementationClass="org.intellij.terraform.hil.codeinsight.HilCompletionContributor"/>
+    <lang.elementManipulator forClass="org.intellij.terraform.hil.psi.ILVariable"
+                             implementationClass="org.intellij.terraform.hil.psi.ILVariableManipulator"/>
+    <lang.elementManipulator forClass="org.intellij.terraform.hil.psi.ILLiteralExpression"
+                             implementationClass="org.intellij.terraform.hil.psi.ILLiteralExpressionManipulator"/>
+    <!-- Refactoring support -->
+    <lang.refactoringSupport language="HIL" implementationClass="org.intellij.terraform.hil.refactoring.ILRefactoringSupportProvider"/>
+    <renameInputValidator implementation="org.intellij.terraform.hil.refactoring.HILElementRenameValidator"/>
+
+    <lang.findUsagesProvider language="HIL" implementationClass="org.intellij.terraform.hil.findUsages.HILFindUsagesProvider"/>
+    <usageTypeProvider implementation="org.intellij.terraform.hil.findUsages.HILUsageTypeProvider"/>
+
+    <!-- Inject TIL into TerraformConfig -->
+    <languageInjector implementation="org.intellij.terraform.hil.ILLanguageInjector"/>
+
+    <!-- Terraform Config language -->
+    <fileType name="Terraform" language="HCL-Terraform" extensions="tf;tfvars"
+              implementationClass="org.intellij.terraform.config.TerraformFileType" fieldName="INSTANCE"/>
+    <lang.parserDefinition language="HCL-Terraform" implementationClass="org.intellij.terraform.config.TfParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="HCL-Terraform" implementationClass="org.intellij.terraform.config.TfSyntaxHighlighterFactory"/>
+
+    <!-- CodeInsight -->
+    <lang.foldingBuilder language="HCL-Terraform" implementationClass="org.intellij.terraform.hcl.editor.HCLFoldingBuilder"/>
+    <lang.commenter language="HCL-Terraform" implementationClass="org.intellij.terraform.hcl.editor.HCLCommenter"/>
+    <!-- TODO: Better structure view provider-->
+    <lang.psiStructureViewFactory language="HCL-Terraform"
+                                  implementationClass="org.intellij.terraform.hcl.structureView.HCLStructureViewFactory"/>
+    <lang.braceMatcher language="HCL-Terraform" implementationClass="org.intellij.terraform.hcl.codeinsight.HCLBraceMatcher"/>
+    <lang.findUsagesProvider language="HCL-Terraform" implementationClass="org.intellij.terraform.config.findUsages.TfFindUsagesProvider"/>
+    <useScopeEnlarger implementation="org.intellij.terraform.config.TfOutputsAndVariablesUseScopeEnlarger"/>
+    <codeInsight.daemonBoundCodeVisionProvider implementation="org.intellij.terraform.config.hints.TfReferencesCodeVisionProvider"/>
+    <vcs.codeVisionLanguageContext language="HCL-Terraform" implementationClass="org.intellij.terraform.config.hints.TfVcsContextProvider"/>
+    <codeInsight.codeVisionSettingsPreviewLanguage modelId="references" language="HCL-Terraform"/>
+    <psi.referenceContributor language="HCL" implementation="org.intellij.terraform.config.psi.TfReferenceContributor"/>
+
+    <platform.backend.documentation.psiTargetProvider implementation="org.intellij.terraform.config.documentation.TfPsiDocTargetProvider"/>
+
+    <registryKey key="terraform.registry.connection.timeout" defaultValue="1000"
+                 description="Specifies timeout in ms for for connecting to Terraform registry and fetching docs from GitHub"
+                 restartRequired="false"/>
+
+    <registryKey key="terraform.registry.metadata.parallelism" defaultValue="4"
+                 description="Specifies number of max parallel building metadata"
+                 restartRequired="false"/>
+
+    <statementUpDownMover implementation="org.intellij.terraform.config.HCLStatementMover" id="HCL_SM" order="before line"/>
+
+    <!-- Formatter -->
+    <codeStyleSettingsProvider implementation="org.intellij.terraform.config.formatter.TfCodeStyleSettingsProvider"/>
+    <langCodeStyleSettingsProvider implementation="org.intellij.terraform.config.formatter.TfConfigCodeStyleSettingsProvider"/>
+    <lang.formatter language="HCL-Terraform" implementationClass="org.intellij.terraform.config.formatter.TfFormattingBuilderModel"/>
+    <lang.quoteHandler language="HCL-Terraform" implementationClass="org.intellij.terraform.hcl.formatter.HCLQuoteHandler"/>
+
+    <lang.floatingToolbar language="HCL" minimal="true"/>
+
+    <applicationService serviceInterface="org.intellij.terraform.config.util.TfCommandLineService"
+                        serviceImplementation="org.intellij.terraform.config.util.TfCommandLineServiceImpl"
+                        testServiceImplementation="org.intellij.terraform.config.util.TfCommandLineServiceMock"/>
+
+    <projectService serviceInterface="org.intellij.terraform.runtime.TfToolPathDetector"
+                    serviceImplementation="org.intellij.terraform.runtime.TfToolPathDetectorImpl"
+                    testServiceImplementation="org.intellij.terraform.runtime.TfToolPathDetectorMock"
+    />
+
+    <vfs.asyncListener implementation="org.intellij.terraform.config.model.local.LocalSchemaVfsListener"/>
+    <vfs.asyncListener implementation="org.intellij.terraform.config.model.local.TfDirectoryExcludeVfsListener"/>
+    <projectFileScanner implementation="org.intellij.terraform.config.model.local.TfIndexableFileScanner"/>
+
+    <lang.inspectionSuppressor language="HCL" implementationClass="org.intellij.terraform.config.inspection.HCLInspectionSuppressor"/>
+    <!-- HCL compatible inspections: Terraform, OpenTofu and Terragrunt -->
+    <localInspection language="HCL" applyToDialects="true" shortName="HclBlockMissingProperty" bundle="messages.HCLBundle"
+                     key="missing.resource.property.inspection.display.name"
+                     groupKey="hcl.files.inspection.group.display.name" enabledByDefault="true" level="WARNING"
+                     suppressId="MissingProperty"
+                     implementationClass="org.intellij.terraform.config.inspection.HclBlockMissingPropertyInspection"/>
+
+    <!-- Terraform/OpenTofu inspections -->
+    <localInspection language="HCL" applyToDialects="true" shortName="HCLBlockConflictingProperties" bundle="messages.HCLBundle"
+                     key="conflicting.resource.property.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     suppressId="ConflictingProperties"
+                     implementationClass="org.intellij.terraform.config.inspection.HCLBlockConflictingPropertiesInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfUnknownBlockType" bundle="messages.HCLBundle"
+                     key="unknown.block.type.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WARNING"
+                     implementationClass="org.intellij.terraform.config.inspection.TfUnknownBlockTypeInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="HCLDeprecatedElement" bundle="messages.HCLBundle"
+                     key="deprecated.element.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WEAK WARNING"
+                     implementationClass="org.intellij.terraform.config.inspection.HCLDeprecatedElementInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfVARSIncorrectElement" bundle="messages.HCLBundle"
+                     key="tfvars.unsupported.element.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WARNING"
+                     implementationClass="org.intellij.terraform.config.inspection.TfVARSIncorrectElementInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfIncorrectVariableType" bundle="messages.HCLBundle"
+                     key="incorrect.variable.type.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WARNING"
+                     implementationClass="org.intellij.terraform.config.inspection.TfIncorrectVariableTypeInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfMissingModule" bundle="messages.HCLBundle"
+                     key="missing.module.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WARNING"
+                     suppressId="MissingModule"
+                     implementationClass="org.intellij.terraform.config.inspection.TfMissingModuleInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfNotInitialized" bundle="messages.HCLBundle"
+                     key="not.initialized.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="false" level="WARNING"
+                     suppressId="NotInitialized"
+                     implementationClass="org.intellij.terraform.config.inspection.TfNotInitializedInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfBlockNameValidness" bundle="messages.HCLBundle"
+                     key="block.name.validness.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     suppressId="BlockNameValidness"
+                     implementationClass="org.intellij.terraform.config.inspection.TfBlockNameValidnessInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="HCLLiteralValidness" bundle="messages.HCLBundle"
+                     key="hcl.literal.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     suppressId="LiteralValidness"
+                     implementationClass="org.intellij.terraform.config.inspection.HCLLiteralValidnessInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfUnknownProperty" bundle="messages.HCLBundle"
+                     key="unknown.property.in.block.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WARNING"
+                     implementationClass="org.intellij.terraform.config.inspection.TfUnknownPropertyInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfUnknownResource" bundle="messages.HCLBundle"
+                     key="unknown.resource.identifier.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WARNING"
+                     implementationClass="org.intellij.terraform.config.inspection.TfUnknownResourceInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfUnusedElements" bundle="messages.HCLBundle"
+                     key="unused.local.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WARNING"
+                     implementationClass="org.intellij.terraform.config.inspection.TfUnusedElementsInspection"/>
+
+    <!--region Duplicates-->
+    <localInspection language="HCL" applyToDialects="true" shortName="TfDuplicatedProvider" bundle="messages.HCLBundle"
+                     key="duplicated.provider.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.terraform.config.inspection.TfDuplicatedProviderInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfDuplicatedVariable" bundle="messages.HCLBundle"
+                     key="duplicated.variable.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.terraform.config.inspection.TfDuplicatedVariableInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfDuplicatedOutput" bundle="messages.HCLBundle"
+                     key="duplicated.output.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.terraform.config.inspection.TfDuplicatedOutputInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="TfDuplicatedBlockProperty" bundle="messages.HCLBundle"
+                     key="duplicated.block.property.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.terraform.config.inspection.TfDuplicatedBlockPropertyInspection"/>
+    <!--endregion Duplicates-->
+
+    <localInspection language="HCL" applyToDialects="true" shortName="TfNoInterpolationsAllowed" bundle="messages.HCLBundle"
+                     key="illegal.interpolations.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.terraform.config.inspection.TfNoInterpolationsAllowedInspection"/>
+
+    <!-- HIL Inspections -->
+    <localInspection language="HIL" applyToDialects="true" shortName="HILMissingSelfInContext" bundle="messages.HCLBundle"
+                     key="hil.scope.not.available.in.context.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.terraform.hil.inspection.HILMissingSelfInContextInspection"/>
+    <localInspection language="HIL" applyToDialects="true" shortName="HILUnknownResourceType" bundle="messages.HCLBundle"
+                     key="hil.unknown.resource.type.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WARNING"
+                     implementationClass="org.intellij.terraform.hil.inspection.HILUnknownResourceTypeInspection"/>
+    <localInspection language="" shortName="HILUnresolvedReference" bundle="messages.HCLBundle"
+                     key="hil.unresolved.reference.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.terraform.hil.inspection.HILUnresolvedReferenceInspection"/>
+    <localInspection language="HIL" applyToDialects="true" shortName="HILOperationTypesMismatch" bundle="messages.HCLBundle"
+                     key="hil.operation.types.mismatch.inspection.display.name"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.terraform.hil.inspection.HILOperationTypesMismatchInspection"/>
+
+    <!-- Convert HIL -> HCL inspections/intentions -->
+    <localInspection language="HCL" applyToDialects="true" shortName="HILConvertToHCL" bundle="messages.HCLBundle"
+                     key="hil.convert.to.hcl.inspection.display.name"
+                     cleanupTool="true"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WEAK WARNING"
+                     implementationClass="org.intellij.terraform.hil.inspection.HILConvertToHCLInspection"/>
+    <localInspection language="HCL" applyToDialects="true" shortName="HCLSimplifyExpression" bundle="messages.HCLBundle"
+                     key="hcl.simplify.expression.inspection.display.name"
+                     cleanupTool="true"
+                     groupKey="terraform.files.inspection.group.display.name" enabledByDefault="true" level="WEAK WARNING"
+                     implementationClass="org.intellij.terraform.hil.inspection.HCLSimplifyExpressionInspection"/>
+
+    <fileBasedIndex implementation="org.intellij.terraform.hcl.HCLSymbolIndex"/>
+    <gotoSymbolContributor implementation="org.intellij.terraform.hcl.GoToSymbolContributor"/>
+
+    <!-- Terraform as Tool -->
+    <advancedSetting id="org.intellij.terraform.config.documentation.download"
+                     default="true"
+                     groupKey="advanced.setting.terraform"
+                     bundle="messages.HCLBundle"
+                     descriptionKey="terraform.documentation.download.enabled"/>
+
+    <advancedSetting id="org.intellij.terraform.config.build.metadata.auto"
+                     default="true"
+                     groupKey="advanced.setting.terraform"
+                     bundle="messages.HCLBundle"
+                     descriptionKey="terraform.metadata.build.auto"/>
+
+    <advancedSetting id="org.intellij.terraform.config.build.metadata.eagerly"
+                     default="false"
+                     groupKey="advanced.setting.terraform"
+                     bundle="messages.HCLBundle"
+                     descriptionKey="terraform.metadata.build.eagerly"/>
+
+    <advancedSetting id="org.intellij.terraform.use.global.meta"
+                     default="false"
+                     groupKey="advanced.setting.terraform"
+                     bundle="messages.HCLBundle"
+                     descriptionKey="terraform.use.global.meta"/>
+
+    <advancedSetting id="org.intellij.terraform.config.variables.deep.search"
+                     default="true"
+                     groupKey="advanced.setting.terraform"
+                     bundle="messages.HCLBundle"
+                     descriptionKey="terraform.variables.deep.search"/>
+
+    <advancedSetting id="org.intellij.terraform.variables.search.fallback"
+                     default="false"
+                     groupKey="advanced.setting.terraform"
+                     bundle="messages.HCLBundle"
+                     descriptionKey="terraform.variables.search.fallback"/>
+
+    <advancedSetting id="org.intellij.terraform.code.vision.usages.limit"
+                     default="50"
+                     groupKey="advanced.setting.terraform"
+                     bundle="messages.HCLBundle"/>
+
+    <projectConfigurable groupId="tools" instance="org.intellij.terraform.runtime.TfToolConfigurable"
+                         id="reference.settings.dialog.project.terraform"
+                         key="terraform.opentofu.settings.label" bundle="messages.HCLBundle"/>
+
+    <configurationType implementation="org.intellij.terraform.runtime.TfConfigurationType"/>
+    <runLineMarkerContributor language="HCL" implementationClass="org.intellij.terraform.runtime.TfRunLineMarkerContributor"/>
+    <checkinHandlerFactory implementation="org.intellij.terraform.config.actions.TfFmtCheckinFactory" order="last"/>
+    <macro implementation="org.intellij.terraform.macros.TfExecutableMacro"/>
+
+    <notificationGroup id="Terraform Execution" displayType="TOOL_WINDOW" toolWindowId="Run" bundle="messages.HCLBundle"
+                       key="notification.group.terraform.execution"/>
+
+    <dependencySupport kind="executable" coordinate="terraform"/>
+
+    <internalFileTemplate name="Config"/>
+    <internalFileTemplate name="Component"/>
+    <internalFileTemplate name="Deploy"/>
+    <internalFileTemplate name="OpenTofu"/>
+    <internalFileTemplate name="Terragrunt Config"/>
+    <internalFileTemplate name="Terragrunt Stack"/>
+
+    <!--OpenTofu support-->
+    <fileType name="OpenTofu" language="HCL-Terraform" extensions="tofu"
+              implementationClass="org.intellij.terraform.opentofu.OpenTofuFileType" fieldName="INSTANCE"/>
+
+    <fileTypeUsageSchemaDescriptor schema="OpenTofu"
+                                   implementationClass="org.intellij.terraform.config.editor.OpenTofuJsonFileTypeUsageSchemaDescriptor"/>
+
+    <configurationType implementation="org.intellij.terraform.opentofu.runtime.OpenTofuConfigurationType"/>
+    <!-- OpenTofu support -->
+    <fileTypeUsageSchemaDescriptor schema="Terraform"
+                                   implementationClass="org.intellij.terraform.config.editor.TfJsonFileTypeUsageSchemaDescriptor"/>
+
+    <fileTypeUsageSchemaDescriptor schema="Terragrunt"
+                                   implementationClass="org.intellij.terraform.config.editor.TerragruntTypeUsageSchemaDescriptor"/>
+
+    <statistics.projectUsagesCollector implementation="org.intellij.terraform.TfUsageCollector"/>
+    <statistics.counterUsagesCollector implementationClass="org.intellij.terraform.TfUsageTriggerCollector"/>
+
+    <psi.referenceContributor language="HCL" implementation="org.intellij.terraform.opentofu.codeinsight.OpenTofuReferenceContributor"/>
+
+
+    <completion.contributor language="HCL" implementationClass="org.intellij.terraform.opentofu.codeinsight.OpenTofuCompletionContributor"/>
+
+    <localInspection bundle="messages.HCLBundle" language="HCL"
+                     applyToDialects="true"
+                     implementationClass="org.intellij.terraform.opentofu.inspection.OpenTofuUnknownKeyProviderInspection"
+                     key="opentofu.unknown.key.provider.inspection.display.name"
+                     groupKey="opentofu.files.inspection.group.display.name"
+                     enabledByDefault="true" level="ERROR"
+    />
+
+    <localInspection bundle="messages.HCLBundle" language="HCL"
+                     applyToDialects="true"
+                     implementationClass="org.intellij.terraform.opentofu.inspection.OpenTofuUnknownEncryptionMethodInspection"
+                     key="opentofu.unknown.encryption.method.inspection.display.name"
+                     groupKey="opentofu.files.inspection.group.display.name"
+                     enabledByDefault="true" level="ERROR"
+    />
+
+    <!--Terragrunt support-->
+    <fileType name="Terragrunt" language="HCL" patterns="root.hcl;*.root.hcl;*terragrunt.hcl;*terragrunt.*.hcl"
+              implementationClass="org.intellij.terraform.terragrunt.TerragruntFileType" fieldName="INSTANCE"/>
+    <localInspection bundle="messages.HCLBundle" language="HCL"
+                     applyToDialects="true"
+                     implementationClass="org.intellij.terraform.terragrunt.inspection.TerragruntDuplicatedBlocksInspection"
+                     key="terragrunt.duplicated.blocks.inspection.display.name"
+                     groupKey="terragrunt.files.inspection.group.display.name"
+                     enabledByDefault="true" level="WARNING"/>
+
+    <completion.contributor language="HCL" implementationClass="org.intellij.terraform.terragrunt.codeinsight.TerragruntCompletionContributor"/>
+
+    <!--Terraform Stack support-->
+    <fileType name="Terraform Component" language="HCL" patterns="*.tfcomponent.hcl"
+              implementationClass="org.intellij.terraform.stack.component.TfComponentFileType" fieldName="INSTANCE"/>
+    <completion.contributor language="HCL" implementationClass="org.intellij.terraform.stack.component.TfComponentCompletionContributor"/>
+    <psi.referenceContributor language="HCL" implementation="org.intellij.terraform.stack.component.TfComponentReferenceContributor"/>
+
+    <fileType name="Terraform Deployment" language="HCL" patterns="*.tfdeploy.hcl"
+              implementationClass="org.intellij.terraform.stack.deployment.TfDeployFileType" fieldName="INSTANCE"/>
+    <completion.contributor language="HCL" implementationClass="org.intellij.terraform.stack.deployment.TfDeployCompletionContributor"/>
+  </extensions>
+
+  <projectListeners>
+    <listener class="org.intellij.terraform.runtime.TfRunManagerListener" topic="com.intellij.execution.RunManagerListener"/>
+  </projectListeners>
+
+  <actions>
+    <action icon="AllIcons.General.Warning" id="TfInitRequiredAction" class="org.intellij.terraform.config.actions.TfInitRequiredAction"/>
+
+    <action id="NewTerraformFile" class="org.intellij.terraform.config.actions.TfCreateFileFromTemplateAction"
+            icon="org.intellij.terraform.TerraformIcons.Terraform">
+      <add-to-group group-id="NewGroup" anchor="after" relative-to-action="NewWebDevelopment"/>
+    </action>
+
+    <group id="TfTools" popup="true" icon="org.intellij.terraform.TerraformIcons.Terraform"
+           class="com.intellij.ide.actions.NonTrivialActionGroup">
+      <action id="TfInitAction" class="org.intellij.terraform.config.actions.TfInitAction"/>
+      <action id="TfFmtFileAction" class="org.intellij.terraform.config.actions.TfFmtFileAction">
+        <keyboard-shortcut keymap="$default" first-keystroke="shift ctrl alt F"/>
+      </action>
+      <action id="TfGenerateLocalMetadataAction"
+              class="org.intellij.terraform.config.actions.TfGenerateLocalMetadataAction"/>
+      <add-to-group group-id="CodeMenu" anchor="last"/>
+      <add-to-group group-id="ProjectViewPopupMenu" anchor="last"/>
+      <add-to-group group-id="EditorLangPopupMenu" anchor="last"/>
+    </group>
+
+    <group id="TfRunConfigurationActions">
+      <action id="TfInitConfigAction" class="org.intellij.terraform.runtime.InitAction"/>
+      <action id="TfValidateConfigAction" class="org.intellij.terraform.runtime.ValidateAction"/>
+      <action id="TfPlanConfigAction" class="org.intellij.terraform.runtime.PlanAction"/>
+      <action id="TfApplyConfigAction" class="org.intellij.terraform.runtime.ApplyAction"/>
+      <action id="TfDestroyConfigAction" class="org.intellij.terraform.runtime.DestroyAction"/>
+    </group>
+    <group id="OpenTofuRunConfigurationActions">
+      <action id="OtInitConfigAction" class="org.intellij.terraform.runtime.InitAction"/>
+      <action id="OtValidateConfigAction" class="org.intellij.terraform.runtime.ValidateAction"/>
+      <action id="OtPlanConfigAction" class="org.intellij.terraform.runtime.PlanAction"/>
+      <action id="OtApplyConfigAction" class="org.intellij.terraform.runtime.ApplyAction"/>
+      <action id="OtDestroyConfigAction" class="org.intellij.terraform.runtime.DestroyAction"/>
+    </group>
+  </actions>
+</idea-plugin>

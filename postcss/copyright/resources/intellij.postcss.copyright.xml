@@ -1,0 +1,11 @@
+<idea-plugin>
+
+  <dependencies>
+    <plugin id="com.intellij.copyright"/>
+    <module name="intellij.css.copyright"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij.copyright">
+    <updater filetype="PostCSS" implementationClass="com.intellij.postcss.copyright.PostCssCopyrightsProvider"/>
+  </extensions>
+</idea-plugin>

@@ -1,0 +1,5 @@
+(boldHover) (typeText=null; priority=100.0; bold; typeGreyed)
+[fontWeight] (typeText='Number'; priority=100.0; bold; typeGreyed)
+[underlineColor] (typeText='String'; priority=100.0; bold; typeGreyed)
+fontWeight (typeText='Number'; priority=100.0; bold; typeGreyed)
+underlineColor (typeText='String'; priority=100.0; bold; typeGreyed)

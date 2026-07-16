@@ -1,0 +1,20 @@
+### auto-generated section `local-libs` start
+load("@rules_java//java:defs.bzl", "java_import")
+
+java_import(
+  name = "dart-json",
+  jars = ["json.jar"],
+  visibility = ["//visibility:public"]
+)
+
+java_import(
+  name = "dart-weberknecht-0-1-5",
+  jars = ["weberknecht-0.1.5.jar"],
+  visibility = ["//visibility:public"]
+)
+
+exports_files([
+  "json.jar",
+  "weberknecht-0.1.5.jar",
+], visibility = ["//visibility:public"])
+### auto-generated section `local-libs` end

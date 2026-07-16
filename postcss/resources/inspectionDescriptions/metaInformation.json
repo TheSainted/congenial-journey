@@ -1,0 +1,24 @@
+{
+  "inspections": [
+    {
+      "id": "PostCssNesting",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "PostCssCustomMedia",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "PostCssCustomSelector",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "PostCssMediaRange",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "PostCssUnresolvedModuleValueReference",
+      "codeQualityCategory": "Sanity"
+    }
+  ]
+}

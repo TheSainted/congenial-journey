@@ -1,0 +1,10 @@
+// "Create method 'foo'" "true"
+package {
+public function name():void {
+    function foo():void {
+        <caret>
+    }
+
+    foo();
+}
+}

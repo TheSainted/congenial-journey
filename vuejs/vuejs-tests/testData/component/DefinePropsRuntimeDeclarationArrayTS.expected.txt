@@ -1,0 +1,18 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  DefinePropsRuntimeDeclarationArrayTS: <recursive value of class VueFileSourceComponent>,
+ },
+ props: [
+  {
+   class: "VueStringLiteralInputProperty",
+   name: "optional",
+   required: false,
+  },
+  {
+   class: "VueStringLiteralInputProperty",
+   name: "required",
+   required: false,
+  },
+ ],
+}

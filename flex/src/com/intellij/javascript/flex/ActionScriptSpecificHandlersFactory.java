@@ -1,0 +1,139 @@
+// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+package com.intellij.javascript.flex;
+
+import com.intellij.javascript.flex.index.ActionScriptCustomIndexer;
+import com.intellij.javascript.flex.resolve.ActionScriptClassResolver;
+import com.intellij.javascript.flex.resolve.ActionScriptImportHandler;
+import com.intellij.javascript.flex.resolve.ActionScriptQualifiedItemProcessor;
+import com.intellij.javascript.flex.resolve.ActionScriptReferenceExpressionResolver;
+import com.intellij.javascript.flex.resolve.ActionScriptResolveProcessor;
+import com.intellij.javascript.flex.resolve.ActionScriptSinkResolveProcessor;
+import com.intellij.javascript.flex.resolve.ActionScriptTypeEvaluator;
+import com.intellij.javascript.flex.resolve.ActionScriptTypeGuardEvaluator;
+import com.intellij.javascript.flex.resolve.ActionScriptTypeHelper;
+import com.intellij.lang.javascript.completion.JSLookupPriority;
+import com.intellij.lang.javascript.dialects.JSDialectSpecificHandlersFactory;
+import com.intellij.lang.javascript.flex.ActionScriptExpectedTypeEvaluator;
+import com.intellij.lang.javascript.index.JSCustomIndexer;
+import com.intellij.lang.javascript.index.JSIndexContentBuilder;
+import com.intellij.lang.javascript.psi.ExpectedTypeEvaluator;
+import com.intellij.lang.javascript.psi.JSExpectedTypeKind;
+import com.intellij.lang.javascript.psi.ecmal4.JSQualifiedNamedElement;
+import com.intellij.lang.javascript.psi.impl.JSReferenceExpressionImpl;
+import com.intellij.lang.javascript.psi.resolve.JSClassResolver;
+import com.intellij.lang.javascript.psi.resolve.JSEvaluateContext;
+import com.intellij.lang.javascript.psi.resolve.JSGenericTypesEvaluator;
+import com.intellij.lang.javascript.psi.resolve.JSImportHandler;
+import com.intellij.lang.javascript.psi.resolve.JSResolveProcessorEx;
+import com.intellij.lang.javascript.psi.resolve.JSSinkResolveProcessor;
+import com.intellij.lang.javascript.psi.resolve.JSTypeEvaluator;
+import com.intellij.lang.javascript.psi.resolve.JSTypeGuardEvaluator;
+import com.intellij.lang.javascript.psi.resolve.JSTypeHelper;
+import com.intellij.lang.javascript.psi.resolve.QualifiedItemProcessor;
+import com.intellij.lang.javascript.psi.resolve.ResultSink;
+import com.intellij.lang.javascript.psi.resolve.processors.JSQualifiedItemProcessor;
+import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.text.StringUtil;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.ResolveState;
+import com.intellij.psi.impl.source.resolve.ResolveCache;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.function.BiFunction;
+
+/**
+ * @author Konstantin.Ulitin
+ */
+public final class ActionScriptSpecificHandlersFactory extends JSDialectSpecificHandlersFactory {
+  @Override
+  public @NotNull JSTypeEvaluator newTypeEvaluator(@NotNull JSEvaluateContext context) {
+    return new ActionScriptTypeEvaluator(context);
+  }
+
+  @Override
+  public @NotNull JSTypeGuardEvaluator getTypeGuardEvaluator() {
+    return ActionScriptTypeGuardEvaluator.INSTANCE;
+  }
+
+  @Override
+  public @NotNull ResolveCache.PolyVariantResolver<JSReferenceExpressionImpl> createReferenceExpressionResolver(@NotNull JSReferenceExpressionImpl referenceExpression,
+                                                                                                                boolean ignorePerformanceLimits) {
+    return new ActionScriptReferenceExpressionResolver(referenceExpression, ignorePerformanceLimits);
+  }
+
+  @Override
+  protected @NotNull ExpectedTypeEvaluator newExpectedTypeEvaluator(@NotNull PsiElement parent,
+                                                                    @NotNull JSExpectedTypeKind expectedTypeKind) {
+    return new ActionScriptExpectedTypeEvaluator(parent, expectedTypeKind);
+  }
+
+  @Override
+  public @Nullable JSLookupPriority getSpecificCompletionVariantPriority(final @NotNull PsiElement element) {
+    if (element instanceof JSQualifiedNamedElement) {
+      final String qName = ((JSQualifiedNamedElement)element).getQualifiedName();
+      if (qName != null && "avmplus".equals(StringUtil.getPackageName(qName))) {
+        return JSLookupPriority.NO_RELEVANT_SMARTNESS_PRIORITY;
+      }
+    }
+
+    return null;
+  }
+
+  @Override
+  public @NotNull JSClassResolver getClassResolver() {
+    return ActionScriptClassResolver.getInstance();
+  }
+
+  @Override
+  public @NotNull JSImportHandler getImportHandler() {
+    return ActionScriptImportHandler.getInstance();
+  }
+
+  @Override
+  public @NotNull JSTypeHelper getTypeHelper() {
+    return ActionScriptTypeHelper.getInstance();
+  }
+
+  @Override
+  public @NotNull JSCustomIndexer createCustomIndexer(@NotNull PsiFile file, @NotNull JSIndexContentBuilder indexBuilder) {
+    return new ActionScriptCustomIndexer(file, indexBuilder);
+  }
+
+  @Override
+  public @NotNull JSSinkResolveProcessor createSinkResolveProcessor(@NotNull ResultSink resultSink) {
+    return new ActionScriptSinkResolveProcessor<>(resultSink);
+  }
+
+  @Override
+  public <T extends ResultSink> QualifiedItemProcessor<T> createQualifiedItemProcessor(@NotNull T sink, @NotNull PsiElement place) {
+    Logger.getInstance(ActionScriptSpecificHandlersFactory.class).error(
+      "Use ActionScriptQualifiedItemProcessor directly, or createJSQualifiedItemProcessor");
+    return super.createQualifiedItemProcessor(sink, place);
+  }
+
+  @Override
+  public @NotNull JSQualifiedItemProcessor createJSQualifiedItemProcessor(@NotNull ResultSink sink, @NotNull PsiElement place) {
+    return new ActionScriptQualifiedItemProcessor<>(sink);
+  }
+
+  @Override
+  public @NotNull JSGenericTypesEvaluator getGenericTypeEvaluator() {
+    return JSGenericTypesEvaluator.NO_OP;
+  }
+
+  @Override
+  public @NotNull JSResolveProcessorEx createJSResolveProcessorEx(
+    @Nullable String name,
+    @Nullable PsiElement place,
+    @NotNull BiFunction<? super @NotNull PsiElement, ? super @NotNull ResolveState, Boolean> executeHandler
+  ) {
+    return new ActionScriptResolveProcessor(name, place) {
+      @Override
+      public boolean execute(@NotNull PsiElement element, @NotNull ResolveState state) {
+        return executeHandler.apply(element, state);
+      }
+    };
+  }
+}

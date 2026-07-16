@@ -1,0 +1,4 @@
+/ {
+    node {};
+    <error descr="Duplicate node name">node</error> {};
+};

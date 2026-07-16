@@ -1,0 +1,4 @@
+addItemToList (tailText='() (dataTypeTS.vue)'; typeText='void')
+msg (tailText=' (dataTypeTS.vue)'; typeText='number')
+tasks (tailText=' (dataTypeTS.vue)'; typeText='string[]')
+userInput (tailText=' (dataTypeTS.vue)'; typeText='string')

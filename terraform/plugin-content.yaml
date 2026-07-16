@@ -1,0 +1,11 @@
+- name: lib/modules/intellij.terraform.template.jar
+  contentModules:
+  - name: intellij.terraform.template
+- name: lib/terraform-metadata.jar
+  library: terraform-metadata
+  module: intellij.terraform
+  files:
+  - name: $MAVEN_REPOSITORY$/org/intellij/plugins/hcl/terraform/terraform-metadata/2025/terraform-metadata-2025.jar
+- name: lib/terraform.jar
+  modules:
+  - name: intellij.terraform

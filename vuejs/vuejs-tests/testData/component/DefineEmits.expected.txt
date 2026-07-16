@@ -1,0 +1,32 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  DefineEmits: <recursive value of class VueFileSourceComponent>,
+ },
+ emits: [
+  {
+   class: "VueScriptSetupLiteralBasedEvent",
+   name: "add",
+   type: "(...args: any[]) => void",
+   params: [],
+   hasStrictSignature: false,
+   callSignature: "(event: "add", ...args: any[]) => void",
+  },
+  {
+   class: "VueScriptSetupLiteralBasedEvent",
+   name: "change",
+   type: "(...args: any[]) => void",
+   params: [],
+   hasStrictSignature: false,
+   callSignature: "(event: "change", ...args: any[]) => void",
+  },
+  {
+   class: "VueScriptSetupLiteralBasedEvent",
+   name: "delete",
+   type: "(...args: any[]) => void",
+   params: [],
+   hasStrictSignature: false,
+   callSignature: "(event: "delete", ...args: any[]) => void",
+  },
+ ],
+}

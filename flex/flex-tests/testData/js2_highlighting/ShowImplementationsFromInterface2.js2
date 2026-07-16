@@ -1,0 +1,8 @@
+interface <lineMarker descr="Has implementations">XXX</lineMarker> {
+  function bbb2();
+}
+
+interface <lineMarker descr="Has implementations">XXX2</lineMarker> extends XXX {
+}
+interface XXX3 extends XXX2 {
+}

@@ -1,0 +1,33 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  ScriptSetupGeneric: <recursive value of class VueFileSourceComponent>,
+ },
+ props: [
+  {
+   class: "VueScriptSetupInputProperty",
+   name: "clearable",
+   type: "Clearable | undefined",
+   required: false,
+  },
+  {
+   class: "VueScriptSetupInputProperty",
+   name: "onChange",
+   type: "Clearable extends true ? (<ValueType>(value: (ValueType | null)) => void) : (<Va…",
+   required: false,
+  },
+  {
+   class: "VueScriptSetupInputProperty",
+   name: "value",
+   type: "ValueType | undefined",
+   required: false,
+  },
+ ],
+ slots: [
+  {
+   class: "VueAnySlot",
+   name: "Unknown slot",
+   pattern: \.*\,
+  },
+ ],
+}

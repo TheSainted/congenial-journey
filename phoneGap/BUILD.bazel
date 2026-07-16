@@ -1,0 +1,110 @@
+### auto-generated section `build intellij.phoneGap` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "phoneGap_resources",
+  srcs = glob(["compatibilityResources/**/*"]),
+  strip_prefix = "compatibilityResources"
+)
+
+resourcegroup(
+  name = "phoneGap_resources_1",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "phoneGap",
+  module_name = "intellij.phoneGap",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [
+    ":phoneGap_resources",
+    ":phoneGap_resources_1",
+  ],
+  deps = [
+    "@community//platform/analysis-api:analysis",
+    "@community//platform/core-api:core",
+    "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/indexing-api:indexing",
+    "@community//jps/model-api:model",
+    "@community//platform/lang-api:lang",
+    "@community//platform/lang-core",
+    "@community//platform/lang-impl",
+    "@community//platform/execution-impl",
+    "//plugins/JavaScriptLanguage:javascript-backend",
+    "@community//platform/projectModel-api:projectModel",
+    "@community//RegExpSupport:regexp",
+    "@community//xml/xml-psi-api:psi",
+    "@community//libraries/gson",
+    "//plugins/JavaScriptLanguage/javascript-parser",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//platform/core-ui",
+    "@community//platform/platform-util-io:ide-util-io",
+    "@community//platform/util/jdom",
+    "@community//platform/execution",
+  ]
+)
+
+jvm_library(
+  name = "phoneGap_test_lib",
+  visibility = ["//visibility:public"],
+  srcs = glob(["test/**/*.kt", "test/**/*.java", "test/**/*.form"], allow_empty = True),
+  associates = [":phoneGap"],
+  deps = [
+    "@community//platform/analysis-api:analysis",
+    "@community//platform/analysis-api:analysis_test_lib",
+    "@community//platform/core-api:core",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
+    "@community//platform/indexing-api:indexing",
+    "@community//platform/indexing-api:indexing_test_lib",
+    "@community//jps/model-api:model",
+    "@community//jps/model-api:model_test_lib",
+    "@community//platform/lang-api:lang",
+    "@community//platform/lang-api:lang_test_lib",
+    "@community//platform/lang-core",
+    "@community//platform/lang-core:lang-core_test_lib",
+    "@community//platform/lang-impl",
+    "@community//platform/lang-impl:lang-impl_test_lib",
+    "@community//platform/execution-impl",
+    "@community//platform/execution-impl:execution-impl_test_lib",
+    "//plugins/JavaScriptLanguage:javascript-backend",
+    "//plugins/JavaScriptLanguage:javascript-backend_test_lib",
+    "@community//platform/projectModel-api:projectModel",
+    "@community//platform/projectModel-api:projectModel_test_lib",
+    "@community//RegExpSupport:regexp",
+    "@community//RegExpSupport:regexp_test_lib",
+    "@community//xml/xml-psi-api:psi",
+    "@community//xml/xml-psi-api:psi_test_lib",
+    "@community//libraries/gson",
+    "@community//libraries/gson:gson_test_lib",
+    "//plugins/JavaScriptLanguage/javascript-parser",
+    "//plugins/JavaScriptLanguage/javascript-parser:javascript-parser_test_lib",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//platform/testFramework",
+    "@community//platform/testFramework:testFramework_test_lib",
+    "@community//platform/core-ui",
+    "@community//platform/core-ui:core-ui_test_lib",
+    "@community//platform/platform-util-io:ide-util-io",
+    "@community//platform/util/jdom",
+    "@community//platform/util/jdom:jdom_test_lib",
+    "@community//platform/execution",
+    "@community//platform/execution:execution_test_lib",
+  ],
+  runtime_deps = [
+    "@community//platform/platform-impl:ide-impl_test_lib",
+    "@community//platform/platform-util-io:ide-util-io_test_lib",
+  ]
+)
+### auto-generated section `build intellij.phoneGap` end
+
+### auto-generated section `test intellij.phoneGap` start
+load("@community//build:tests-options.bzl", "jps_test")
+
+jps_test(
+  name = "phoneGap_test",
+  runtime_deps = [":phoneGap_test_lib"]
+)
+### auto-generated section `test intellij.phoneGap` end

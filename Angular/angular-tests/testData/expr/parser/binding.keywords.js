@@ -1,0 +1,16 @@
+null
+nullize
+undefined
+undefinedes
+true
+trues
+false
+falses
+this
+thisus
+typeof
+typeofus
+in
+ins
+void
+voids

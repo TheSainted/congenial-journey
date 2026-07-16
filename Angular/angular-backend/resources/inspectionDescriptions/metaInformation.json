@@ -1,0 +1,128 @@
+{
+  "inspections": [
+    {
+      "id": "AngularRecursiveModuleImportExport",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularNgOptimizedImage",
+      "codeQualityCategory": "Performance"
+    },
+    {
+      "id": "AngularMultipleStructuralDirectives",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "AngularNonStandaloneComponentImports",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularInvalidSelector",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularNonEmptyNgContent",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "AngularDeferBlockOnTrigger",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularMissingEventHandler",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "AngularUndefinedBinding",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "AngularBindingTypeMismatch",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularUndefinedModuleExport",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularInvalidI18nAttribute",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularInvalidAnimationTriggerAssignment",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "AngularUnusedComponentImport",
+      "codeQualityCategory": "Code Style"
+    },
+    {
+      "id": "AngularIncorrectBlockUsage",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "AngularCliAddDependency",
+      "codeQualityCategory": "Code Style"
+    },
+    {
+      "id": "AngularInaccessibleSymbol",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularMissingRequiredDirectiveInputBinding",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularMissingOrInvalidDeclarationInModule",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularInvalidEntryComponent",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularInvalidImportedOrDeclaredSymbol",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularInvalidTemplateReferenceVariable",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularInsecureBindingToEvent",
+      "codeQualityCategory": "Security"
+    },
+    {
+      "id": "AngularForBlockNonIterableVar",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularUndefinedTag",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "AngularAmbiguousComponentTag",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularIncorrectLetUsage",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularUnresolvedPipe",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "AngularIncorrectTemplateDefinition",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularIllegalForLoopTrackAccess",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "AngularUnsupportedSyntax",
+      "codeQualityCategory": "Sanity"
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+NG:BLOCK_NAME ('@if')
+WHITE_SPACE (' ')
+JS:LPAR ('(')
+NG:BLOCK_PARAMETER (if:0) (' this is not finished')

@@ -1,0 +1,107 @@
+<idea-plugin package="org.intellij.plugins.postcss">
+  <name>PostCSS</name>
+  <id>org.intellij.plugins.postcss</id>
+  <category>Style Sheets</category>
+  <vendor>JetBrains</vendor>
+  <description><![CDATA[
+    <p>Provides <a href="https://postcss.org/">PostCSS</a> support to all JetBrains IDEs that
+    <a href="https://www.jetbrains.com/products/#lang=js&type=ide">support JavaScript</a>.
+
+    <h2>Features</h2>
+    <ul>
+      <li>Option to enable PostCSS support for <code>.css</code> files
+      <li>Syntax highlighting, code completion, and other code insight features for the following PostCSS plugins:
+      <ul>
+        <li><a href="https://github.com/postcss/postcss-custom-properties">postcss-custom-properties</a><
+        <li><a href="https://github.com/pascalduez/postcss-apply">postcss-apply</a></li>
+        <li><a href="https://github.com/postcss/postcss-custom-media">postcss-custom-media</a></li>
+        <li><a href="https://github.com/postcss/postcss-media-minmax">postcss-media-minmax</a></li>
+        <li><a href="https://github.com/postcss/postcss-custom-selectors">postcss-custom-selectors</a></li>
+        <li><a href="https://github.com/jonathantneal/postcss-nesting">postcss-nesting</a></li>
+        <li><a href="https://github.com/postcss/postcss-nested">postcss-nested</a></li>
+      </ul>
+    </ul>
+
+    <h2>Getting started</h2>
+    <p>For information on getting started, head over to the <a href="https://www.jetbrains.com/help/">documentation</a> for your IDE.
+      For WebStorm, you can check out this section in the
+      <a href="https://www.jetbrains.com/help/webstorm/style-sheets.html">documentation</a>.
+  ]]></description>
+
+  <dependencies>
+    <plugin id="com.intellij.css"/>
+    <plugin id="com.intellij.modules.lang"/>
+    <plugin id="com.intellij.modules.ultimate"/>
+    <module name="intellij.css.backend"/>
+    <module name="intellij.css.analysis"/>
+  </dependencies>
+
+  <content>
+    <module name="intellij.postcss.copyright"/>
+  </content>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <dependencySupport kind="javascript" coordinate="npm:postcss" displayName="PostCSS"/>
+    <css.dialect implementation="org.intellij.plugins.postcss.PostCssDialect"/>
+    <lang.substitutor language="CSS" implementationClass="org.intellij.plugins.postcss.PostCssLanguageSubstitutor"/>
+    <embeddedTokenTypesProvider implementation="org.intellij.plugins.postcss.PostCssEmbeddedTokenTypesProvider"/>
+    <embeddedTokenHighlighter implementation="org.intellij.plugins.postcss.highlighting.PostCssSyntaxHighlighter"/>
+    <fileType language="PostCSS" extensions="pcss" fieldName="POST_CSS" name="PostCSS"
+              implementationClass="org.intellij.plugins.postcss.PostCssFileType"/>
+    <lang.parserDefinition language="PostCSS" implementationClass="org.intellij.plugins.postcss.parser.PostCssParserDefinition"/>
+    <lang.ast.factory language="PostCSS" implementationClass="org.intellij.plugins.postcss.psi.impl.PostCssTreeElementFactory"/>
+    <multiLangCommenter implementation="org.intellij.plugins.postcss.PostCssCommentProvider"/>
+    <codeStyleSettingsProvider implementation="org.intellij.plugins.postcss.settings.PostCssStyleSettingsProvider"/>
+    <internalFileTemplate name="PostCSS File"/>
+    <lang.syntaxHighlighter language="PostCSS" implementationClass="org.intellij.plugins.postcss.highlighting.PostCssSyntaxHighlighter"/>
+    <colorSettingsPage implementation="org.intellij.plugins.postcss.highlighting.PostCssColorsPage"/>
+    <css.structureViewChildrenProvider implementation="org.intellij.plugins.postcss.fileStructure.PostCssStructureViewElementsProvider"/>
+    <completion.contributor language="CSS"
+                            implementationClass="org.intellij.plugins.postcss.completion.PostCssDumbAwareCompletionContributor"
+                            order="before cssDumbCompletion"/>
+    <completion.contributor language="CSS" implementationClass="org.intellij.plugins.postcss.completion.PostCssCompletionContributor"/>
+    <css.elementDescriptorProvider implementation="org.intellij.plugins.postcss.descriptors.PostCssElementDescriptorProvider"/>
+    <psi.referenceContributor language="CSS" implementation="org.intellij.plugins.postcss.references.PostCssReferenceContributor"/>
+    <lang.findUsagesProvider language="PostCSS" implementationClass="org.intellij.plugins.postcss.usages.PostCssFindUsagesProvider"/>
+    <referencesSearch implementation="org.intellij.plugins.postcss.usages.PostCssUsageSearcher"/>
+    <idIndexer filetype="PostCSS" implementationClass="org.intellij.plugins.postcss.usages.PostCssIdIndexer"/>
+    <lang.formatter language="PostCSS" implementationClass="org.intellij.plugins.postcss.formatter.PostCssFormattingModelBuilder"/>
+
+    <stubIndex implementation="org.intellij.plugins.postcss.psi.stubs.PostCssCustomSelectorIndex"/>
+    <stubIndex implementation="org.intellij.plugins.postcss.psi.stubs.PostCssCustomMediaIndex"/>
+    <stubElementTypeHolder externalIdPrefix="PostCSS." class="org.intellij.plugins.postcss.PostCssStubElementTypes"/>
+
+    <gotoSymbolContributor implementation="org.intellij.plugins.postcss.PostCssGotoSymbolContributor"/>
+
+    <inspection.basicVisitor class="org.intellij.plugins.postcss.psi.impl.PostCssElementVisitor"/>
+
+    <localInspection language="PostCSS" bundle="messages.PostCssBundle"
+                     key="inspections.nesting.problems.name"
+                     groupKey="inspections.group.name" enabledByDefault="false" level="WARNING"
+                     implementationClass="org.intellij.plugins.postcss.inspections.PostCssNestingInspection"/>
+    <localInspection language="PostCSS" bundle="messages.PostCssBundle"
+                     key="inspections.custom.selector.problems.name"
+                     groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.plugins.postcss.inspections.PostCssCustomSelectorInspection"/>
+    <localInspection language="PostCSS" bundle="messages.PostCssBundle"
+                     key="inspections.media.query.range.problems.name"
+                     groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.plugins.postcss.inspections.PostCssMediaRangeInspection"/>
+    <localInspection language="PostCSS" bundle="messages.PostCssBundle"
+                     key="inspections.custom.media.problems.name"
+                     groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.plugins.postcss.inspections.PostCssCustomMediaInspection"/>
+    <localInspection language="PostCSS" bundle="messages.PostCssBundle"
+                     key="inspections.unresolved.module.value.reference"
+                     groupKey="inspections.group.name" enabledByDefault="true" level="ERROR"
+                     implementationClass="org.intellij.plugins.postcss.inspections.PostCssUnresolvedModuleValueReferenceInspection"/>
+
+  </extensions>
+  <extensions defaultExtensionNs="com.intellij.css">
+    <supportedFileTypesProvider implementation="org.intellij.plugins.postcss.index.PostCssSupportedFileTypesProvider" version="1"/>
+    <cssInspectionFilter language="PostCSS"
+                         implementationClass="org.intellij.plugins.postcss.inspections.suppress.PostCssInspectionFilter"/>
+    <descriptorHandler forClass="org.intellij.plugins.postcss.psi.impl.PostCssCustomSelectorImpl"
+                       implementationClass="org.intellij.plugins.postcss.psi.impl.PostCssCustomSelectoDescriptorHandler"/>
+  </extensions>
+</idea-plugin>

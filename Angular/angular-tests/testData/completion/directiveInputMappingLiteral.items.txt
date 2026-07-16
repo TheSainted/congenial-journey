@@ -1,0 +1,3 @@
+field1 (typeText='string'; priority=100.0; bold; typeGreyed)
+field3 (typeText='string'; priority=100.0; bold; typeGreyed)
+title (typeText='string'; priority=100.0; bold; typeGreyed)

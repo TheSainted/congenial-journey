@@ -1,0 +1,46 @@
+// Copyright 2000-2026 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+package org.intellij.terraform.config.model.local
+
+import com.intellij.openapi.components.service
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.roots.ProjectFileIndex
+import com.intellij.openapi.vfs.AsyncFileListener
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.newvfs.events.VFileEvent
+
+internal class LocalSchemaVfsListener : AsyncFileListener {
+  override fun prepareChange(events: MutableList<out VFileEvent>): AsyncFileListener.ChangeApplier? {
+    if (!buildLocalMetadataAutomatically) return null
+    val lockFiles = events.filter { isTfLock(it.file) }
+    if (lockFiles.isEmpty()) return null
+    logger<TfLocalSchemaService>().info("LocalSchemaVfsListener: $events")
+    return object : AsyncFileListener.ChangeApplier {
+      override fun afterVfsChange() {
+        logger<TfLocalSchemaService>().info("LocalSchemaVfsListener after: $events")
+
+        val files = lockFiles.mapNotNullTo(mutableSetOf()) { it.file }
+        val projectFiles = mutableMapOf<Project, MutableSet<VirtualFile>>()
+        val openProjects = ProjectManager.getInstance().openProjects
+        openProjects.forEach { project -> projectFiles[project] = mutableSetOf() }
+        for (file in files) {
+          for (project in openProjects) {
+            if (!ProjectFileIndex.getInstance(project).isInProject(file)) continue
+            projectFiles[project]!!.add(file)
+          }
+        }
+
+        val lostFiles = files.filterTo(mutableSetOf()) { file ->
+          openProjects.none { ProjectFileIndex.getInstance(it).isInProject(file) }
+        }
+
+        for ((project, pfiles) in projectFiles) {
+          project.service<TfLocalSchemaService>().scheduleModelRebuild(pfiles + lostFiles)
+        }
+
+      }
+    }
+  }
+
+}

@@ -1,0 +1,128 @@
+### auto-generated section `build intellij.handlebars` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "handlebars_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+resourcegroup(
+  name = "handlebars_resources_1",
+  srcs = glob(["compatibilityResources/**/*"]),
+  strip_prefix = "compatibilityResources"
+)
+
+jvm_library(
+  name = "handlebars",
+  module_name = "intellij.handlebars",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form", "gen/**/*.kt", "gen/**/*.java"], allow_empty = True),
+  resources = [
+    ":handlebars_resources",
+    ":handlebars_resources_1",
+  ],
+  deps = [
+    "@community//platform/analysis-api:analysis",
+    "@community//platform/code-style-api:codeStyle",
+    "@community//platform/core-api:core",
+    "@community//platform/lang-api:lang",
+    "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//platform/lang-impl",
+    "@community//platform/editor-ui-ex:editor-ex",
+    "@community//platform/projectModel-api:projectModel",
+    "@community//platform/structure-view-impl:structureView-impl",
+    "@community//xml/impl",
+    "@community//xml/xml-parser:parser",
+    "@community//platform/ide-core-impl",
+    "//plugins/JavaScriptLanguage/javascript-parser",
+    "@community//xml/xml-psi-api:psi",
+    "@community//platform/core-ui",
+    "@community//platform/code-style-impl:codeStyle-impl",
+    "@community//platform/core-impl",
+    "@community//platform/forms_rt:java-guiForms-rt",
+    "@community//xml/emmet",
+  ]
+)
+
+jvm_library(
+  name = "handlebars_test_lib",
+  visibility = ["//visibility:public"],
+  srcs = glob(["test/src/**/*.kt", "test/src/**/*.java", "test/src/**/*.form"], allow_empty = True),
+  associates = [":handlebars"],
+  deps = [
+    "@community//platform/analysis-api:analysis",
+    "@community//platform/analysis-api:analysis_test_lib",
+    "@community//platform/code-style-api:codeStyle",
+    "@community//platform/code-style-api:codeStyle_test_lib",
+    "@community//platform/util/concurrency",
+    "@community//platform/util/concurrency:concurrency_test_lib",
+    "@community//platform/core-api:core",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/lang-api:lang",
+    "@community//platform/lang-api:lang_test_lib",
+    "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//platform/indexing-api:indexing",
+    "@community//platform/indexing-api:indexing_test_lib",
+    "@community//platform/lang-impl",
+    "@community//platform/lang-impl:lang-impl_test_lib",
+    "@community//platform/editor-ui-ex:editor-ex",
+    "@community//platform/editor-ui-ex:editor-ex_test_lib",
+    "@community//platform/projectModel-api:projectModel",
+    "@community//platform/projectModel-api:projectModel_test_lib",
+    "@community//platform/structure-view-impl:structureView-impl",
+    "@community//platform/structure-view-impl:structureView-impl_test_lib",
+    "@community//xml/impl",
+    "@community//xml/impl:impl_test_lib",
+    "@community//xml/xml-analysis-api:analysis",
+    "@community//xml/xml-analysis-api:analysis_test_lib",
+    "@community//xml/xml-parser:parser",
+    "@community//xml/xml-parser:parser_test_lib",
+    "@community//platform/ide-core-impl",
+    "//plugins/JavaScriptLanguage/javascript-parser",
+    "//plugins/JavaScriptLanguage/javascript-parser:javascript-parser_test_lib",
+    "@community//xml/xml-psi-api:psi",
+    "@community//xml/xml-psi-api:psi_test_lib",
+    "@community//xml/tests",
+    "@community//xml/tests:tests_test_lib",
+    "//plugins/JavaScriptLanguage:javascript-testFramework",
+    "//plugins/JavaScriptLanguage:javascript-testFramework_test_lib",
+    "@community//platform/testFramework",
+    "@community//platform/testFramework:testFramework_test_lib",
+    "@community//platform/testFramework/junit5",
+    "@community//platform/testFramework/junit5:junit5_test_lib",
+    "//plugins/JavaScriptLanguage/javascript-psi-impl",
+    "//plugins/JavaScriptLanguage/javascript-psi-impl:javascript-psi-impl_test_lib",
+    "@community//platform/core-ui",
+    "@community//platform/core-ui:core-ui_test_lib",
+    "@community//platform/code-style-impl:codeStyle-impl",
+    "@community//platform/code-style-impl:codeStyle-impl_test_lib",
+    "@community//xml/relaxng",
+    "@community//xml/relaxng:relaxng_test_lib",
+    "@community//xml/testFramework",
+    "@community//xml/testFramework:testFramework_test_lib",
+    "@community//platform/core-impl",
+    "@community//platform/core-impl:core-impl_test_lib",
+    "@community//platform/forms_rt:java-guiForms-rt",
+    "@community//platform/forms_rt:java-guiForms-rt_test_lib",
+    "@community//xml/emmet",
+    "@community//xml/emmet:emmet_test_lib",
+  ],
+  runtime_deps = [
+    "@community//platform/platform-impl:ide-impl_test_lib",
+    "@community//platform/ide-core-impl:ide-core-impl_test_lib",
+  ]
+)
+### auto-generated section `build intellij.handlebars` end
+
+### auto-generated section `test intellij.handlebars` start
+load("@community//build:tests-options.bzl", "jps_test")
+
+jps_test(
+  name = "handlebars_test",
+  runtime_deps = [":handlebars_test_lib"]
+)
+### auto-generated section `test intellij.handlebars` end

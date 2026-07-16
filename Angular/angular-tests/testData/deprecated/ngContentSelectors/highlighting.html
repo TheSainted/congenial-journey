@@ -1,0 +1,14 @@
+<test>
+  <div>
+    <<warning descr="Unknown html tag foo">foo</warning>></<warning descr="Unknown html tag foo">foo</warning>>
+  </div>
+  <test>
+    <<warning descr="Unknown html tag foo">foo</warning>></<warning descr="Unknown html tag foo">foo</warning>>
+  </test>
+  <<warning descr="Unknown html tag foo">foo</warning>></<warning descr="Unknown html tag foo">foo</warning>>
+  <div bar=""></div>
+  <span <warning descr="Attribute foo is not allowed here">foo</warning>=""></span>
+  <div foo=""></div>
+  <span goo=""></span>
+  <<warning descr="Unknown html tag goo">goo</warning>></<warning descr="Unknown html tag goo">goo</warning>>
+</test>

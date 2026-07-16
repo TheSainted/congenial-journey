@@ -1,0 +1,46 @@
+package <error descr="Package name 'xxx' does not correspond to file path ''">xxx</error> {
+  class <error descr="Class 'AAA' should be defined in file 'AAA.js2'">AAA</error> {
+    static var log:AAA;
+    function getLogger():void {}
+  }
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'xxx.yyy' does not correspond to file path ''">xxx.yyy</error> {
+   public class <error descr="Class 'BBB' should be defined in file 'BBB.js2'">BBB</error> {
+       function AAA():void {
+           <error descr="Unresolved variable or type log">log</error>.getLogger()
+       }
+   }
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'xxx.yyy' does not correspond to file path ''">xxx.yyy</error> {
+    class <error descr="Class 'Foo' should be defined in file 'Foo.js2'"><error descr="More than one externally visible symbol defined in file">Foo</error></error> {
+        function foo() {
+            var a = String(<error descr="Unresolved variable or type data">data</error>["aaa"]);
+            <error descr="Unresolved variable or type bar">bar</error>.setStyle();
+        }
+    }
+
+    class <error descr="Class 'Bar' should be defined in file 'Bar.js2'"><error descr="More than one externally visible symbol defined in file">Bar</error></error> {
+        function Bar() {
+            Object(this).data = null;
+            Bar(this).<error descr="Unresolved variable data">data</error> = null;
+
+        }
+        function bar() {}
+        function bar2(x:*) { bar2(x.ttt)}
+    }
+
+    dynamic class <error descr="Class 'Baz' should be defined in file 'Baz.js2'"><error descr="More than one externally visible symbol defined in file">Baz</error></error> {
+        static function foo() {
+            var data;
+            data = new Object();
+        }
+    }
+
+    class <error descr="Class 'Fault' should be defined in file 'Fault.js2'"><error descr="More than one externally visible symbol defined in file">Fault</error></error> extends Error {
+      function Fault() {
+          getStackTrace();
+      }
+    }
+}

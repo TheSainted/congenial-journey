@@ -1,0 +1,32 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  DefinePropsRuntimeDeclarationTS: <recursive value of class VueFileSourceComponent>,
+ },
+ props: [
+  {
+   class: "VuePsiNamedElementInputProperty",
+   name: "optional",
+   type: "string | undefined",
+   required: false,
+  },
+  {
+   class: "VuePsiNamedElementInputProperty",
+   name: "optionalUnion",
+   type: "string | number | undefined",
+   required: false,
+  },
+  {
+   class: "VuePsiNamedElementInputProperty",
+   name: "required",
+   type: "string",
+   required: true,
+  },
+  {
+   class: "VuePsiNamedElementInputProperty",
+   name: "requiredUnion",
+   type: "string | number",
+   required: true,
+  },
+ ],
+}

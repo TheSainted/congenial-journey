@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" >
+  <mx:Script><inject descr="null">
+    static var <symbolName descr="static field">staticField</symbolName>:int;
+    static function <symbolName descr="static method">staticMethod</symbolName>():void {}
+    function <symbolName descr="instance method">instanceMethod</symbolName>(<symbolName descr="identifiers//parameter">p</symbolName>):int {}
+    var <symbolName descr="instance field">instanceField</symbolName>:int;
+
+    function <symbolName descr="instance method">testFun</symbolName>(<symbolName descr="identifiers//parameter">param</symbolName>:int):void {
+        <symbolName descr="static field">staticField</symbolName> = 1
+        <symbolName descr="static method">staticMethod</symbolName>();
+        var <symbolName descr="identifiers//local variable">a</symbolName>:<symbolName descr="classes//class name">HighlightStaticInstanceMembers</symbolName>;
+        <symbolName descr="identifiers//local variable">a</symbolName>.<symbolName descr="instance method">instanceMethod</symbolName>(<symbolName descr="identifiers//parameter">param</symbolName>)
+        <symbolName descr="identifiers//local variable">a</symbolName>.<symbolName descr="instance field">instanceField</symbolName> = 1
+    }
+  </inject></mx:Script>
+
+  <mx:Canvas width="{<inject descr="null"><symbolName descr="instance field">conventionsChoiceForm</symbolName>.<symbolName descr="instance method">width</symbolName></inject>}" />
+  <mx:Canvas id="conventionsChoiceForm" />
+</mx:Application>

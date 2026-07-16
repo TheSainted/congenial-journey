@@ -1,0 +1,52 @@
+<idea-plugin>
+  <dependencies>
+    <plugin id="com.intellij.modules.ultimate"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileType name="Terraform Template"
+              language="TFTPL"
+              implementationClass="com.intellij.terraform.template.TftplFileType"
+              fieldName="INSTANCE"
+              extensions="tfpl;tftpl"/>
+    <lang.parserDefinition language="TFTPL"
+                           implementationClass="com.intellij.terraform.template.psi.TftplParserDefinition"/>
+    <lang.fileViewProviderFactory language="TFTPL"
+                                  implementationClass="com.intellij.terraform.template.TftplFileViewProviderFactory"/>
+    <lang.syntaxHighlighterFactory language="TFTPL"
+                                   implementationClass="com.intellij.terraform.template.editor.TftplSyntaxHighlightingFactory"/>
+    <editorHighlighterProvider filetype="Terraform Template" implementationClass="com.intellij.terraform.template.editor.TftplEditorHighlighterProvider"/>
+    <completion.contributor language="HIL"
+                            implementationClass="com.intellij.terraform.template.editor.HilTemplateCompletionContributor"/>
+    <completion.contributor language="HIL"
+                            implementationClass="com.intellij.terraform.template.editor.InjectedHilTemplateCompletionContributor"/>
+    <completion.contributor language="any"
+                            implementationClass="com.intellij.terraform.template.editor.TftplLanguageCompletionContributor"/>
+    <completion.contributor language="any"
+                            implementationClass="com.intellij.terraform.template.editor.TftplDataLanguageCompletionContributor"/>
+    <psi.referenceContributor language="HCL" implementation="com.intellij.terraform.template.HclFileReferenceContributor"/>
+    <lang.foldingBuilder language="TFTPL" implementationClass="com.intellij.terraform.template.editor.TftplFoldingBuilder"/>
+    <liveTemplateContext contextId="TFTPL_TEMPLATE" implementation="com.intellij.terraform.template.editor.TftplContextType"/>
+    <defaultLiveTemplates file="liveTemplates/terraformTemplate.xml"/>
+    <gotoDeclarationHandler implementation="com.intellij.terraform.template.editor.TftplVariableGoToDeclarationHandler"/>
+    <localInspection language=""
+                     shortName="MaybeTfTemplateInspection"
+                     groupBundle="messages.TftplBundle" groupKey="inspection.possible.template.group.name"
+                     bundle="messages.TftplBundle" key="inspection.possible.template.name"
+                     enabledByDefault="true" level="WARNING"
+                     implementationClass="com.intellij.terraform.template.editor.MaybeTfTemplateInspection"/>
+    <localInspection language="TFTPL"
+                     shortName="TfUnselectedDataLanguage"
+                     groupBundle="messages.TftplBundle" groupKey="inspection.possible.template.group.name"
+                     bundle="messages.TftplBundle" key="inspection.unselected.data.language.name"
+                     enabledByDefault="true" level="WARNING"
+                     implementationClass="com.intellij.terraform.template.editor.TfUnselectedDataLanguageInspection"/>
+    <intentionAction>
+      <language>TFTPL</language>
+      <className>com.intellij.terraform.template.editor.TfRemoveFileTypeAssociationIntention</className>
+      <bundleName>messages.TftplBundle</bundleName>
+      <categoryKey>inspection.possible.template.group.name</categoryKey>
+      <skipBeforeAfter>true</skipBeforeAfter>
+    </intentionAction>
+  </extensions>
+</idea-plugin>

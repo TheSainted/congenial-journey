@@ -1,0 +1,38 @@
+/* Angular type checking code */
+
+/* TCB for blockSwitch.ts */
+
+function _tcb1(this: RobotProfileComponent) {
+switch(this.user.name){
+case "foo":
+"" + (this.user.name);
+var _t1 = document.createElement("a");
+_t1.addEventListener("click", ($event): any => {
+if ((this.user.name === "foo")){
+this.use(this.user.name);
+}
+});
+break;
+case "foo1":
+case "foo2":
+case "bar":
+"" + (this.user.name);
+var _t2 = document.createElement("a");
+_t2.addEventListener("click", ($event): any => {
+if ((this.user.name === "foo1" || this.user.name === "foo2" || this.user.name === "bar")){
+this.use(this.user.name);
+}
+});
+break;
+case "foo3":
+default:
+"" + (this.user.name);
+var _t3 = document.createElement("a");
+_t3.addEventListener("click", ($event): any => {
+if ((this.user.name !== "foo" && this.user.name !== "foo1" && this.user.name !== "foo2" && this.user.name !== "bar")){
+this.use(this.user.name);
+}
+});
+break;
+}
+}

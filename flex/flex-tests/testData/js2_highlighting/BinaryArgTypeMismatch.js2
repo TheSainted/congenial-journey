@@ -1,0 +1,86 @@
+package {
+class <error descr="More than one externally visible symbol defined in file">BinaryArgTypeMismatch</error> {
+    function Foo() {
+
+        var x:Bar
+        var y:Baz
+        var z:Class
+        if (x is <error descr="Binary operation argument type Class is not compatible with type Baz">y</error>) {
+            trace("Hi")
+        }
+      
+        var t = x as <error descr="Binary operation argument type Class is not compatible with type Baz">new Baz()</error>;
+        var t2 = x as <error descr="Binary operation argument type Class is not compatible with type Bar">x</error>;
+
+        if (x is z || x is (z)) {
+            trace(x as Baz)
+        }
+
+        if (x is Bar) {
+            trace(x as Baz)
+        }
+      
+        var t3:IFoo3;
+        var t4:Object;
+      
+        if (x <error descr="Condition is always false since types 'Bar' and 'Baz' have no overlap">==</error> y ||
+            x == x || x == null || x == t3 || x == t4) {}
+      
+        var a:Foo2;
+        var b:IFoo2;
+        if (a == b) {}
+        var z2:Boolean = new Array();
+        z2 = new Vector.<Boolean>()
+        var z3:Class = <error descr="Initializer type Object is not assignable to variable type Class">new Object()</error>
+        z3 = (new Object()).constructor;
+    }
+}
+interface <error descr="Class 'IFoo3' should be defined in file 'IFoo3.js2'"><error descr="More than one externally visible symbol defined in file">IFoo3</error></error> {}
+}
+
+class Bar {
+}
+class Baz {
+}
+
+interface IFoo2 {}
+class Foo2 implements IFoo2 {}
+
+function trace(... x) {}
+
+class A {}
+class B extends A {}
+
+var a:A;
+var b:B;
+if (a == b) {} // correct
+if (b == a) {}
+
+var s:String = "1";
+s+= 500; // similar to s+= 500
+
+var f: String = <error descr="Initializer type Function is not assignable to variable type String">function</error>(): int { return 0; };
+var flag:Boolean = false;
+var l:String = flag ? "aa" : <error descr="Expression type int is implicitly coerced to unrelated type String">123</error>;
+var l2:String = flag ? <error descr="Expression type int is implicitly coerced to unrelated type String">123</error>: "aa";
+
+var x:Object;
+var y:* = x + 2; // OK (apparently conversion to String)
+var y2:* = <error descr="Expression type Object is implicitly coerced to unrelated type Number">x</error> * 2;
+++<error descr="Expression type Object is implicitly coerced to unrelated type Number">x</error>;
+<error descr="Expression type Object is implicitly coerced to unrelated type Number">x</error>++;
+
+var m:Number = <weak_warning descr="Expression type * is implicitly coerced to unrelated type Number">null</weak_warning>;
+m = <weak_warning descr="Expression type * is implicitly coerced to unrelated type Number">null</weak_warning>;
+
+function foo():void {
+  var n:Number = <weak_warning descr="Expression type * is implicitly coerced to unrelated type Number">null</weak_warning>;
+  if (n == <error descr="Expression type * is implicitly coerced to unrelated type Number">null</error>) {}
+  if (n === <error descr="Expression type * is implicitly coerced to unrelated type Number">null</error>) {}
+  if (n != <error descr="Expression type * is implicitly coerced to unrelated type Number">null</error>) {}
+  if (n !== <error descr="Expression type * is implicitly coerced to unrelated type Number">null</error>) {}
+}
+
+<error descr="Package should be first statement in file">package</error> {
+  public class <error descr="Class 'Vector' should be defined in file 'Vector.js2'">Vector$object</error> {}
+}

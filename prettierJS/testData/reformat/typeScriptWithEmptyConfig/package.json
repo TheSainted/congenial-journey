@@ -1,0 +1,7 @@
+{
+  "dependencies": {
+    "prettier": "$PRETTIER_VERSION$"
+  },
+  "prettier": {
+  }
+}

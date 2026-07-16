@@ -1,0 +1,32 @@
+{
+  "inspections": [
+    {
+      "id": "CucumberTableInspection",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "GherkinMisplacedBackground",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "CucumberUndefinedStep",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "GherkinBrokenTableInspection",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "CucumberExamplesColon",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "GherkinScenarioToScenarioOutline",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "CucumberMissedExamples",
+      "codeQualityCategory": "Sanity"
+    }
+  ]
+}

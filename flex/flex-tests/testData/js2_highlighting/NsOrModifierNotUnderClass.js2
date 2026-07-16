@@ -1,0 +1,30 @@
+function clearSky() :void {
+<error descr="Access modifier allowed for class members only">private</error> function removeCloud():void {
+}
+}
+
+<warning descr="Namespace allowed for class members only">xxx</warning> var n;
+<warning descr="Access modifier allowed for class members only">private</warning> var n2;
+
+<error descr="Package should be first statement in file">package</error> {
+<error descr="Only public / internal modifiers allowed for package members">private</error> class NsOrModifierNotUnderClass {}
+}
+
+namespace xxx;
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'foo' does not correspond to file path ''">foo</error> {
+<error descr="Only public / internal modifiers allowed for package members">xxx</error> class NsOrModifierNotUnderClass {}
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'bar' does not correspond to file path ''">bar</error> {
+    class <error descr="Class 'Foo' should be defined in file 'Foo.js2'">Foo</error> {
+      <error descr="Use namespace OR access modifier">public</error> <error descr="Use namespace OR access modifier">xxx</error> var n3;
+    }
+}
+
+<error descr="Static modifier is allowed only for class members">static</error> class Foo {
+  {
+    public static var foo;
+  }
+  <error descr="Constructor cannot be static">static</error> function Foo() {}
+  static function Foo2() {}
+}

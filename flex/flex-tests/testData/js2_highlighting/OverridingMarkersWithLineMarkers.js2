@@ -1,0 +1,13 @@
+class <lineMarker descr="Has subclasses">AAA</lineMarker> {
+  function <lineMarker descr="Is overridden">bbb</lineMarker>() {}
+  function <lineMarker descr="Is overridden">bbb2</lineMarker>(x) {  }
+  private function bbb3() {}
+  public static function instance() {}
+}
+
+class BBB extends AAA {
+  override function <lineMarker descr="Overrides method 'bbb' in AAA">bbb</lineMarker>() {}
+  override function <lineMarker descr="Overrides method 'bbb2' in AAA">bbb2</lineMarker>(x) {  }
+  function bbb3() {}
+  public static function instance() {}
+}

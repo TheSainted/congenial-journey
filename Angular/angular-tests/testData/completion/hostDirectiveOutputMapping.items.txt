@@ -1,0 +1,3 @@
+alias1 (typeText='String')
+field4 (typeText='String')
+virtual (typeText=null)

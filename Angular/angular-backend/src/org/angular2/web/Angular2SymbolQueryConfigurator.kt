@@ -1,0 +1,424 @@
+// Copyright 2000-2021 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
+package org.angular2.web
+
+import com.intellij.lang.javascript.psi.JSArgumentList
+import com.intellij.lang.javascript.psi.JSArrayLiteralExpression
+import com.intellij.lang.javascript.psi.JSCallExpression
+import com.intellij.lang.javascript.psi.JSLiteralExpression
+import com.intellij.lang.javascript.psi.JSObjectLiteralExpression
+import com.intellij.lang.javascript.psi.JSProperty
+import com.intellij.lang.javascript.psi.JSReferenceExpression
+import com.intellij.lang.javascript.psi.ecma6.ES6Decorator
+import com.intellij.lang.javascript.psi.ecma6.TypeScriptClass
+import com.intellij.lang.javascript.psi.ecma6.TypeScriptField
+import com.intellij.model.Pointer
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.ModificationTracker
+import com.intellij.polySymbols.PolySymbolKind
+import com.intellij.polySymbols.PolySymbolProperty
+import com.intellij.polySymbols.context.PolyContext
+import com.intellij.polySymbols.css.CSS_CLASS_LIST
+import com.intellij.polySymbols.framework.framework
+import com.intellij.polySymbols.html.HTML_ATTRIBUTES
+import com.intellij.polySymbols.html.NAMESPACE_HTML
+import com.intellij.polySymbols.js.JS_PROPERTIES
+import com.intellij.polySymbols.js.JS_STRING_LITERALS
+import com.intellij.polySymbols.js.NAMESPACE_JS
+import com.intellij.polySymbols.js.css.CssClassListInJSLiteralInHtmlAttributeScope
+import com.intellij.polySymbols.js.css.CssClassListInJSLiteralInHtmlAttributeScope.Companion.isJSLiteralContextFromEmbeddedContent
+import com.intellij.polySymbols.query.PolySymbolLocationQueryScopeProvider
+import com.intellij.polySymbols.query.PolySymbolNameConversionRules
+import com.intellij.polySymbols.query.PolySymbolNameConversionRulesProvider
+import com.intellij.polySymbols.query.PolySymbolQueryConfigurator
+import com.intellij.polySymbols.query.PolySymbolQueryScopeContributor
+import com.intellij.polySymbols.query.PolySymbolQueryScopeProviderRegistrar
+import com.intellij.polySymbols.query.PolySymbolScope
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiWhiteSpace
+import com.intellij.psi.css.CssElement
+import com.intellij.psi.html.HtmlTag
+import com.intellij.psi.util.parentOfType
+import com.intellij.psi.util.parentOfTypes
+import com.intellij.psi.util.siblings
+import com.intellij.psi.xml.XmlAttribute
+import com.intellij.psi.xml.XmlAttributeValue
+import com.intellij.psi.xml.XmlElement
+import com.intellij.psi.xml.XmlTag
+import com.intellij.util.asSafely
+import org.angular2.Angular2DecoratorUtil
+import org.angular2.Angular2DecoratorUtil.COMPONENT_DEC
+import org.angular2.Angular2DecoratorUtil.DIRECTIVE_DEC
+import org.angular2.Angular2DecoratorUtil.HOST_BINDING_DEC
+import org.angular2.Angular2DecoratorUtil.VIEW_CHILDREN_DEC
+import org.angular2.Angular2DecoratorUtil.VIEW_CHILD_DEC
+import org.angular2.Angular2DecoratorUtil.getDecoratorForLiteralParameter
+import org.angular2.Angular2DecoratorUtil.isHostBindingClassValueLiteral
+import org.angular2.Angular2DecoratorUtil.isHostListenerDecoratorEventLiteral
+import org.angular2.Angular2Framework
+import org.angular2.codeInsight.Angular2DeclarationsScope
+import org.angular2.codeInsight.attributes.isNgClassOrAnimateAttribute
+import org.angular2.codeInsight.blocks.Angular2HtmlBlockReferenceExpressionCompletionProvider
+import org.angular2.codeInsight.blocks.isDeferOnTriggerParameterReference
+import org.angular2.codeInsight.blocks.isDeferOnTriggerReference
+import org.angular2.codeInsight.blocks.isJSReferenceAfterEqInForBlockLetParameterAssignment
+import org.angular2.directiveInputToTemplateBindingVar
+import org.angular2.entities.Angular2Directive
+import org.angular2.entities.Angular2EntitiesProvider
+import org.angular2.index.getFunctionNameFromIndex
+import org.angular2.isTemplateBindingDirectiveInput
+import org.angular2.lang.expr.psi.Angular2Binding
+import org.angular2.lang.expr.psi.Angular2BlockParameter
+import org.angular2.lang.expr.psi.Angular2EmbeddedExpression
+import org.angular2.lang.expr.psi.Angular2TemplateBinding
+import org.angular2.lang.expr.psi.Angular2TemplateBindingKey
+import org.angular2.lang.expr.psi.Angular2TemplateBindings
+import org.angular2.lang.html.parser.Angular2AttributeNameParser
+import org.angular2.lang.html.parser.Angular2AttributeType
+import org.angular2.lang.html.psi.Angular2HtmlBlock
+import org.angular2.lang.html.psi.Angular2HtmlPropertyBinding
+import org.angular2.signals.Angular2SignalUtils.getPossibleSignalFunNameForLiteralParameter
+import org.angular2.signals.Angular2SignalUtils.isViewChildSignalCall
+import org.angular2.signals.Angular2SignalUtils.isViewChildrenSignalCall
+import org.angular2.templateBindingVarToDirectiveInput
+import org.angular2.web.scopes.Angular2ComponentExpectedMethodsScope
+import org.angular2.web.scopes.Angular2CustomCssPropertiesScope
+import org.angular2.web.scopes.Angular2TemplateScope
+import org.angular2.web.scopes.AttributeWithInterpolationsScope
+import org.angular2.web.scopes.BINDINGS_PROP
+import org.angular2.web.scopes.CreateComponentDirectiveBindingScope
+import org.angular2.web.scopes.DeferOnTriggerParameterScope
+import org.angular2.web.scopes.DirectiveAttributeSelectorsScope
+import org.angular2.web.scopes.DirectiveElementSelectorsScope
+import org.angular2.web.scopes.DirectivePropertyMappingCompletionScope
+import org.angular2.web.scopes.HostBindingsScope
+import org.angular2.web.scopes.HtmlAttributesCustomCssPropertiesScope
+import org.angular2.web.scopes.I18NAttributesScope
+import org.angular2.web.scopes.INPUT_BINDING_FUN
+import org.angular2.web.scopes.MatchedDirectivesScope
+import org.angular2.web.scopes.NgContentSelectorsScope
+import org.angular2.web.scopes.OUTPUT_BINDING_FUN
+import org.angular2.web.scopes.OneTimeBindingsScope
+import org.angular2.web.scopes.StandardPropertyAndEventsScope
+import org.angular2.web.scopes.TWO_WAY_BINDING_FUN
+import org.angular2.web.scopes.TemplateBindingKeyScope
+import org.angular2.web.scopes.TemplateBindingKeywordsScope
+import org.angular2.web.scopes.ViewChildrenScope
+
+class Angular2SymbolQueryScopeContributor : PolySymbolQueryScopeContributor {
+
+  override fun registerProviders(registrar: PolySymbolQueryScopeProviderRegistrar) {
+    registrar
+      .inContext { it.framework == Angular2Framework.ID }
+      .apply {
+
+        forAnyPsiLocationInFile()
+          .contributeScopeProvider {
+            listOf(Angular2CustomCssPropertiesScope(it.containingFile))
+          }
+
+        forPsiLocations(XmlElement::class.java, CssElement::class.java)
+          .contributeScopeProvider {
+            listOf(DirectiveElementSelectorsScope(it.containingFile),
+                   DirectiveAttributeSelectorsScope(it.containingFile))
+          }
+
+        forPsiLocation(CssElement::class.java)
+          .contributeScopeProvider {
+            listOf(HtmlAttributesCustomCssPropertiesScope(it))
+          }
+
+        forPsiLocations<XmlElement>(XmlAttributeValue::class.java, XmlAttribute::class.java, HtmlTag::class.java)
+          .contributeScopeProvider(AngularTemplateXmlSymbolScopeProvider)
+
+        forPsiLocation(Angular2HtmlPropertyBinding::class.java)
+          .contributeScopeProvider {
+            if (Angular2AttributeNameParser.parse(it.name).type == Angular2AttributeType.REGULAR)
+              listOf(AttributeWithInterpolationsScope)
+            else
+              emptyList()
+          }
+
+        forPsiLocation(JSReferenceExpression::class.java)
+          .contributeScopeProvider(JSReferenceSymbolScopeProvider)
+
+        forPsiLocation(JSLiteralExpression::class.java)
+          .contributeScopeProvider(JSLiteralExpressionScopeProvider)
+
+        forPsiLocation(JSObjectLiteralExpression::class.java)
+          .contributeScopeProvider(JSObjectLiteralExpressionScopeProvider)
+
+        forPsiLocation(TypeScriptClass::class.java)
+          .contributeScopeProvider(TypeScriptClassScopeProvider)
+
+        forPsiLocation(Angular2TemplateBindingKey::class.java)
+          .contributeScopeProvider { element ->
+            listOfNotNull(
+              TemplateBindingKeyScope(element),
+              TemplateBindingKeywordsScope.takeIf { (element.parent as? Angular2TemplateBinding)?.keyIsVar() == false }
+            )
+          }
+      }
+  }
+
+  private object AngularTemplateXmlSymbolScopeProvider : PolySymbolLocationQueryScopeProvider<XmlElement> {
+    override fun getScopes(location: XmlElement): List<PolySymbolScope> =
+      location.parentOfType<XmlTag>(withSelf = true)?.let {
+        listOf(
+          OneTimeBindingsScope(it),
+          StandardPropertyAndEventsScope(it.containingFile),
+          NgContentSelectorsScope(it),
+          MatchedDirectivesScope.createFor(it),
+          I18NAttributesScope(it),
+          HtmlAttributesCustomCssPropertiesScope(it),
+        )
+      } ?: emptyList()
+  }
+
+  private object JSReferenceSymbolScopeProvider : PolySymbolLocationQueryScopeProvider<JSReferenceExpression> {
+    override fun getScopes(location: JSReferenceExpression): List<PolySymbolScope> =
+      when {
+        Angular2HtmlBlockReferenceExpressionCompletionProvider.canAddCompletions(location) ->
+          emptyList()
+
+        isJSReferenceAfterEqInForBlockLetParameterAssignment(location) ->
+          listOfNotNull(location.parentOfType<Angular2HtmlBlock>()?.definition)
+
+        isDeferOnTriggerReference(location) ->
+          listOfNotNull(location.parentOfType<Angular2BlockParameter>()?.definition)
+
+        isDeferOnTriggerParameterReference(location) ->
+          listOfNotNull(location.parentOfType<Angular2BlockParameter>()?.let { DeferOnTriggerParameterScope(it) })
+
+        isTemplateBindingKeywordLocation(location) ->
+          listOf(TemplateBindingKeywordsScope)
+
+        else ->
+          listOfNotNull(DirectivePropertyMappingCompletionScope(location),
+                        getCssClassesInJSLiteralInHtmlAttributeScope(location),
+                        location.parentOfType<Angular2EmbeddedExpression>()?.let { Angular2TemplateScope(it) })
+      }
+
+    private fun isTemplateBindingKeywordLocation(element: JSReferenceExpression): Boolean =
+      element.qualifier == null
+      && element.parent is Angular2TemplateBinding
+      && element.siblings(forward = false, withSelf = false).filter { it !is PsiWhiteSpace }.firstOrNull() !is Angular2TemplateBindingKey
+  }
+
+  private object JSObjectLiteralExpressionScopeProvider : PolySymbolLocationQueryScopeProvider<JSObjectLiteralExpression> {
+    override fun getScopes(location: JSObjectLiteralExpression): List<PolySymbolScope> {
+      var decorator: ES6Decorator? = null
+      if (location.parent.asSafely<JSProperty>()?.name == Angular2DecoratorUtil.HOST_PROP
+          && location.parentOfType<ES6Decorator>()
+            ?.takeIf { Angular2DecoratorUtil.isAngularEntityDecorator(it, true, COMPONENT_DEC, DIRECTIVE_DEC) }
+            ?.also { decorator = it } != null
+      )
+        return listOf(HostBindingsScope(mapOf(JS_PROPERTIES to HTML_ATTRIBUTES), decorator!!))
+      else
+        return listOfNotNull(getCssClassesInJSLiteralInHtmlAttributeScope(location))
+    }
+  }
+
+  private object JSLiteralExpressionScopeProvider : PolySymbolLocationQueryScopeProvider<JSLiteralExpression> {
+    override fun getScopes(location: JSLiteralExpression): List<PolySymbolScope> =
+      listOfNotNull(
+        DirectivePropertyMappingCompletionScope(location),
+        getHostBindingsScopeForLiteral(location),
+        getCssClassesInJSLiteralInHtmlAttributeScope(location),
+        getViewChildrenScopeForLiteral(location),
+        location.parentOfType<Angular2EmbeddedExpression>()?.let { Angular2TemplateScope(it) },
+      ) + getCreateComponentBindingsScopeForLiteral(location)
+
+
+    private fun getHostBindingsScopeForLiteral(element: JSLiteralExpression): PolySymbolScope? {
+      val mapping = when {
+        getDecoratorForLiteralParameter(element)?.decoratorName == HOST_BINDING_DEC -> NG_PROPERTY_BINDINGS
+        isHostListenerDecoratorEventLiteral(element) -> NG_EVENT_BINDINGS
+        isHostBindingClassValueLiteral(element) -> CSS_CLASS_LIST
+        else -> return null
+      }
+
+      return element
+        .parentOfType<TypeScriptClass>()
+        ?.let { Angular2DecoratorUtil.findDecorator(it, true, COMPONENT_DEC, DIRECTIVE_DEC) }
+        ?.let { HostBindingsScope(mapOf(JS_STRING_LITERALS to mapping), it) }
+    }
+
+    private fun getViewChildrenScopeForLiteral(element: JSLiteralExpression): PolySymbolScope? {
+      val signalCallInfo = getPossibleSignalFunNameForLiteralParameter(element)
+      val decorator = getDecoratorForLiteralParameter(element)
+      val isChildViewCall = decorator?.decoratorName == VIEW_CHILD_DEC || isViewChildSignalCall(signalCallInfo)
+      val isChildrenViewCall = decorator?.decoratorName == VIEW_CHILDREN_DEC || isViewChildrenSignalCall(signalCallInfo)
+      if (!isChildViewCall && !isChildrenViewCall) return null
+
+      return element
+        .parentOfType<TypeScriptClass>()
+        ?.let { Angular2DecoratorUtil.findDecorator(it, true, COMPONENT_DEC, DIRECTIVE_DEC) }
+        ?.let { ViewChildrenScope(it, isChildrenViewCall) }
+    }
+
+    private fun getCreateComponentBindingsScopeForLiteral(element: JSLiteralExpression): List<PolySymbolScope> {
+      val callExpr =
+        element.context
+          ?.let { if (it is JSArgumentList) it.parent else it }
+          ?.asSafely<JSCallExpression>()
+        ?: return emptyList()
+      val functionName = getFunctionNameFromIndex(callExpr)
+                           ?.takeIf { it == TWO_WAY_BINDING_FUN || it == OUTPUT_BINDING_FUN || it == INPUT_BINDING_FUN }
+                         ?: return emptyList()
+      val objectLiteral =
+        callExpr.context
+          ?.let { if (it is JSArrayLiteralExpression) it.parent else it }
+          ?.asSafely<JSProperty>()
+          ?.takeIf { it.name == BINDINGS_PROP }
+          ?.context?.asSafely<JSObjectLiteralExpression>()
+        ?: return emptyList()
+      return listOf(
+        CreateComponentDirectiveBindingScope(objectLiteral),
+        when (functionName) {
+          INPUT_BINDING_FUN -> CreateComponentDirectiveBindingScope.INPUTS_SCOPE
+          OUTPUT_BINDING_FUN -> CreateComponentDirectiveBindingScope.OUTPUTS_SCOPE
+          TWO_WAY_BINDING_FUN -> CreateComponentDirectiveBindingScope.IN_OUTS_SCOPE
+          else -> throw IllegalStateException("Unexpected function name: $functionName")
+        }
+      )
+    }
+  }
+
+  private object TypeScriptClassScopeProvider : PolySymbolLocationQueryScopeProvider<TypeScriptClass> {
+    override fun getScopes(location: TypeScriptClass): List<PolySymbolScope> {
+      Angular2DecoratorUtil
+        .findDecorator(location, true, COMPONENT_DEC) ?: return emptyList()
+      return listOf(Angular2ComponentExpectedMethodsScope(location))
+    }
+  }
+
+}
+
+
+class Angular2SymbolQueryConfigurator : PolySymbolQueryConfigurator {
+
+  override fun getNameConversionRulesProviders(
+    project: Project,
+    element: PsiElement?,
+    context: PolyContext,
+  ): List<PolySymbolNameConversionRulesProvider> {
+    if (context.framework == Angular2Framework.ID && element != null) {
+      // possibly the input definition
+      if (element is JSLiteralExpression || element is TypeScriptField) {
+        val parent = element
+          .parentOfTypes(TypeScriptClass::class, ES6Decorator::class)
+          ?.let {
+            if (it is ES6Decorator && !Angular2DecoratorUtil.isAngularEntityDecorator(it, true, COMPONENT_DEC, DIRECTIVE_DEC))
+              it.parentOfType<TypeScriptClass>()
+            else
+              it
+          }
+        if (parent == null || parent is TypeScriptClass
+            && Angular2DecoratorUtil.findDecorator(parent, false,
+                                                   COMPONENT_DEC, DIRECTIVE_DEC) == null)
+          return emptyList()
+        val attrSelectors by lazy(LazyThreadSafetyMode.PUBLICATION) {
+          Angular2EntitiesProvider.getDirective(parent)?.selector
+            ?.simpleSelectors
+            ?.flatMapTo(mutableSetOf()) { it.attrNames }
+          ?: emptyList()
+        }
+        return listOf(object : PolySymbolNameConversionRulesProvider {
+          override val modificationTracker: ModificationTracker = ModificationTracker.NEVER_CHANGED
+
+          override fun getNameConversionRules(): PolySymbolNameConversionRules =
+            PolySymbolNameConversionRules.builder()
+              .addMatchNamesRule(NG_DIRECTIVE_INPUTS) { name ->
+                attrSelectors.mapNotNull {
+                  if (isTemplateBindingDirectiveInput(name, it))
+                    directiveInputToTemplateBindingVar(name, it)
+                  else null
+                } + name
+              }
+              .build()
+
+          override fun createPointer(): Pointer<out PolySymbolNameConversionRulesProvider> =
+            Pointer.hardPointer(this)
+        })
+      }
+      else if (element is Angular2TemplateBindingKey) {
+        val templateName = element.parentOfType<Angular2TemplateBindings>()?.templateName
+        if (templateName != null)
+          return listOf(object : PolySymbolNameConversionRulesProvider {
+            override val modificationTracker: ModificationTracker = ModificationTracker.NEVER_CHANGED
+
+            override fun getNameConversionRules(): PolySymbolNameConversionRules =
+              PolySymbolNameConversionRules.builder()
+                .addMatchNamesRule(NG_DIRECTIVE_INPUTS) {
+                  listOf(templateBindingVarToDirectiveInput(it, templateName))
+                }
+                .addRenameRule(NG_DIRECTIVE_INPUTS) {
+                  listOf(directiveInputToTemplateBindingVar(it, templateName))
+                }
+                .addCanonicalNamesRule(NG_DIRECTIVE_OUTPUTS) {
+                  listOf(templateBindingVarToDirectiveInput(it, templateName))
+                }
+                .addCompletionVariantsRule(NG_DIRECTIVE_INPUTS) {
+                  listOf(directiveInputToTemplateBindingVar(it, templateName))
+                }
+                .build()
+
+            override fun createPointer(): Pointer<out PolySymbolNameConversionRulesProvider> =
+              Pointer.hardPointer(this)
+          })
+      }
+    }
+    return emptyList()
+  }
+
+}
+
+private fun getCssClassesInJSLiteralInHtmlAttributeScope(element: PsiElement): PolySymbolScope? =
+  element.takeIf { isNgClassOrAnimateLiteralContext(it) }
+    ?.parentOfType<XmlAttribute>()
+    ?.let { CssClassListInJSLiteralInHtmlAttributeScope(it) }
+
+object Angular2BindingPatternProperty : PolySymbolProperty<Boolean>("ng-binding-pattern", Boolean::class.java)
+
+object Angular2ErrorSymbolProperty : PolySymbolProperty<Boolean>("ng-error-symbol", Boolean::class.java)
+
+object Angular2SymbolDirectiveProperty : PolySymbolProperty<Angular2Directive>("ng-symbol-directive", Angular2Directive::class.java)
+
+object Angular2ScopeProximityProperty : PolySymbolProperty<Angular2DeclarationsScope.DeclarationProximity>("scope-proximity",
+                                                                                                           Angular2DeclarationsScope.DeclarationProximity::class.java)
+
+object Angular2HostBindingProperty : PolySymbolProperty<Boolean>("ng-host-binding", Boolean::class.java)
+
+const val EVENT_ATTR_PREFIX: String = "on"
+
+const val ATTR_NG_NON_BINDABLE: String = "ngNonBindable"
+const val ATTR_SELECT: String = "select"
+
+const val ELEMENT_NG_CONTAINER: String = "ng-container"
+const val ELEMENT_NG_CONTENT: String = "ng-content"
+const val ELEMENT_NG_TEMPLATE: String = "ng-template"
+
+val NG_PROPERTY_BINDINGS: PolySymbolKind = PolySymbolKind[NAMESPACE_HTML, "ng-property-bindings"]
+val NG_EVENT_BINDINGS: PolySymbolKind = PolySymbolKind[NAMESPACE_HTML, "ng-event-bindings"]
+val NG_STRUCTURAL_DIRECTIVES: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-structural-directives"]
+val NG_DIRECTIVE_ONE_TIME_BINDINGS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-one-time-bindings"]
+val NG_DIRECTIVE_INPUTS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-directive-inputs"]
+val NG_DIRECTIVE_OUTPUTS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-directive-outputs"]
+val NG_DIRECTIVE_IN_OUTS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-directive-in-outs"]
+val NG_DIRECTIVE_ATTRIBUTES: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-directive-attributes"]
+val NG_DIRECTIVE_EXPORTS_AS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-directive-exports-as"]
+val NG_DIRECTIVE_ELEMENT_SELECTORS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-directive-element-selectors"]
+val NG_DIRECTIVE_ATTRIBUTE_SELECTORS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-directive-attribute-selectors"]
+val NG_I18N_ATTRIBUTES: PolySymbolKind = PolySymbolKind[NAMESPACE_HTML, "ng-i18n-attributes"]
+val NG_BLOCKS: PolySymbolKind = PolySymbolKind[NAMESPACE_HTML, "ng-blocks"]
+val NG_BLOCK_PARAMETERS: PolySymbolKind = PolySymbolKind[NAMESPACE_HTML, "ng-block-parameters"]
+val NG_BLOCK_PARAMETER_PREFIXES: PolySymbolKind = PolySymbolKind[NAMESPACE_HTML, "ng-block-parameter-prefixes"]
+val NG_DEFER_ON_TRIGGERS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-defer-on-triggers"]
+val NG_TEMPLATE_BINDING_KEYWORDS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-template-binding-keywords"]
+val NG_TEMPLATE_BINDINGS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-template-bindings"]
+val NG_KEY_EVENT_MODIFIERS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "key-event-modifiers"]
+val NG_CUSTOM_PROPERTY: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-custom-property"]
+val NG_COMPONENT_LIFECYCLE_HOOKS: PolySymbolKind = PolySymbolKind[NAMESPACE_JS, "ng-component-lifecycle-hooks"]
+
+fun isNgClassOrAnimateLiteralContext(literal: PsiElement): Boolean =
+  isJSLiteralContextFromEmbeddedContent(literal, Angular2Binding::class.java, ::isNgClassOrAnimateAttribute)

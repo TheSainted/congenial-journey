@@ -1,0 +1,13 @@
+<idea-plugin>
+  <dependencies>
+    <plugin id="com.intellij.diagram"/>
+    <module name="intellij.platform.graph.impl"/>
+    <module name="intellij.jhipster.backend"/>
+  </dependencies>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <diagram.Provider implementation="com.intellij.jhipster.uml.JdlUmlProvider"/>
+
+    <fileEditorProvider implementation="com.intellij.jhipster.uml.JdlSplitEditorProvider"/>
+  </extensions>
+</idea-plugin>

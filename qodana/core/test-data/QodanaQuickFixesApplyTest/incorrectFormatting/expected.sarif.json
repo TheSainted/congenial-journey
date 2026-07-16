@@ -1,0 +1,458 @@
+{
+  "runs": [
+    {
+      "language": "en-US",
+      "results": [
+        {
+          "ruleId": "IncorrectFormatting",
+          "kind": "fail",
+          "level": "note",
+          "message": {
+            "text": "File 'Main.java' is not properly formatted",
+            "markdown": "File 'Main.java' is not properly formatted"
+          },
+          "locations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 0,
+                  "startColumn": 0,
+                  "charLength": 0
+                }
+              },
+              "logicalLocations": [
+                {
+                  "fullyQualifiedName": "testIncorrectFormatting",
+                  "kind": "module"
+                }
+              ]
+            }
+          ],
+          "partialFingerprints": {
+            "equalIndicator/v2": "5a0fe0ba2eca607b",
+            "equalIndicator/v1": "c030fdb31b17b1c7834683527ed6545f9a069aa1c98971b1be5b7427e0e9dcc5"
+          },
+          "relatedLocations": [
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 2,
+                  "startColumn": 1,
+                  "charOffset": 20,
+                  "charLength": 13,
+                  "snippet": {
+                    "text": "\n            "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 1,
+                  "startColumn": 1,
+                  "charOffset": 0,
+                  "charLength": 122,
+                  "snippet": {
+                    "text": "public class Main {\n\n            public static void main(String[] args) {\n                System.out.println(\"String 1\");\n"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 4,
+                  "startColumn": 1,
+                  "charOffset": 74,
+                  "charLength": 16,
+                  "snippet": {
+                    "text": "                "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 2,
+                  "startColumn": 1,
+                  "charOffset": 20,
+                  "charLength": 140,
+                  "snippet": {
+                    "text": "\n            public static void main(String[] args) {\n                System.out.println(\"String 1\");\n\n        for (int i = 0; i < 5; i++) {"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 5,
+                  "startColumn": 1,
+                  "charOffset": 122,
+                  "charLength": 9,
+                  "snippet": {
+                    "text": "\n        "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 3,
+                  "startColumn": 1,
+                  "charOffset": 21,
+                  "charLength": 161,
+                  "snippet": {
+                    "text": "            public static void main(String[] args) {\n                System.out.println(\"String 1\");\n\n        for (int i = 0; i < 5; i++) {\n\n        if (false) {"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 7,
+                  "startColumn": 1,
+                  "charOffset": 161,
+                  "charLength": 9,
+                  "snippet": {
+                    "text": "\n        "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 5,
+                  "startColumn": 1,
+                  "charOffset": 122,
+                  "charLength": 117,
+                  "snippet": {
+                    "text": "\n        for (int i = 0; i < 5; i++) {\n\n        if (false) {\n                        System.out.println(\"String 2\");\n"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 9,
+                  "startColumn": 1,
+                  "charOffset": 183,
+                  "charLength": 24,
+                  "snippet": {
+                    "text": "                        "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 7,
+                  "startColumn": 1,
+                  "charOffset": 161,
+                  "charLength": 79,
+                  "snippet": {
+                    "text": "\n        if (false) {\n                        System.out.println(\"String 2\");\n\n"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 10,
+                  "startColumn": 1,
+                  "charOffset": 239,
+                  "charLength": 47,
+                  "snippet": {
+                    "text": "\n\n\n\n\n\n                        \n\n\n\n\n\n\n\n\n        "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 8,
+                  "startColumn": 1,
+                  "charOffset": 162,
+                  "charLength": 150,
+                  "snippet": {
+                    "text": "        if (false) {\n                        System.out.println(\"String 2\");\n\n\n\n\n\n\n                        \n\n\n\n\n\n\n\n\n        } \n        else \n        {"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 25,
+                  "startColumn": 10,
+                  "charOffset": 287,
+                  "charLength": 10,
+                  "snippet": {
+                    "text": " \n        "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 23,
+                  "startColumn": 1,
+                  "charOffset": 276,
+                  "charLength": 37,
+                  "snippet": {
+                    "text": "\n\n        } \n        else \n        {\n"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 26,
+                  "startColumn": 13,
+                  "charOffset": 301,
+                  "charLength": 10,
+                  "snippet": {
+                    "text": " \n        "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 24,
+                  "startColumn": 1,
+                  "charOffset": 277,
+                  "charLength": 37,
+                  "snippet": {
+                    "text": "\n        } \n        else \n        {\n\n"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 28,
+                  "startColumn": 1,
+                  "charOffset": 313,
+                  "charLength": 32,
+                  "snippet": {
+                    "text": "\n\n\n\n                            "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 26,
+                  "startColumn": 1,
+                  "charOffset": 289,
+                  "charLength": 113,
+                  "snippet": {
+                    "text": "        else \n        {\n\n\n\n\n                            System.out.println(\"String 3\");\n            \n            "
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 33,
+                  "startColumn": 1,
+                  "charOffset": 377,
+                  "charLength": 89,
+                  "snippet": {
+                    "text": "            \n            \n            \n            \n            \n                        "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 31,
+                  "startColumn": 1,
+                  "charOffset": 316,
+                  "charLength": 231,
+                  "snippet": {
+                    "text": "\n                            System.out.println(\"String 3\");\n            \n            \n            \n            \n            \n                        System.out.println(\"String 4\");\n                        \n                        "
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 39,
+                  "startColumn": 1,
+                  "charOffset": 498,
+                  "charLength": 108,
+                  "snippet": {
+                    "text": "                        \n                        \n                        \n                        \n        "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 37,
+                  "startColumn": 1,
+                  "charOffset": 429,
+                  "charLength": 243,
+                  "snippet": {
+                    "text": "            \n                        System.out.println(\"String 4\");\n                        \n                        \n                        \n                        \n        }\n        }\n                System.out.println(\"String 5\");       "
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 44,
+                  "startColumn": 1,
+                  "charOffset": 608,
+                  "charLength": 8,
+                  "snippet": {
+                    "text": "        "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 42,
+                  "startColumn": 1,
+                  "charOffset": 573,
+                  "charLength": 105,
+                  "snippet": {
+                    "text": "                        \n        }\n        }\n                System.out.println(\"String 5\");       \n    }"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 45,
+                  "startColumn": 1,
+                  "charOffset": 618,
+                  "charLength": 16,
+                  "snippet": {
+                    "text": "                "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 43,
+                  "startColumn": 1,
+                  "charOffset": 598,
+                  "charLength": 82,
+                  "snippet": {
+                    "text": "        }\n        }\n                System.out.println(\"String 5\");       \n    }\n}"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            },
+            {
+              "physicalLocation": {
+                "artifactLocation": {
+                  "uri": "test-module/Main.java",
+                  "uriBaseId": "SRCROOT"
+                },
+                "region": {
+                  "startLine": 45,
+                  "startColumn": 48,
+                  "charOffset": 665,
+                  "charLength": 12,
+                  "snippet": {
+                    "text": "       \n    "
+                  },
+                  "sourceLanguage": "Java"
+                },
+                "contextRegion": {
+                  "startLine": 43,
+                  "startColumn": 1,
+                  "charOffset": 598,
+                  "charLength": 83,
+                  "snippet": {
+                    "text": "        }\n        }\n                System.out.println(\"String 5\");       \n    }\n}\n"
+                  },
+                  "sourceLanguage": "JAVA"
+                }
+              }
+            }
+          ],
+          "properties": {
+            "ideaSeverity": "WEAK WARNING",
+            "qodanaSeverity": "Moderate",
+            "problemType": "INCORRECT_FORMATTING",
+            "hasFixes": true,
+            "tags": [
+              "JAVA"
+            ]
+          }
+        }
+      ],
+      "automationDetails": {
+        "id": "tests",
+        "guid": "tests",
+        "properties": {
+          "jobUrl": "",
+          "analysisKind": "regular"
+        }
+      },
+      "newlineSequences": [
+        "\r\n",
+        "\n"
+      ]
+    }
+  ]
+}

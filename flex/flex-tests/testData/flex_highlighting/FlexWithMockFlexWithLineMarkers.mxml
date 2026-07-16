@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml" mouseDown="<inject descr="null"><symbolName descr="instance method">copy</symbolName>()</inject>" mouseUp="<inject descr="null"><symbolName descr="instance method">copy</symbolName>()</inject>">
+
+    <mx:Script><inject descr="null">public override function <lineMarker descr="Overrides method 'removeEventListener' in flash.events.EventDispatcher"><symbolName descr="instance method">removeEventListener</symbolName></lineMarker>(<symbolName descr="identifiers//parameter">type</symbolName>:<symbolName descr="classes//class name">String</symbolName>, <symbolName descr="identifiers//parameter">listener</symbolName>:<symbolName descr="classes//class name">Function</symbolName>, <symbolName descr="identifiers//parameter">useCapture</symbolName>:<symbolName descr="classes//class name">Boolean</symbolName> = false):void {}
+
+    function <symbolName descr="instance method">copy</symbolName>() {
+        <symbolName descr="instance field">destination</symbolName>.<symbolName descr="instance method">text</symbolName>=<symbolName descr="instance field">source</symbolName>.<symbolName descr="instance method">text</symbolName> = ' '
+        var <symbolName descr="identifiers//local function">aaa</symbolName>:<symbolName descr="classes//class name">Function</symbolName> = <symbolName descr="instance method">copy_</symbolName>
+    }
+
+    function <symbolName descr="instance method">copy_</symbolName>() {
+    }
+    </inject></mx:Script>
+    <mx:Script><![CDATA[<inject descr="null">
+    var <symbolName descr="instance field">a</symbolName> = <xxx>{<error descr="Unresolved variable or type zzz">zzz</error>}</xxx>;
+    var <symbolName descr="instance field">b</symbolName> = <xxx>{<symbolName descr="instance field">a</symbolName>}</xxx>;
+ </inject>]]></mx:Script>
+
+    <mx:TextInput id="source" width="100" horizontalCenter="0" verticalCenter="1"/>
+    <mx:TextInput id="destination" width="100" horizontalCenter="0" verticalCenter="1"/>
+</mx:Application>

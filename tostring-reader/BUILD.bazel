@@ -1,0 +1,75 @@
+### auto-generated section `build intellij.tsr` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "tsr_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+resourcegroup(
+  name = "tsr_test_resources",
+  srcs = glob(["test-resources/**/*"]),
+  strip_prefix = "test-resources"
+)
+
+jvm_library(
+  name = "tsr",
+  module_name = "intellij.tsr",
+  visibility = ["//visibility:public"],
+  srcs = glob(["gen/**/*.kt", "gen/**/*.java", "src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":tsr_resources"],
+  deps = [
+    "@community//platform/analysis-api:analysis",
+    "@community//platform/code-style-api:codeStyle",
+    "@community//platform/core-api:core",
+    "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/platform-api:ide",
+    "@community//platform/lang-impl",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//platform/code-style-impl:codeStyle-impl",
+    "@community//platform/core-impl",
+  ]
+)
+
+jvm_library(
+  name = "tsr_test_lib",
+  visibility = ["//visibility:public"],
+  srcs = glob(["test/**/*.kt", "test/**/*.java", "test/**/*.form"], allow_empty = True),
+  resources = [":tsr_test_resources"],
+  associates = [":tsr"],
+  deps = [
+    "@community//platform/analysis-api:analysis",
+    "@community//platform/analysis-api:analysis_test_lib",
+    "@community//platform/code-style-api:codeStyle",
+    "@community//platform/code-style-api:codeStyle_test_lib",
+    "@community//platform/core-api:core",
+    "@community//platform/core-api:core_test_lib",
+    "@community//java/testFramework",
+    "@community//java/testFramework:testFramework_test_lib",
+    "@community//platform/editor-ui-api:editor-ui",
+    "@community//platform/editor-ui-api:editor-ui_test_lib",
+    "@community//platform/platform-api:ide",
+    "@community//platform/platform-api:ide_test_lib",
+    "@community//platform/lang-impl",
+    "@community//platform/lang-impl:lang-impl_test_lib",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//platform/testFramework",
+    "@community//platform/testFramework:testFramework_test_lib",
+    "@community//platform/code-style-impl:codeStyle-impl",
+    "@community//platform/code-style-impl:codeStyle-impl_test_lib",
+    "@community//platform/core-impl",
+    "@community//platform/core-impl:core-impl_test_lib",
+  ],
+  runtime_deps = ["@community//platform/platform-impl:ide-impl_test_lib"]
+)
+### auto-generated section `build intellij.tsr` end
+
+### auto-generated section `test intellij.tsr` start
+load("@community//build:tests-options.bzl", "jps_test")
+
+jps_test(
+  name = "tsr_test",
+  runtime_deps = [":tsr_test_lib"]
+)
+### auto-generated section `test intellij.tsr` end

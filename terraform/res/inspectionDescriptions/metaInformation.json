@@ -1,0 +1,116 @@
+{
+  "inspections": [
+    {
+      "id": "TfDuplicatedProvider",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "TfNotInitialized",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "TfIncorrectVariableType",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "HILUnknownResourceType",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "TfUnselectedDataLanguage",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "HILUnresolvedReference",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "TfUnusedElements",
+      "codeQualityCategory": "Code Style"
+    },
+    {
+      "id": "TfBlockNameValidness",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "TfUnknownProperty",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "TfNoInterpolationsAllowed",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "OpenTofuUnknownEncryptionMethod",
+      "codeQualityCategory": "Security"
+    },
+    {
+      "id": "HILOperationTypesMismatch",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "HCLBlockMissingProperty",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "HCLDeprecatedElement",
+      "codeQualityCategory": "Code Style"
+    },
+    {
+      "id": "HCLSimplifyExpression",
+      "codeQualityCategory": "Performance"
+    },
+    {
+      "id": "TfMissingModule",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "HCLBlockConflictingProperties",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "OpenTofuUnknownKeyProvider",
+      "codeQualityCategory": "Security"
+    },
+    {
+      "id": "TfVARSIncorrectElement",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "TfDuplicatedOutput",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "TfUnknownResource",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "HILMissingSelfInContext",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "MaybeTfTemplateInspection",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "TfDuplicatedVariable",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "TfDuplicatedBlockProperty",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "HILConvertToHCL",
+      "codeQualityCategory": "Code Style"
+    },
+    {
+      "id": "TfUnknownBlockType",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "HCLLiteralValidness",
+      "codeQualityCategory": "Reliability"
+    }
+  ]
+}

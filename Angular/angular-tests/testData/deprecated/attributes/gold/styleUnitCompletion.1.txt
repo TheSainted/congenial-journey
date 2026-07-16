@@ -1,0 +1,2 @@
+baseline-shift] (tailText=null; typeText=null; priority=10.0; typeGreyed)
+baseline-shift. (tailText=null; typeText=null; priority=0.0; typeGreyed)

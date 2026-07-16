@@ -1,0 +1,93 @@
+// Copyright 2000-2024 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+package org.jetbrains.plugins.cucumber.java.steps;
+
+import com.intellij.openapi.module.Module;
+import com.intellij.psi.JavaPsiFacade;
+import com.intellij.psi.PsiAnnotation;
+import com.intellij.psi.PsiClass;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementFactory;
+import com.intellij.psi.PsiMethod;
+import com.intellij.psi.PsiParameter;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.psi.util.PsiTreeUtil;
+import org.jetbrains.annotations.NotNullByDefault;
+import org.jetbrains.annotations.Nullable;
+import org.jetbrains.plugins.cucumber.java.CucumberJavaUtil;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@NotNullByDefault
+public class JavaAnnotatedStepDefinition extends AbstractJavaStepDefinition {
+
+  public JavaAnnotatedStepDefinition(PsiAnnotation element, Module module) {
+    super(element, module);
+  }
+
+  @Override
+  protected @Nullable String getCucumberRegexFromElement(@Nullable PsiElement element) {
+    // NOTE(bartekpacia): This implementation doesn't conform to this method's name because it can return either a regex or a cukex.
+    //  However, it has been like this for many years, and it seems to work fine. If possible, consider refactoring in the future.
+    if (!(element instanceof PsiAnnotation annotation)) return null;
+    return CucumberJavaUtil.getAnnotationValue(annotation);
+  }
+
+  @Override
+  public void setValue(String newValue) {
+    if (!(getElement() instanceof PsiAnnotation annotation)) {
+      return;
+    }
+    final GlobalSearchScope dependenciesScope = module.getModuleWithDependenciesAndLibrariesScope(true);
+    final Set<PsiClass> allStepAnnotations = new HashSet<>(CucumberJavaUtil.getAllStepAnnotationClasses(module, dependenciesScope));
+    final PsiClass annotationClass = annotation.resolveAnnotationType();
+    if (annotationClass == null) {
+      return;
+    }
+    if (allStepAnnotations.contains(annotationClass)) {
+      PsiElementFactory factory = JavaPsiFacade.getElementFactory(annotation.getProject());
+      String newValueEscaped = CucumberJavaUtil.unescapeCucumberRegex(newValue);
+      annotation.setDeclaredAttributeValue("value", factory.createExpressionFromText("\"" + newValueEscaped + "\"", null));
+    }
+  }
+
+  @Override
+  public @Nullable PsiAnnotation getElement() {
+    final PsiElement element = super.getElement();
+    if (element == null) return null;
+    return (PsiAnnotation)element;
+  }
+
+  @Override
+  public @Nullable PsiElement getNavigationElement() {
+    final PsiAnnotation annotation = getElement();
+    if (annotation == null) return null;
+    return PsiTreeUtil.getParentOfType(annotation, PsiMethod.class);
+  }
+
+  @Override
+  public List<String> getVariableNames() {
+    PsiElement element = getElement();
+    if (element instanceof PsiAnnotation annotation) {
+      PsiMethod method = PsiTreeUtil.getParentOfType(annotation, PsiMethod.class);
+      if (method == null) {
+        return Collections.emptyList();
+      }
+      PsiParameter[] parameters = method.getParameterList().getParameters();
+      ArrayList<String> result = new ArrayList<>();
+      for (PsiParameter parameter : parameters) {
+        result.add(parameter.getName());
+      }
+      return result;
+    }
+    return Collections.emptyList();
+  }
+
+  @Override
+  public String toString() {
+    return "JavaAnnotatedStepDefinition{backed by element: " + getElement() + "}";
+  }
+}

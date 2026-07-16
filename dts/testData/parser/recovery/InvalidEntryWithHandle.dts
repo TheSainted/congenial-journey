@@ -1,0 +1,7 @@
+&label
+
+&{/path}
+
+a b &label c &label
+
+/ {};

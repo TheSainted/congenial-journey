@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "target": "ES2021",
+    "lib": [
+      "ES2021"
+    ],
+    "outDir": "../../gen-resources/angular-service/node_modules/ws-typescript-angular-plugin",
+    "declaration": false,
+    "module": "Node16",
+    "strictNullChecks": true,
+    "noImplicitThis": true,
+    "noImplicitAny": true,
+    "noImplicitReturns": true,
+    "strict": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "types": [
+      "tsc-ide-plugin/typescript",
+      "node"
+    ]
+  },
+  "include": [
+    "src/index.ts",
+    "src/typings/*.d.ts"
+  ]
+}

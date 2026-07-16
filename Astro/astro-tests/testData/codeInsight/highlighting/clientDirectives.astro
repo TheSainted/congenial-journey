@@ -1,0 +1,27 @@
+---
+import {MyReactComponent} from "./react-component"
+---
+<div>
+  <MyReactComponent client:load />
+  <!--
+  Temporarily removed warning from the line under this comment
+  TODO When validation will be done through LSP, rollback this change
+  -->
+  <MyReactComponent client:load="incorrect" />
+  <MyReactComponent client:idle />
+  <!--
+  Temporarily removed warning from the line under this comment
+  TODO When validation will be done through LSP, rollback this change
+  -->
+  <MyReactComponent client:idle="incorrect" />
+  <MyReactComponent client:visible />
+  <!--
+  Temporarily removed warning from the line under this comment
+  TODO When validation will be done through LSP, rollback this change
+  -->
+  <MyReactComponent client:visible="incorrect" />
+  <MyReactComponent <warning descr="client:media requires value">client:media</warning> />
+  <MyReactComponent client:media="(max-width: 50em)" />
+  <MyReactComponent <warning descr="client:only requires value">client:only</warning> />
+  <MyReactComponent client:only="react" />
+</div>

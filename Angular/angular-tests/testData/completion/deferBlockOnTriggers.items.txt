@@ -1,0 +1,6 @@
+hover (typeText=null; priority=100.0)
+idle (typeText=null; priority=100.0)
+immediate (typeText=null; priority=100.0)
+interaction (typeText=null; priority=100.0)
+timer (typeText=null; priority=100.0)
+viewport (typeText=null; priority=100.0)

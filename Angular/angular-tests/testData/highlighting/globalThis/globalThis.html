@@ -1,0 +1,20 @@
+<!-- For Angular <19 `this.div` should resolve to #div -->
+{{this.div | <error descr="Unresolved pipe json">json</error>}}
+
+{{this | <error descr="Unresolved pipe json">json</error>}}
+
+{{this.<error descr="TS2339: Property 'foo' does not exist on type 'MyComponent'.">foo</error>}}
+
+<div (click)="this.got_a_click()"></div>
+{{ this.get_title() }}
+
+<div [class]="this.get_title()">
+  {{ this.get_title() }}
+</div>
+
+<div #<warning descr="Unused constant div">div</warning>></div>
+
+<script>
+  <warning descr="Top-level 'this' expression">this</warning>
+</script>
+

@@ -1,0 +1,27 @@
+<idea-plugin package="org.jetbrains.qodana.python.coverage">
+  <dependencies>
+    <plugin id="com.intellij.modules.python"/>
+    <plugin id="Pythonid"/>
+    <module name="intellij.python"/>
+    <!-- region Generated dependencies - run `Generate Product Layouts` to regenerate -->
+    <module name="intellij.qodana.coverage"/>
+    <!-- endregion -->
+  </dependencies>
+
+  <extensions defaultExtensionNs="org.intellij.qodana">
+    <reportMetadataArtifact implementation="org.jetbrains.qodana.python.coverage.PyCoverageReportMetadataArtifact"/>
+  </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+    <qodana.coverage.cloudArtifactsProcessor implementation="org.jetbrains.qodana.python.coverage.PyCoverageArtifactProcessor"/>
+  </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+    <globalInspection hasStaticDescription="true"
+                      language="Python"
+                      shortName="PyCoverageInspection"
+                      key="check.python.display.name"
+                      bundle="messages.QodanaBundle"
+                      groupKey="coverage.group.display.name"
+                      enabledByDefault="true"
+                      implementationClass="org.jetbrains.qodana.python.coverage.PyCoverageInspection"/>
+  </extensions>
+</idea-plugin>

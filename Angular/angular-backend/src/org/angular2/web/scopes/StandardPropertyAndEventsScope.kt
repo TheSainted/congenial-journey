@@ -1,0 +1,279 @@
+// Copyright 2000-2022 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+package org.angular2.web.scopes
+
+import com.intellij.documentation.mdn.MdnSymbolDocumentation
+import com.intellij.documentation.mdn.getDomEventDocumentation
+import com.intellij.javascript.web.js.WebJSTypesUtil
+import com.intellij.lang.javascript.evaluation.JSTypeEvaluationLocationProvider.withTypeEvaluationLocation
+import com.intellij.lang.javascript.psi.JSFile
+import com.intellij.lang.javascript.psi.JSType
+import com.intellij.lang.javascript.psi.ecma6.TypeScriptPropertySignature
+import com.intellij.lang.javascript.psi.ecmal4.JSAttributeList
+import com.intellij.lang.javascript.psi.types.JSTypeSourceFactory
+import com.intellij.model.Pointer
+import com.intellij.openapi.project.Project
+import com.intellij.platform.backend.documentation.DocumentationTarget
+import com.intellij.polySymbols.PolySymbol
+import com.intellij.polySymbols.PolySymbolKind
+import com.intellij.polySymbols.PolySymbolQualifiedName
+import com.intellij.polySymbols.html.HTML_ELEMENTS
+import com.intellij.polySymbols.html.StandardHtmlSymbol
+import com.intellij.polySymbols.js.JS_EVENTS
+import com.intellij.polySymbols.js.JS_PROPERTIES
+import com.intellij.polySymbols.js.symbols.asJSSymbol
+import com.intellij.polySymbols.js.types.JSTypeProperty
+import com.intellij.polySymbols.query.PolySymbolNameMatchQueryParams
+import com.intellij.polySymbols.query.PolySymbolQueryStack
+import com.intellij.polySymbols.query.PolySymbolScope
+import com.intellij.polySymbols.utils.PolySymbolScopeWithCache
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.createSmartPointer
+import com.intellij.psi.util.PsiModificationTracker
+import org.angular2.codeInsight.attributes.DomElementSchemaRegistry
+import org.angular2.lang.types.Angular2TypeUtils
+import org.angular2.web.Angular2PsiSourcedSymbol
+import org.angular2.web.Angular2Symbol
+import org.angular2.web.EVENT_ATTR_PREFIX
+
+class StandardPropertyAndEventsScope(private val templateFile: PsiFile) : PolySymbolScope {
+
+  override fun getMatchingSymbols(
+    qualifiedName: PolySymbolQualifiedName,
+    params: PolySymbolNameMatchQueryParams,
+    stack: PolySymbolQueryStack,
+  ): List<PolySymbol> =
+    if (qualifiedName.matches(HTML_ELEMENTS)) {
+      listOf(HtmlElementStandardPropertyAndEventsExtension(templateFile, "", qualifiedName.name))
+    }
+    else emptyList()
+
+  override fun createPointer(): Pointer<StandardPropertyAndEventsScope> {
+    val templateFile = this.templateFile.createSmartPointer()
+    return Pointer {
+      templateFile.dereference()?.let { StandardPropertyAndEventsScope(it) }
+    }
+  }
+
+  override fun equals(other: Any?): Boolean =
+    other is StandardPropertyAndEventsScope
+    && other.templateFile == templateFile
+
+  override fun hashCode(): Int =
+    templateFile.hashCode()
+
+  private class HtmlElementStandardPropertyAndEventsExtension(
+    templateFile: PsiFile, tagNamespace: String, tagName: String,
+  ) : PolySymbolScopeWithCache<PsiFile, Pair<String, String>>(templateFile.project, templateFile,
+                                                              Pair(tagNamespace, tagName)), Angular2Symbol {
+
+    override fun provides(kind: PolySymbolKind): Boolean =
+      kind == JS_PROPERTIES
+      || kind == JS_EVENTS
+
+    override val name: String
+      get() = key.second
+
+    override val extension: Boolean
+      get() = true
+
+    override val kind: PolySymbolKind
+      get() = HTML_ELEMENTS
+
+    override fun createPointer(): Pointer<HtmlElementStandardPropertyAndEventsExtension> {
+      val templateFile = this.dataHolder.createSmartPointer()
+      val tagName = this.key.first
+      val tagNamespace = this.key.second
+      return Pointer {
+        templateFile.dereference()?.let { HtmlElementStandardPropertyAndEventsExtension(it, tagNamespace, tagName) }
+      }
+    }
+
+    override fun initialize(consumer: (PolySymbol) -> Unit, cacheDependencies: MutableSet<Any>) {
+      val templateFile = dataHolder
+      val tagNamespace = key.first
+      val tagName = key.second
+
+      val typeSource = if (templateFile is JSFile)
+        JSTypeSourceFactory.createTypeSource(templateFile)
+      else
+        Angular2TypeUtils.createJSTypeSourceForXmlElement(templateFile)
+      val tagClass = withTypeEvaluationLocation(templateFile) { WebJSTypesUtil.getHtmlElementClassType(typeSource, tagName) }
+      val ariaMixin = withTypeEvaluationLocation(templateFile) { WebJSTypesUtil.getAriaMixinClassType(typeSource) }
+      val elementEventMap = Angular2TypeUtils.getElementEventMap(typeSource).asRecordType(templateFile)
+
+      val allowedElementProperties = DomElementSchemaRegistry.getElementProperties(tagNamespace, tagName).toMutableSet()
+      val eventNames = DomElementSchemaRegistry.getElementEvents(tagNamespace, tagName).toMutableSet()
+      elementEventMap.propertyNames.forEach { name -> eventNames.add(name) }
+
+      fun addStandardProperty(name: String, project: Project, source: TypeScriptPropertySignature?) {
+        DomElementSchemaRegistry.getMappedBindingName(name)
+          ?.let { consumer(Angular2StandardProperty(it, project, source, templateFile)) }
+        consumer(Angular2StandardProperty(name, project, source, templateFile))
+      }
+
+      for (property in sequenceOf(tagClass.asRecordType(templateFile),
+                                  ariaMixin.asRecordType(templateFile))
+        .flatMap { it.properties }
+      ) {
+        val propertyDeclaration = property.memberSource.singleElement
+        if (propertyDeclaration is TypeScriptPropertySignature) {
+          if (propertyDeclaration.attributeList?.hasModifier(JSAttributeList.ModifierType.READONLY) == true) {
+            continue
+          }
+          cacheDependencies.add(propertyDeclaration.containingFile)
+          val name: String
+          if (property.memberName.startsWith(EVENT_ATTR_PREFIX)) {
+            val eventName = property.memberName.substring(2)
+            eventNames.remove(eventName)
+            consumer(Angular2StandardEvent(
+              eventName,
+              propertyDeclaration.project, propertyDeclaration,
+              elementEventMap.findPropertySignature(eventName)
+                ?.memberSource?.singleElement as? TypeScriptPropertySignature,
+              templateFile
+            ))
+          }
+          else {
+            name = property.memberName
+            if (!allowedElementProperties.remove(name)) {
+              continue
+            }
+            addStandardProperty(name, propertyDeclaration.project, propertyDeclaration)
+          }
+        }
+      }
+      for (name in allowedElementProperties) {
+        addStandardProperty(name, templateFile.project, null)
+      }
+      for (eventName in eventNames) {
+        consumer(Angular2StandardEvent(
+          eventName,
+          templateFile.project,
+          null,
+          elementEventMap.findPropertySignature(eventName)
+            ?.memberSource?.singleElement as? TypeScriptPropertySignature,
+          templateFile
+        ))
+      }
+      if (cacheDependencies.isEmpty()) {
+        cacheDependencies.add(PsiModificationTracker.MODIFICATION_COUNT)
+      }
+    }
+
+  }
+
+  private class Angular2StandardProperty(
+    override val name: String,
+    override val project: Project,
+    override val source: TypeScriptPropertySignature?,
+    private val templateFile: PsiFile,
+  ) : Angular2PsiSourcedSymbol {
+
+
+    override fun createPointer(): Pointer<Angular2StandardProperty> {
+      val name = name
+      val project = project
+      val source = source?.createSmartPointer()
+      val templateFilePtr = templateFile.createSmartPointer()
+      return Pointer {
+        val newSource = source?.let {
+          it.dereference() ?: return@Pointer null
+        }
+        Angular2StandardProperty(name, project, newSource,
+                                 templateFilePtr.dereference() ?: return@Pointer null)
+      }
+    }
+
+    override fun getDocumentationTarget(location: PsiElement?): DocumentationTarget? =
+      source?.asJSSymbol()?.getDocumentationTarget(location)
+
+    @PolySymbol.Property(JSTypeProperty::class)
+    val jsType: JSType?
+      get() = source?.getJSType(templateFile)
+
+    override val kind: PolySymbolKind
+      get() = JS_PROPERTIES
+
+    override fun equals(other: Any?): Boolean =
+      other === this
+      || other is Angular2StandardProperty
+      && other.name == name
+      && other.project == project
+      && other.source == source
+      && other.templateFile == templateFile
+
+    override fun hashCode(): Int {
+      var result = name.hashCode()
+      result = 31 * result + project.hashCode()
+      result = 31 * result + source.hashCode()
+      result = 31 * result + templateFile.hashCode()
+      return result
+    }
+
+  }
+
+  private class Angular2StandardEvent(
+    override val name: String,
+    override val project: Project,
+    private val mainSource: TypeScriptPropertySignature?,
+    private val mapSource: TypeScriptPropertySignature?,
+    private val templateFile: PsiFile,
+  ) : StandardHtmlSymbol(), Angular2PsiSourcedSymbol {
+
+    override val source: PsiElement?
+      get() = mainSource ?: mapSource
+
+    override fun getMdnDocumentation(): MdnSymbolDocumentation? =
+      getDomEventDocumentation(name)
+
+    override fun createPointer(): Pointer<Angular2StandardEvent> {
+      val name = this.name
+      val project = this.project
+      val mainSourcePtr = mainSource?.createSmartPointer()
+      val mapSourcePtr = mapSource?.createSmartPointer()
+      val templateFilePtr = templateFile.createSmartPointer()
+      return Pointer {
+        val mainSource = mainSourcePtr?.let {
+          it.dereference() ?: return@Pointer null
+        }
+        val mapSource = mapSourcePtr?.let {
+          it.dereference() ?: return@Pointer null
+        }
+        Angular2StandardEvent(name, project, mainSource, mapSource,
+                              templateFilePtr.dereference() ?: return@Pointer null)
+      }
+    }
+
+    @PolySymbol.Property(JSTypeProperty::class)
+    val jsType: JSType?
+      get() = Angular2TypeUtils.extractEventVariableType(mainSource?.getJSType(templateFile))
+              ?: mapSource?.getJSType(templateFile)
+
+    override val priority: PolySymbol.Priority
+      get() = PolySymbol.Priority.NORMAL
+
+    override val kind: PolySymbolKind
+      get() = JS_EVENTS
+
+    override fun equals(other: Any?): Boolean =
+      other === this
+      || other is Angular2StandardEvent
+      && other.name == name
+      && other.project == project
+      && other.mainSource == mainSource
+      && other.mapSource == mapSource
+      && other.templateFile == templateFile
+
+    override fun hashCode(): Int {
+      var result = name.hashCode()
+      result = 31 * result + project.hashCode()
+      result = 31 * result + mainSource.hashCode()
+      result = 31 * result + mapSource.hashCode()
+      result = 31 * result + templateFile.hashCode()
+      return result
+    }
+
+  }
+
+}

@@ -1,0 +1,34 @@
+### auto-generated section `build intellij.protoeditor` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "protoeditor_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "protoeditor",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  resources = [":protoeditor_resources"],
+  runtime_deps = ["//contrib/protobuf/protoeditor-core"]
+)
+
+jvm_library(
+  name = "protoeditor_test_lib",
+  module_name = "intellij.protoeditor",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":protoeditor",
+    "//contrib/protobuf/protoeditor-core:protoeditor-core_test_lib",
+    "//contrib/protobuf/protoeditor-jvm",
+    "//contrib/protobuf/protoeditor-jvm:protoeditor-jvm_test_lib",
+    "//contrib/protobuf/protoeditor-python",
+    "//contrib/protobuf/protoeditor-python:protoeditor-python_test_lib",
+    "//contrib/protobuf/protoeditor-go",
+    "//contrib/protobuf/protoeditor-go:protoeditor-go_test_lib",
+  ]
+)
+### auto-generated section `build intellij.protoeditor` end

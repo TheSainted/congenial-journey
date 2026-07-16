@@ -1,0 +1,43 @@
+### auto-generated section `build intellij.flex.jps` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "jps_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "jps",
+  module_name = "intellij.flex.jps",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":jps_resources"],
+  kotlinc_opts = "@community//:k11",
+  deps = [
+    "//contrib/flex/flex-shared:shared",
+    "@community//jps/jps-builders:build",
+    "@community//jps/model-api:model",
+    "@community//jps/model-serialization",
+    "@community//platform/util/jdom",
+    "@community//platform/util",
+  ]
+)
+
+jvm_library(
+  name = "jps_test_lib",
+  module_name = "intellij.flex.jps",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  kotlinc_opts = "@community//:k11",
+  runtime_deps = [
+    ":jps",
+    "//contrib/flex/flex-shared:shared_test_lib",
+    "@community//jps/jps-builders:build_test_lib",
+    "@community//jps/model-api:model_test_lib",
+    "@community//jps/model-serialization:model-serialization_test_lib",
+    "@community//platform/util/jdom:jdom_test_lib",
+    "@community//platform/util:util_test_lib",
+  ]
+)
+### auto-generated section `build intellij.flex.jps` end

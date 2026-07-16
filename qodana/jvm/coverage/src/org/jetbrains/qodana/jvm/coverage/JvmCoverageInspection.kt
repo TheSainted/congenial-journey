@@ -1,0 +1,361 @@
+package org.jetbrains.qodana.jvm.coverage
+
+import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.coverage.CoverageEngine
+import com.intellij.coverage.JavaCoverageEngine
+import com.intellij.coverage.xml.XMLReportEngine
+import com.intellij.coverage.xml.XMLReportSuite
+import com.intellij.lang.Language
+import com.intellij.openapi.application.runReadAction
+import com.intellij.openapi.diagnostic.logger
+import com.intellij.openapi.editor.Document
+import com.intellij.openapi.module.ModuleManager
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.util.Key
+import com.intellij.openapi.util.TextRange
+import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.openapi.vfs.VirtualFileManager
+import com.intellij.openapi.vfs.toNioPathOrNull
+import com.intellij.psi.JavaPsiFacade
+import com.intellij.psi.PsiAnonymousClass
+import com.intellij.psi.PsiClassOwner
+import com.intellij.psi.PsiDocumentManager
+import com.intellij.psi.PsiElement
+import com.intellij.psi.PsiFile
+import com.intellij.psi.PsiNameIdentifierOwner
+import com.intellij.psi.search.GlobalSearchScope
+import com.intellij.rt.coverage.data.ProjectData
+import com.intellij.rt.coverage.report.XMLProjectData
+import com.intellij.uast.UastHintedVisitorAdapter
+import org.jetbrains.kotlin.asJava.elements.KtLightMethod
+import org.jetbrains.kotlin.asJava.elements.isGetter
+import org.jetbrains.kotlin.asJava.elements.isSetter
+import org.jetbrains.qodana.QodanaBundle
+import org.jetbrains.qodana.coverage.CoverageLanguage
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.CoverageInspectionBase
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.computeSuites
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.issueWithCoverage
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.iterateContents
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.loadClassData
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.loadMissingData
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.loadXmlLineData
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.merge
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.processReportClassData
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.processReportXmlData
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.reportElement
+import org.jetbrains.qodana.staticAnalysis.inspections.coverage.reportProblemsNeeded
+import org.jetbrains.qodana.staticAnalysis.inspections.runner.QodanaException
+import org.jetbrains.qodana.staticAnalysis.inspections.runner.QodanaGlobalInspectionContext
+import org.jetbrains.qodana.staticAnalysis.stat.CoverageFeatureEventsCollector
+import org.jetbrains.qodana.staticAnalysis.stat.CoverageFeatureEventsCollector.COVERAGE_LANGUAGE_FIELD
+import org.jetbrains.uast.UAnonymousClass
+import org.jetbrains.uast.UClass
+import org.jetbrains.uast.UDeclaration
+import org.jetbrains.uast.UMethod
+import org.jetbrains.uast.getContainingUClass
+import org.jetbrains.uast.java.UastAnonymousClassUtil
+import org.jetbrains.uast.visitor.AbstractUastNonRecursiveVisitor
+import java.util.concurrent.atomic.AtomicBoolean
+import kotlin.reflect.KClass
+
+internal val logger = logger<JvmCoverageInspection>()
+
+private enum class MethodType(val printName: String) {
+  CONSTRUCTOR("constructor"),
+  METHOD("method"),
+  PROPERTY("property")
+}
+
+class JvmCoverageInspection : CoverageInspectionBase() {
+  private val languages = setOf("Java", "Kotlin")
+
+  companion object {
+    private val javacov = Key.create<Lazy<ProjectData?>>("qodana.javacov.coverage")
+    private val xmlcov = Key.create<Lazy<XMLProjectData?>>("qodana.xml.coverage")
+  }
+
+  override fun loadCoverage(globalContext: QodanaGlobalInspectionContext) {
+    globalContext.putUserData(javacov, lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+      computeCoverageData(globalContext, JavaCoverageEngine::class)
+    })
+    globalContext.putUserData(xmlcov, lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) {
+      val data = computeXmlCoverageData(globalContext, XMLReportEngine::class)
+      if (data != null) {
+        CoverageFeatureEventsCollector.INPUT_COVERAGE_LOADED.log(globalContext.project, COVERAGE_LANGUAGE_FIELD.with(CoverageLanguage.JVM))
+      }
+      data
+    })
+  }
+
+  override fun loadReportForIncrementalAnalysis(globalContext: QodanaGlobalInspectionContext) {
+    if (Language.getRegisteredLanguages().any { languages.contains(it.displayName) }) {
+      val stat = globalContext.coverageStatisticsData
+      val xmlReport = globalContext.getUserData(xmlcov)?.value
+      xmlReport?.files?.filter { fileInfo ->
+        runReadAction {
+          val possibleFiles = ModuleManager.getInstance(globalContext.project).modules.flatMap {
+            ModuleRootManager.getInstance(it).sourceRoots.mapNotNull { root ->
+              val filePath = root.toNioPathOrNull()?.resolve(fileInfo.path)
+              filePath?.let { VirtualFileManager.getInstance().findFileByNioPath(filePath) }
+            }
+          }
+          possibleFiles.any { file ->
+            GlobalSearchScope.allScope(globalContext.project).contains(file)
+          }
+        }
+      }?.forEach { x ->
+        stat.processReportXmlData(x)
+      }
+
+      globalContext.getUserData(javacov)?.value?.let { loadReportData(globalContext, it) }
+    }
+  }
+
+  override fun processReportData(data: ProjectData, globalContext: QodanaGlobalInspectionContext) {
+    val stat = globalContext.coverageStatisticsData
+    val searchScope = GlobalSearchScope.projectScope(globalContext.project)
+    data.classes.filter {
+      runReadAction {
+        JavaPsiFacade.getInstance(globalContext.project).findClass(it.value.name, searchScope) != null
+      }
+    }.forEach { x -> stat.processReportClassData(x.value) }
+  }
+
+  override fun checker(file: PsiFile, problemsHolder: ProblemsHolder, globalContext: QodanaGlobalInspectionContext) {
+    val report = globalContext.getUserData(javacov)?.value
+    val xmlReport = globalContext.getUserData(xmlcov)?.value
+    if (report == null && xmlReport == null) return
+    file.iterateContents(UastHintedVisitorAdapter.create(
+      file.language,
+      JVMDefVisitor(globalContext, problemsHolder, methodThreshold, classThreshold, warnMissingCoverage, report, xmlReport, ::highlightedElement),
+      arrayOf(UClass::class.java, UMethod::class.java),
+      true
+    ))
+  }
+
+  override fun validateFileType(file: PsiFile) = languages.contains(file.language.displayName)
+
+  override fun cleanup(globalContext: QodanaGlobalInspectionContext) {
+    val data = globalContext.getUserData(javacov)?.value
+    if (data != null) {
+      saveCoverageData(globalContext, JavaCoverageEngine::class.java.simpleName, data)
+    }
+    globalContext.putUserData(javacov, null)
+    globalContext.putUserData(xmlcov, null)
+  }
+
+  private class JVMDefVisitor(private val globalContext: QodanaGlobalInspectionContext,
+                              private val problemsHolder: ProblemsHolder,
+                              private val methodThreshold: Int,
+                              private val classThreshold: Int,
+                              private val warnMissingCoverage: Boolean,
+                              private val report: ProjectData?,
+                              private val xmlReport: XMLProjectData?,
+                              private val highlightedElement: (PsiElement) -> PsiElement) : AbstractUastNonRecursiveVisitor() {
+    private val anonymousClasses = mutableSetOf<UClass>()
+    private val visitedMethods = mutableSetOf<UMethod>()
+    private val xmlFileDataLoaded = AtomicBoolean(false)
+
+    override fun visitClass(node: UClass): Boolean {
+      val sourcePsi = node.sourcePsi ?: return true
+      val fqn = getUClassFqn(node) ?: return true // we won't find any data in such a case
+      if (report != null) {
+        val data = report.getClassData(fqn)
+        val file = sourcePsi.containingFile
+        loadClassData(data, file.virtualFile, globalContext)
+        if (reportProblemsNeeded(globalContext) &&
+            issueWithCoverage(data, file, file.textRange, problemsHolder.project, classThreshold, warnMissingCoverage)) {
+          reportElement(problemsHolder, highlightedElement(sourcePsi),
+                        QodanaBundle.message("class.coverage.below.threshold", classNameForReports(node), classThreshold))
+        }
+      }
+      else if (xmlReport != null) {
+        val (packageName, fileName) = sourcePsi.containingFile.packageAndFileName() ?: return true
+        val fileData = xmlReport.getFile(XMLReportSuite.getPath(packageName, fileName))
+        loadXmlFileData(fileData, sourcePsi.containingFile.virtualFile, globalContext)
+
+        if (reportProblemsNeeded(globalContext)) {
+          val data = xmlReport.getClass(fqn)
+          if (data == null && warnMissingCoverage ||
+              data != null && data.coveredLines + data.missedLines != 0 && ((data.coveredLines * 100 / (data.coveredLines + data.missedLines)) < classThreshold)) {
+            reportElement(problemsHolder, highlightedElement(sourcePsi),
+                          QodanaBundle.message("class.coverage.below.threshold", classNameForReports(node), classThreshold))
+          }
+        }
+      }
+
+      // we need to visit declarations explicitly, say hi to Kotlin and init inside companion objects
+      for (method in node.uastDeclarations.filterIsInstance<UMethod>()) {
+        if (method.javaPsi.isPhysical || method.isConstructor) {
+          visitMethod(method)
+        }
+      }
+
+      return true
+    }
+
+    override fun visitMethod(node: UMethod): Boolean {
+      if (!visitedMethods.add(node)) return true
+      val sourcePsi = node.sourcePsi ?: return true
+      val containingClass = node.getContainingUClass() ?: return true
+      val fqn = getUClassFqn(containingClass) ?: return true // we won't find any data in such a case
+      if (report != null) {
+        val data = report.getClassData(fqn)
+        // Load class data for the implicit anonymous classes
+        if (containingClass.sourcePsi == null && anonymousClasses.add(containingClass)) {
+          loadClassData(data, sourcePsi.containingFile.virtualFile, globalContext)
+        }
+        val isDataLoaded =
+          data != null || loadMissingData(problemsHolder.project, sourcePsi.textRange, sourcePsi.containingFile, warnMissingCoverage, globalContext)
+        if (!isDataLoaded) return true
+
+        if (reportProblemsNeeded(globalContext) &&
+            issueWithCoverage(data, sourcePsi.containingFile, sourcePsi.textRange, problemsHolder.project, methodThreshold, warnMissingCoverage)) {
+          reportMethodCoverage(node, sourcePsi)
+        }
+      }
+      else if (xmlReport != null) {
+        val (packageName, fileName) = sourcePsi.containingFile.packageAndFileName() ?: return true
+        val data = xmlReport.getFile(XMLReportSuite.getPath(packageName, fileName))
+        loadXmlFileData(data, sourcePsi.containingFile.virtualFile, globalContext)
+
+        val isDataLoaded =
+          data != null || loadMissingData(problemsHolder.project, sourcePsi.textRange, sourcePsi.containingFile, warnMissingCoverage, globalContext)
+        if (!isDataLoaded) return true
+
+        if (reportProblemsNeeded(globalContext) && issueWithXmlMethodCoverage(data, sourcePsi.containingFile, sourcePsi.textRange, problemsHolder.project, methodThreshold)) {
+          reportMethodCoverage(node, sourcePsi)
+        }
+      }
+      return true
+    }
+
+    private fun loadXmlFileData(fileInfo: XMLProjectData.FileInfo?, virtualFile: VirtualFile, globalContext: QodanaGlobalInspectionContext) {
+      if (fileInfo == null) return
+      if (xmlFileDataLoaded.getAndSet(true)) return
+      globalContext.coverageStatisticsData.loadXmlLineData(fileInfo, virtualFile)
+    }
+
+    private fun reportMethodCoverage(node: UMethod, sourcePsi: PsiElement) {
+      when {
+        node.isConstructor -> {
+          val signature = methodNameForReports(node, MethodType.CONSTRUCTOR)
+          reportElement(problemsHolder, highlightedElement(sourcePsi),
+                        QodanaBundle.message("constructor.coverage.below.threshold", signature, methodThreshold))
+        }
+        (node.javaPsi as? KtLightMethod)?.isSetter == true -> {
+          val signature = methodNameForReports(node, MethodType.PROPERTY)
+          reportElement(problemsHolder, highlightedElement(sourcePsi),
+                        QodanaBundle.message("property.setter.coverage.below.threshold", signature, methodThreshold))
+        }
+        (node.javaPsi as? KtLightMethod)?.isGetter == true -> {
+          val signature = methodNameForReports(node, MethodType.PROPERTY)
+          reportElement(problemsHolder, highlightedElement(sourcePsi),
+                        QodanaBundle.message("property.getter.coverage.below.threshold", signature, methodThreshold))
+        }
+        else -> {
+          val signature = methodNameForReports(node, MethodType.METHOD)
+          reportElement(problemsHolder, highlightedElement(sourcePsi),
+                        QodanaBundle.message("method.coverage.below.threshold", signature, methodThreshold))
+        }
+      }
+    }
+
+    private fun computeXmlCoverage(data: XMLProjectData.FileInfo, document: Document, textRange: TextRange): Int {
+      val startOffset = textRange.startOffset
+      val endOffset = textRange.endOffset
+      val startLineNumber = document.getLineNumber(startOffset) + 1
+      val endLineNumber = document.getLineNumber(endOffset) + 1
+      var totalLines = 0
+      var coveredLines = 0
+      for (i in startLineNumber..endLineNumber) {
+        val lineData = data.lines.firstOrNull { it.lineNumber == i }
+        if (lineData != null) {
+          totalLines++
+          if (lineData.coveredInstructions != 0 || lineData.coveredBranches != 0) {
+            coveredLines++
+          }
+        }
+      }
+
+      if (totalLines == 0) return 100
+      return coveredLines * 100 / totalLines
+    }
+
+    private fun PsiFile.packageAndFileName(): Pair<String, String>? {
+      if (this !is PsiClassOwner) return null
+      val packageName = runReadAction { packageName } ?: return null
+      return packageName to name
+    }
+
+    private fun issueWithXmlMethodCoverage(
+      data: XMLProjectData.FileInfo?,
+      psiFile: PsiFile,
+      textRange: TextRange,
+      project: Project,
+      threshold: Int
+    ): Boolean {
+      if (data == null) {
+        return warnMissingCoverage
+      }
+      val doc = PsiDocumentManager.getInstance(project).getDocument(psiFile) ?: return false
+      return computeXmlCoverage(data, doc, textRange) < threshold
+    }
+
+    private fun getUClassFqn(uClass: UClass): String? {
+      val name = when (uClass) {
+        is UAnonymousClass -> {
+          val anonymousName = UastAnonymousClassUtil.getName(uClass.javaPsi as PsiAnonymousClass)
+          val containingClass = uClass.getContainingUClass() ?: return anonymousName
+          val parentName = getUClassFqn(containingClass)
+          return "$parentName$anonymousName"
+        }
+        else -> uClass.qualifiedName
+      }
+
+      if (name != null && name.endsWith(".Companion") && uClass.javaPsi.nameIdentifier?.textRange?.isEmpty == true) {
+        return """${name.removeSuffix(".Companion")}${"$"}Companion"""
+      }
+      return name
+    }
+
+    private fun methodNameForReports(node: UMethod, methodType: MethodType) =
+      computeName(node, methodType.printName, node.javaPsi.containingFile)
+
+    private fun classNameForReports(node: UClass) =
+      computeName(node, "class", node.javaPsi.containingFile)
+
+    private fun computeName(node: UDeclaration, type: String, file: PsiFile): String {
+      val psiName = (node.javaPsi as? PsiNameIdentifierOwner)?.name
+      if (psiName != null) {
+        return "$psiName"
+      }
+      var currentClass = node.getContainingUClass()
+      while (currentClass != null) {
+        val nameOwner = currentClass.javaPsi as? PsiNameIdentifierOwner
+        if (nameOwner?.name != null) return "(anonymous $type in ${nameOwner.name})"
+        currentClass = currentClass.getContainingUClass()
+      }
+      return "(anonymous $type in ${file.name})"
+    }
+  }
+
+  private fun computeXmlCoverageData(globalContext: QodanaGlobalInspectionContext, engineType : KClass<out CoverageEngine>): XMLProjectData? {
+    val coverageFiles = provideCoverageFiles(globalContext)
+    logger.info("Coverage for ${engineType.java.simpleName} - provided ${coverageFiles.size} files")
+    if (coverageFiles.isEmpty()) return null
+    val engine = CoverageEngine.EP_NAME.findExtensionOrFail(engineType.java)
+    val suites = computeSuites(engine, coverageFiles, globalContext.project)
+    if (suites.any()) {
+      val firstSuite = suites.first()
+      val report = (firstSuite as? XMLReportSuite)?.getReportData() ?: throw QodanaException("JaCoCo suite ${firstSuite.presentableName} is missing report data")
+      for (suite in suites.drop(1)) {
+        val add = (suite as? XMLReportSuite)?.getReportData() ?: throw QodanaException("JaCoCo suite ${suite.presentableName} is missing report data")
+        report.merge(add)
+      }
+      return report
+    }
+    return null
+  }
+}

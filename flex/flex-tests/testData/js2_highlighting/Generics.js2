@@ -1,0 +1,7 @@
+package {
+  public class <error descr="Class 'Vector' should be defined in file 'Vector.js2'"><symbolName descr="classes//class name">Vector$object</symbolName></error> {
+      <symbolName descr="attribute">[Bindable]</symbolName>
+      var <symbolName descr="instance field">foo</symbolName>;
+  }
+}
+var <symbolName descr="identifiers//global variable">a</symbolName>:<symbolName descr="classes//class name">Vector</symbolName>.<int> = null;

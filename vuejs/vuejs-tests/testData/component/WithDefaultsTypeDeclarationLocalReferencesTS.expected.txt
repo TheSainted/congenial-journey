@@ -1,0 +1,14 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  WithDefaultsTypeDeclarationLocalReferencesTS: <recursive value of class VueFileSourceComponent>,
+ },
+ props: [
+  {
+   class: "VueScriptSetupInputProperty",
+   name: "prop",
+   type: "number",
+   required: true,
+  },
+ ],
+}

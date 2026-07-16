@@ -1,0 +1,313 @@
+// Copyright 2000-2025 JetBrains s.r.o. and contributors. Use of this source code is governed by the Apache 2.0 license.
+package com.intellij.javascript.flex.resolve
+
+import com.intellij.lang.actionscript.psi.ActionScriptPsiImplUtil
+import com.intellij.lang.javascript.index.JSLocalNamespaceEvaluator
+import com.intellij.lang.javascript.psi.JSFieldVariable
+import com.intellij.lang.javascript.psi.JSFile
+import com.intellij.lang.javascript.psi.JSFunction
+import com.intellij.lang.javascript.psi.JSPsiElementBase
+import com.intellij.lang.javascript.psi.JSReferenceExpression
+import com.intellij.lang.javascript.psi.ecma6.impl.JSLocalImplicitElementImpl
+import com.intellij.lang.javascript.psi.ecmal4.JSAttributeList
+import com.intellij.lang.javascript.psi.ecmal4.JSAttributeListOwner
+import com.intellij.lang.javascript.psi.ecmal4.JSClass
+import com.intellij.lang.javascript.psi.ecmal4.JSNamespaceDeclaration
+import com.intellij.lang.javascript.psi.ecmal4.JSPackageStatement
+import com.intellij.lang.javascript.psi.ecmal4.JSSuperExpression
+import com.intellij.lang.javascript.psi.impl.JSPsiImplUtils
+import com.intellij.lang.javascript.psi.resolve.AccessibilityProcessingHandler.Companion.getRealElement
+import com.intellij.lang.javascript.psi.resolve.AccessibilityProcessingHandler.Companion.isParentClassContext
+import com.intellij.lang.javascript.psi.resolve.ActionScriptResolveUtil
+import com.intellij.lang.javascript.psi.resolve.JSResolveResult
+import com.intellij.lang.javascript.psi.resolve.JSResolveUtil
+import com.intellij.lang.javascript.psi.stubs.JSImplicitElement
+import com.intellij.psi.PsiElement
+import com.intellij.psi.ResolveState
+import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.xml.XmlTag
+import it.unimi.dsi.fastutil.Hash
+import it.unimi.dsi.fastutil.objects.ObjectOpenCustomHashSet
+
+class ActionScriptAccessibilityProcessingHandler(_place: PsiElement?, skipNsResolving: Boolean) {
+  var isProcessStatics: Boolean = false
+  protected var allowUnqualifiedStaticsFromInstance: Boolean = false
+
+  protected var myClassDeclarationStarted: Boolean = false
+  protected val place: PsiElement? = if (_place != null) getRealElement(_place) else null
+  var isProcessingInheritedClasses: Boolean = false
+
+  fun accepts(element: PsiElement, resolveProcessor: ActionScriptSinkResolveProcessor<*>): Boolean {
+    if (this.isProcessStatics &&  // ids can not be referenced from static context!
+        myClassDeclarationStarted &&
+        element is JSImplicitElement && element.getType() == JSImplicitElement.Type.Tag
+    ) {
+      return false
+    }
+    else if (element is JSFieldVariable ||
+             element is JSFunction ||
+             element is JSNamespaceDeclaration ||
+             element is JSLocalImplicitElementImpl
+    ) {
+      return acceptsForMembersVisibility(element, resolveProcessor)
+    }
+
+    return true
+  }
+
+  private var myTypeName: String? = null
+  private var openedNses: MutableMap<String?, String?>? = null
+  private var defaultNsIsNotAllowed = false
+  private var anyNsAllowed = false
+
+  private var acceptPrivateMembers: Boolean = true
+  private var acceptProtectedMembers: Boolean = true
+  private var acceptProtectedMembersSet = false
+  private var myClassScopes: MutableSet<JSClass?>? = null
+  private var myClassScopeExplicitlySet = false
+  private var myCheckProtectedQualifier = true
+
+  init {
+    allowUnqualifiedStaticsFromInstance = place is JSReferenceExpression && (place as JSReferenceExpression).getQualifier() == null
+    if (place is JSReferenceExpression) {
+      val namespace = (place as JSReferenceExpression).getNamespaceElement()
+
+      // TODO: e.g. protected is also ns
+      if (namespace != null) {
+        val ns = if (skipNsResolving) namespace.getText() else ActionScriptFlexPsiImplUtil.calcNamespaceReference(place)
+        if (ns != null) {
+          openedNses = HashMap<String?, String?>(1)
+          openedNses!!.put(ns, null)
+          defaultNsIsNotAllowed = true
+        }
+        else {
+          anyNsAllowed = true
+        }
+      }
+    }
+  }
+
+  fun setTypeName(qualifiedName: String?) {
+    myTypeName = qualifiedName
+  }
+
+  fun acceptsForMembersVisibility(element: JSPsiElementBase, resolveProcessor: ActionScriptSinkResolveProcessor<*>): Boolean {
+    if (element !is JSAttributeListOwner) return true
+    val attributeList = (element as JSAttributeListOwner).getAttributeList()
+
+    if (JSResolveUtil.getClassOfContext(place) !== JSResolveUtil.getClassOfContext(element)) {
+      if (!acceptPrivateMembers) {
+        if (attributeList != null && attributeList.getAccessType() == JSAttributeList.AccessType.PRIVATE) {
+          resolveProcessor.addPossibleCandidateResult(element, JSResolveResult.ProblemKind.PRIVATE_MEMBER_IS_NOT_ACCESSIBLE)
+          return false
+        }
+      }
+
+      if (!acceptProtectedMembers) {
+        if (attributeList != null && attributeList.getAccessType() == JSAttributeList.AccessType.PROTECTED) {
+          // we are resolving in context of the class or element within context of the class
+          if ((myClassScopes != null || isParentClassContext(element))) {
+            resolveProcessor.addPossibleCandidateResult(element, JSResolveResult.ProblemKind.PROTECTED_MEMBER_IS_NOT_ACCESSIBLE)
+            return false
+          } // if element / context out of class then protected element is ok due to includes
+        }
+      }
+    }
+
+    val elt = JSResolveUtil.findParent(element)
+
+    if (isProcessStatics) {
+      if ((attributeList == null || !attributeList.hasModifier(JSAttributeList.ModifierType.STATIC))) {
+        if (JSResolveUtil.PROTOTYPE_FIELD_NAME == resolveProcessor.getName()) return true
+        resolveProcessor.addPossibleCandidateResult(element, JSResolveResult.ProblemKind.INSTANCE_MEMBER_INACCESSIBLE)
+        return false
+      }
+      if (myTypeName != null && elt is JSClass && (myTypeName != elt.getQualifiedName())) {
+        // static members are inherited in TypeScript classes
+        resolveProcessor.addPossibleCandidateResult(element, JSResolveResult.ProblemKind.STATIC_MEMBER_INACCESSIBLE)
+        return false
+      }
+    }
+    else if (myClassDeclarationStarted && !allowUnqualifiedStaticsFromInstance) {
+      if (attributeList != null && attributeList.hasModifier(JSAttributeList.ModifierType.STATIC)) {
+        var referencingClass = false
+
+        if (place is JSReferenceExpression) {
+          val qualifier = (place as JSReferenceExpression).getQualifier()
+          if (qualifier is JSReferenceExpression) {
+            val expression = JSLocalNamespaceEvaluator.calcRefExprValue(qualifier)
+            if (expression is JSReferenceExpression && expression !== qualifier) {
+              for (r in expression.multiResolve(false)) {
+                val rElement = r.getElement()
+                if (rElement is JSClass) {
+                  referencingClass = true
+                  break
+                }
+              }
+            }
+          }
+        }
+        if (!referencingClass) {
+          resolveProcessor.addPossibleCandidateResult(element, JSResolveResult.ProblemKind.STATIC_MEMBER_INACCESSIBLE)
+          return false
+        }
+      }
+    }
+
+    if (processActionScriptNotAllowedNsAttributes(element, resolveProcessor, attributeList)) return false
+    return true
+  }
+
+  private fun processActionScriptNotAllowedNsAttributes(
+    element: PsiElement,
+    resolveProcessor: ActionScriptSinkResolveProcessor<*>,
+    attributeList: JSAttributeList?
+  ): Boolean {
+    if (!resolveProcessor.getResultSink().isActionScript) return false
+
+    var attributeNs = ActionScriptPsiImplUtil.getNamespace(attributeList)
+    if (attributeNs != null) {
+      var resolvedNs = ActionScriptPsiImplUtil.resolveNamespaceValue(attributeList)
+      if (resolvedNs == null && !resolveProcessor.getResultSink().isActionScript) {
+        resolvedNs = attributeNs // AS3
+      }
+      attributeNs = resolvedNs
+    }
+
+    if (openedNses == null && attributeNs != null) {
+      if (!anyNsAllowed &&
+          place is JSReferenceExpression && !JSResolveUtil.isExprInTypeContext(place as JSReferenceExpression)
+      ) {
+        openedNses = ActionScriptFlexResolveUtil.calculateOpenNses(place)
+      }
+    }
+
+    if (openedNses != null && !openedNses!!.containsKey(
+        attributeNs) && (AS3_NAMESPACE_VALUE != attributeNs) && (ActionScriptResolveUtil.AS3_NAMESPACE != attributeNs) // AS3 is opened by default from compiler settings and for JavaScript symbols
+    ) {
+      if (attributeNs != null || defaultNsIsNotAllowed) {
+        resolveProcessor.addPossibleCandidateResult(element, JSResolveResult.ProblemKind.MEMBER_FROM_UNOPENED_NAMESPACE)
+        return true
+      }
+    }
+    return false
+  }
+
+  fun configureClassScope(jsClass: JSClass?) {
+    myClassScopeExplicitlySet = true
+    configureCurrentClassScope(jsClass)
+  }
+
+  private fun configureCurrentClassScope(jsClass: JSClass?) {
+    var jsClass = jsClass
+    if (jsClass != null) {
+      jsClass = getRealElement(jsClass)
+      myClassScopes = ObjectOpenCustomHashSet<JSClass?>(object : Hash.Strategy<JSClass?> {
+        override fun hashCode(`object`: JSClass?): Int {
+          if (`object` == null) {
+            return 0
+          }
+
+          val name = `object`.getQualifiedName()
+          return name?.hashCode() ?: `object`.hashCode()
+        }
+
+        override fun equals(left: JSClass?, right: JSClass?): Boolean {
+          if (left === right) {
+            return true
+          }
+          if (left == null || right == null) {
+            return false
+          }
+          return left.isEquivalentTo(right)
+        }
+      })
+      myClassScopes!!.add(jsClass)
+      var parentClass: JSClass? = getParentClass(jsClass)
+      while (parentClass != null) {
+        myClassScopes!!.add(parentClass)
+        parentClass = getParentClass(parentClass)
+      }
+      acceptProtectedMembersSet = false
+    }
+    else {
+      acceptProtectedMembers = false
+      acceptProtectedMembersSet = true
+    }
+  }
+
+  fun startingParent(parent: PsiElement?) {
+    myClassDeclarationStarted = parent is JSClass
+
+    if (parent is JSClass) {
+      val jsClass: JSClass = getRealElement(parent)
+      if (!isProcessingInheritedClasses && !myClassScopeExplicitlySet) {
+        configureCurrentClassScope(JSResolveUtil.getClassOfContext(place))
+      }
+
+      if (acceptPrivateMembers) {
+        acceptPrivateMembers = myClassScopes != null && myClassScopes!!.contains(jsClass)
+      }
+
+      if (!acceptProtectedMembersSet) {
+        acceptProtectedMembersSet = true
+
+        if (myClassScopes != null) {
+          acceptProtectedMembers = computeAcceptProtected(jsClass)
+        }
+      }
+    }
+    else if (parent is JSAttributeListOwner) {
+      if (JSPsiImplUtils.hasModifier(parent, JSAttributeList.ModifierType.STATIC)) {
+        this.isProcessStatics = true
+      }
+    }
+    else if (parent is JSFile ||
+             parent is JSPackageStatement ||
+             parent is XmlTag
+    ) {
+      this.isProcessStatics = false
+    }
+  }
+
+  private fun computeAcceptProtected(jsClass: JSClass): Boolean {
+    var acceptProtected = myClassScopes != null && myClassScopes!!.contains(jsClass)
+    if (place == null || myClassScopes == null) return acceptProtected
+
+    for (element in myClassScopes) {
+      if (acceptProtected) continue
+
+      if (element !is JSClass) continue
+
+      val processor = object : ActionScriptResolveProcessor(null) {
+        override fun execute(element: PsiElement, state: ResolveState): Boolean {
+          if (element !is JSClass) return true
+          return !jsClass.isEquivalentTo(element)
+        }
+      }
+      with(processor) {
+        setTypeContext(true)
+        setToProcessMembers(false)
+        setToProcessHierarchy(true)
+        setLocalResolve(true)
+      }
+      val b = element.processDeclarations(processor, ResolveState.initial(), element, element)
+
+      acceptProtected = !b
+
+      if (place is JSReferenceExpression && myCheckProtectedQualifier &&
+          ((place as JSReferenceExpression).getQualifier() !is JSSuperExpression)) {
+        acceptProtected = acceptProtected && this.isProcessStatics
+      }
+    }
+    return acceptProtected
+  }
+
+  private fun getParentClass(element: PsiElement): JSClass? {
+    return PsiTreeUtil.getParentOfType(element, JSClass::class.java)
+  }
+
+  companion object {
+    private const val AS3_NAMESPACE_VALUE = "http://adobe.com/AS3/2006/builtin"
+  }
+}

@@ -1,0 +1,48 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  DefineModelsOverride: <recursive value of class VueFileSourceComponent>,
+ },
+ props: [
+  {
+   class: "VueScriptSetupModelInputProperty",
+   name: "count",
+   type: "number | boolean[]",
+   required: true,
+  },
+  {
+   class: "VueScriptSetupModelInputProperty",
+   name: "modelValue",
+   type: "number",
+   required: true,
+  },
+ ],
+ emits: [
+  {
+   class: "VueScriptSetupModelEvent",
+   name: "update:count",
+   type: "(value: (number | boolean[])) => void",
+   params: [
+    {
+     name: "value",
+     type: "number | boolean[]",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "update:count", value: (number | boolean[])) => void",
+  },
+  {
+   class: "VueScriptSetupModelEvent",
+   name: "update:modelValue",
+   type: "(value: number) => void",
+   params: [
+    {
+     name: "value",
+     type: "number",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "update:modelValue", value: number) => void",
+  },
+ ],
+}

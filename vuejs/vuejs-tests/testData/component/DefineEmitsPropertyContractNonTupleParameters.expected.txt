@@ -1,0 +1,66 @@
+{
+ class: "VueFileSourceComponent",
+ components: {
+  DefineEmitsPropertyContractNonTupleParameters: <recursive value of class VueFileSourceComponent>,
+ },
+ emits: [
+  {
+   class: "VueScriptSetupPropertyContractEvent",
+   name: "add",
+   type: "(id: number) => void",
+   params: [
+    {
+     name: "id",
+     type: "number",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "add", id: number) => void",
+  },
+  {
+   class: "VueScriptSetupPropertyContractEvent",
+   name: "add_o",
+   type: "(id?: number) => void",
+   params: [
+    {
+     name: "id",
+     type: "number",
+    },
+   ],
+   hasStrictSignature: true,
+   callSignature: "(event: "add_o", id?: number) => void",
+  },
+  {
+   class: "VueScriptSetupPropertyContractEvent",
+   name: "change",
+   type: "() => void",
+   params: [],
+   hasStrictSignature: true,
+   callSignature: "(event: "change") => void",
+  },
+  {
+   class: "VueScriptSetupPropertyContractEvent",
+   name: "change_o",
+   type: "() => void",
+   params: [],
+   hasStrictSignature: true,
+   callSignature: "(event: "change_o") => void",
+  },
+  {
+   class: "VueScriptSetupPropertyContractEvent",
+   name: "delete",
+   type: "() => void",
+   params: [],
+   hasStrictSignature: true,
+   callSignature: "(event: "delete") => void",
+  },
+  {
+   class: "VueScriptSetupPropertyContractEvent",
+   name: "delete_o",
+   type: "() => void",
+   params: [],
+   hasStrictSignature: true,
+   callSignature: "(event: "delete_o") => void",
+  },
+ ],
+}

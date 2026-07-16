@@ -1,0 +1,9 @@
+package <error descr="Package name 'foo' does not correspond to file path ''">foo</error> {
+public namespace <error descr="Namespace 'Foo' should be defined in file 'Foo.js2'">Foo</error> = "xxx";
+}
+
+<error descr="Package should be first statement in file">package</error> <error descr="Package name 'bar' does not correspond to file path ''">bar</error> {
+  class <error descr="Class 'C' should be defined in file 'C.js2'">C</error> {
+      <error descr="Unresolved variable or type Foo">Foo</error> function foo() {}
+  }
+}

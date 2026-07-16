@@ -1,0 +1,3 @@
+bold (typeText='BoldDirective'; priority=0.0; typeGreyed)
+mouseenter (typeText='MouseenterDirective'; priority=0.0; typeGreyed)
+mydir (typeText='MyDirective'; priority=0.0; typeGreyed)

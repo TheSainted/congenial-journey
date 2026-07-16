@@ -1,0 +1,28 @@
+{
+  "inspections": [
+    {
+      "id": "JavaAnnotator",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "QodanaSanity",
+      "codeQualityCategory": "Reliability"
+    },
+    {
+      "id": "QodanaJavaSanity",
+      "codeQualityCategory": "Sanity"
+    },
+    {
+      "id": "JvmLinesOfCodeInspection",
+      "codeQualityCategory": "Unspecified"
+    },
+    {
+      "id": "CyclomaticComplexityInspection",
+      "codeQualityCategory": "Code Style"
+    },
+    {
+      "id": "KotlinAnnotator",
+      "codeQualityCategory": "Sanity"
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+ class: "VueNamedSourceComponent",
+ name: "TestComponent",
+ props: [
+  {
+   class: "VuePsiNamedElementInputProperty",
+   name: "book",
+   type: "Book",
+   required: true,
+  },
+ ],
+}

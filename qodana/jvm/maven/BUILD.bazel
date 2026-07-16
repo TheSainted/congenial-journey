@@ -1,0 +1,46 @@
+### auto-generated section `build intellij.qodana.jvm.maven` start
+load("@rules_jvm//:jvm.bzl", "jvm_library", "resourcegroup")
+
+resourcegroup(
+  name = "maven_resources",
+  srcs = glob(["resources/**/*"]),
+  strip_prefix = "resources"
+)
+
+jvm_library(
+  name = "maven",
+  module_name = "intellij.qodana.jvm.maven",
+  visibility = ["//visibility:public"],
+  srcs = glob(["src/**/*.kt", "src/**/*.java", "src/**/*.form"], allow_empty = True),
+  resources = [":maven_resources"],
+  deps = [
+    "@lib//:kotlin-stdlib",
+    "@community//platform/core-api:core",
+    "@community//platform/external-system-impl:externalSystem-impl",
+    "@community//platform/platform-api:ide",
+    "@community//platform/platform-impl:ide-impl",
+    "@community//plugins/maven",
+    "@community//platform/projectModel-api:projectModel",
+    "//contrib/qodana",
+    "@community//platform/backend/observation",
+  ]
+)
+
+jvm_library(
+  name = "maven_test_lib",
+  module_name = "intellij.qodana.jvm.maven",
+  visibility = ["//visibility:public"],
+  srcs = glob([], allow_empty = True),
+  runtime_deps = [
+    ":maven",
+    "@community//platform/core-api:core_test_lib",
+    "@community//platform/external-system-impl:externalSystem-impl_test_lib",
+    "@community//platform/platform-api:ide_test_lib",
+    "@community//platform/platform-impl:ide-impl_test_lib",
+    "@community//plugins/maven:maven_test_lib",
+    "@community//platform/projectModel-api:projectModel_test_lib",
+    "//contrib/qodana:qodana_test_lib",
+    "@community//platform/backend/observation:observation_test_lib",
+  ]
+)
+### auto-generated section `build intellij.qodana.jvm.maven` end
