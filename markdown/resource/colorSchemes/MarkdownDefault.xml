@@ -1,0 +1,23 @@
+<?xml version='1.0'?>
+<list>
+  <option baseAttributes="MARKDOWN_TEXT" name="MARKDOWN_BOLD">
+    <value>
+      <option name="FONT_TYPE" value="1" />
+    </value>
+  </option>
+  <option baseAttributes="MARKDOWN_TEXT" name="MARKDOWN_ITALIC">
+    <value>
+      <option name="FONT_TYPE" value="2" />
+    </value>
+  </option>
+  <option name="MARKDOWN_REFERENCE_LINK">
+    <value>
+      <option name="FONT_TYPE" value="1" />
+    </value>
+  </option>
+  <option baseAttributes="MARKDOWN_TEXT" name="MARKDOWN_STRUCTURE_HEADER_LOW_LEVELS">
+    <value>
+      <option name="FOREGROUND" value="787878"/>
+    </value>
+  </option>
+</list>
