@@ -1,0 +1,10 @@
+class TestMock implements Test {
+
+  get foo() {
+    <caret>
+  }
+}
+
+class Test {
+  get foo() => 239;
+}
