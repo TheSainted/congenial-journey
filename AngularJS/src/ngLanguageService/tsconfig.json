@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "lib": ["es6", "dom"],
+    "outDir": "../../gen/ngLanguageService"
+  },
+  "compileOnSave": false,
+  "include": [
+    "**/*.ts",
+    "node_modules/ngPluginIDE/index.ts"
+  ]
+}
