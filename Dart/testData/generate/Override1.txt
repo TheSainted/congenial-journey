@@ -1,0 +1,16 @@
+class Override1 extends Foo<Bar> {
+
+  Bar getFoo() {
+    <caret>
+  }
+}
+
+class Foo<T> {
+  T getFoo() {
+    return null;
+  }
+}
+
+class Bar {
+
+}
