@@ -1,0 +1,20 @@
+<idea-plugin url="https://github.com/JetBrains/intellij-plugins/tree/master/AngularJS">
+  <name>Vue.js</name>
+  <description>Support for Vue.js</description>
+  <vendor>JetBrains</vendor>
+
+  <depends>JavaScript</depends>
+  <depends>com.intellij.modules.platform</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="org.jetbrains.vuejs.VueFileTypeFactory" />
+    <lang.parserDefinition language="Vue" implementationClass="org.jetbrains.vuejs.language.VueParserDefinition" />
+    <lang.syntaxHighlighterFactory language="Vue" implementationClass="org.jetbrains.vuejs.language.VueSyntaxHighlighterFactory" />
+    <resolveScopeProvider implementation="org.jetbrains.vuejs.VueTypeScriptResolveScopeProvider" />
+    <!--<directoryProjectGenerator implementation="org.jetbrains.vuejs.cli.VueCliProjectGeneraator"/>-->
+    <!--<projectTemplatesFactory implementation="org.jetbrains.vuejs.cli.VueTemplateFactory"/>-->
+  </extensions>
+  <extensions defaultExtensionNs="JavaScript">
+    <frameworkIndexingHandler implementation="org.jetbrains.vuejs.codeInsight.VueFrameworkHandler"/>
+  </extensions>
+</idea-plugin>
