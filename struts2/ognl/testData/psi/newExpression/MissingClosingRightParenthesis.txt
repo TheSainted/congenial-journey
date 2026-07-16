@@ -1,0 +1,12 @@
+OgnlFile:MissingClosingRightParenthesis.ognl
+  PsiElement(%{)('%{')
+  NEW_EXPRESSION
+    PsiElement(new)('new')
+    PsiWhiteSpace(' ')
+    REFERENCE_EXPRESSION
+      PsiElement(IDENTIFIER)('Integer')
+  PsiElement(()('(')
+  PsiElement(INTEGER_LITERAL)('1')
+  PsiErrorElement:')', ',', <operator> or '?' expected, got '}'
+    <empty list>
+  PsiElement(EXPRESSION_END)('}')
