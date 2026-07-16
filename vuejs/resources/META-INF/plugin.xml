@@ -1,0 +1,39 @@
+<idea-plugin url="https://github.com/JetBrains/intellij-plugins/tree/master/vuejs">
+  <name>Vue.js</name>
+  <id>org.jetbrains.plugins.vue</id>
+  <description>Support for Vue.js</description>
+  <vendor>JetBrains</vendor>
+
+  <depends>JavaScript</depends>
+  <depends>JavaScriptDebugger</depends>
+  <depends>com.intellij.modules.platform</depends>
+  <depends optional="true" config-file="css-support.xml">com.intellij.css</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="org.jetbrains.vuejs.VueFileTypeFactory" />
+    <lang.parserDefinition language="Vue" implementationClass="org.jetbrains.vuejs.language.VueParserDefinition" />
+    <lang.syntaxHighlighterFactory language="Vue" implementationClass="org.jetbrains.vuejs.language.VueSyntaxHighlighterFactory" />
+    <resolveScopeProvider implementation="org.jetbrains.vuejs.VueTypeScriptResolveScopeProvider" />
+    <xml.attributeDescriptorsProvider implementation="org.jetbrains.vuejs.codeInsight.VueAttributesProvider" />
+    <xml.xmlExtension implementation="org.jetbrains.vuejs.codeInsight.VueXmlExtension"/>
+    <xml.tagNameProvider implementation="org.jetbrains.vuejs.codeInsight.VueTagProvider" />
+    <xml.elementDescriptorProvider implementation="org.jetbrains.vuejs.codeInsight.VueTagProvider" />
+
+    <stubIndex implementation="org.jetbrains.vuejs.index.VueComponentsIndex" />
+    <!--<directoryProjectGenerator implementation="org.jetbrains.vuejs.cli.VueCliProjectGeneraator"/>-->
+    <!--<projectTemplatesFactory implementation="org.jetbrains.vuejs.cli.VueTemplateFactory"/>-->
+
+    <localInspection language="Vue" groupName="Vue" displayName="Data Function" shortName="VueDataFunction"
+                     enabledByDefault="true" level="WARNING"
+                     implementationClass="org.jetbrains.vuejs.inspections.DataFunctionInspection"/>
+    <localInspection language="Vue" groupName="Vue" displayName="Duplicate template/script tag" shortName="VueDuplicateTag"
+                     enabledByDefault="true" level="WARNING"
+                     implementationClass="org.jetbrains.vuejs.inspections.DuplicateTagInspection"/>
+  </extensions>
+  <extensions defaultExtensionNs="JavaScript">
+    <frameworkIndexingHandler implementation="org.jetbrains.vuejs.codeInsight.VueFrameworkHandler"/>
+  </extensions>
+  <extensions defaultExtensionNs="com.jetbrains">
+    <javaScriptDebugAware implementation="org.jetbrains.vuejs.run.VueDebugAware"/>
+  </extensions>
+</idea-plugin>
