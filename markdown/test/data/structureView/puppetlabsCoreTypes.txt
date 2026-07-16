@@ -1,0 +1,31 @@
+-puppetlabsCoreTypes.md
+ -h1 Core Types Cheat Sheet
+  -h2 The Trifecta
+   -h3 [file][]
+    h4 Important Attributes
+    h4 For Normal Files
+    h4 For Directories
+    h4 For Symlinks
+    h4 Other Notable Attributes
+   -h3 [package][]
+    h4 Important Attributes
+   -h3 [service][]
+    h4 Important Attributes
+    h4 Other Notable Attributes
+  -h2 Hello World
+   -[h3 [notify][]]
+    h4 Important Attributes
+  -h2 Grab Bag
+   -h3 [exec][]
+    h4 Important Attributes
+    h4 Attributes to Limit When a Command Should Run
+    h4 Other Notable Attributes:
+   -h3 [cron][]
+    h4 Important Attributes
+    h4 Other Notable Attributes
+   -h3 [user][]
+    h4 Important Attributes
+    h4 Other Notable Attributes
+   -h3 [group][]
+    h4 Important Attributes
+  h2 Everything Else
