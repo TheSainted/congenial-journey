@@ -1,0 +1,5 @@
+<idea-plugin>
+  <extensions defaultExtensionNs="AntSupport">
+    <AntMessageCustomizer implementation="com.intellij.lang.javascript.flex.FlexAntMessageCustomizer"/>
+  </extensions>
+</idea-plugin>
