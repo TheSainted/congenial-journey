@@ -1,0 +1,16 @@
+package {
+public <symbolName descr="null">class</symbolName> <info descr="class">SemanticHighlighting</info> {
+
+    private <symbolName descr="null">function</symbolName> <info descr="instance method">foo</info>():<symbolName descr="null">void</symbolName> {
+        <symbolName descr="null">if</symbolName> (<info descr="class">Math</info>.<info descr="static method">random</info>() > 0.5) {
+            <symbolName descr="null">goto</symbolName> <info descr="label">myLabel</info>;
+        }
+        <symbolName descr="null">else</symbolName> {
+            <info descr="label">myLabel</info>:
+            <info descr="global function">eval</info>("")
+        }
+    }
+
+}
+}
+
