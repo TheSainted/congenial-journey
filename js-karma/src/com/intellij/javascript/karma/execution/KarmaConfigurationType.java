@@ -1,0 +1,41 @@
+package com.intellij.javascript.karma.execution;
+
+import com.intellij.execution.configurations.ConfigurationFactory;
+import com.intellij.execution.configurations.ConfigurationTypeBase;
+import com.intellij.execution.configurations.ConfigurationTypeUtil;
+import com.intellij.execution.configurations.RunConfiguration;
+import com.intellij.openapi.project.Project;
+import icons.JSKarmaIcons;
+import org.jetbrains.annotations.NotNull;
+
+/**
+ * @author Sergey Simonchik
+ */
+public class KarmaConfigurationType extends ConfigurationTypeBase {
+
+  public KarmaConfigurationType() {
+    super("JavaScriptTestRunnerKarma", "Karma", "Karma", JSKarmaIcons.Karma16x16);
+    addFactory(new ConfigurationFactory(this) {
+      @Override
+      public RunConfiguration createTemplateConfiguration(Project project) {
+        return new KarmaRunConfiguration(project, this, "Karma");
+      }
+
+      @Override
+      public boolean isConfigurationSingletonByDefault() {
+        return true;
+      }
+
+      @Override
+      public boolean canConfigurationBeSingleton() {
+        return false;
+      }
+    });
+  }
+
+  @NotNull
+  public static KarmaConfigurationType getInstance() {
+    return ConfigurationTypeUtil.findConfigurationType(KarmaConfigurationType.class);
+  }
+
+}

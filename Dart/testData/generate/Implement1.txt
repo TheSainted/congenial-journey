@@ -1,0 +1,14 @@
+class Implement1 implements IFoo<Bar> {
+
+  Bar getFoo() {
+    <caret>
+  }
+}
+
+interface IFoo<T> {
+  T getFoo();
+}
+
+class Bar {
+
+}
