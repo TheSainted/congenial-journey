@@ -1,0 +1,197 @@
+package com.jetbrains.lang.dart;
+
+import com.intellij.ProjectTopics;
+import com.intellij.openapi.components.AbstractProjectComponent;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.module.ModuleUtilCore;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.roots.*;
+import com.intellij.openapi.roots.impl.ModifiableModelCommitter;
+import com.intellij.openapi.startup.StartupManager;
+import com.intellij.openapi.util.Condition;
+import com.intellij.openapi.util.ModificationTracker;
+import com.intellij.openapi.util.SimpleModificationTracker;
+import com.intellij.openapi.util.registry.Registry;
+import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
+import com.intellij.openapi.vfs.VirtualFileManager;
+import com.intellij.openapi.vfs.VirtualFileVisitor;
+import com.intellij.psi.search.FileTypeIndex;
+import com.intellij.psi.search.FilenameIndex;
+import com.intellij.psi.search.GlobalSearchScope;
+import com.intellij.util.containers.ContainerUtil;
+import com.jetbrains.lang.dart.ide.runner.client.DartiumUtil;
+import gnu.trove.THashSet;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collection;
+import java.util.Set;
+
+import static com.jetbrains.lang.dart.util.PubspecYamlUtil.PUBSPEC_YAML;
+
+public class DartProjectComponent extends AbstractProjectComponent {
+
+  private SimpleModificationTracker myProjectRootsModificationTracker = new SimpleModificationTracker();
+
+  protected DartProjectComponent(@NotNull final Project project) {
+    super(project);
+
+    VirtualFileManager.getInstance().addVirtualFileListener(new DartFileListener(project), project);
+
+    project.getMessageBus().connect().subscribe(ProjectTopics.PROJECT_ROOTS, new ModuleRootListener() {
+      @Override
+      public void rootsChanged(ModuleRootEvent event) {
+        myProjectRootsModificationTracker.incModificationCount();
+
+        if (!Registry.is("dart.projects.without.pubspec", false)) {
+          DartFileListener.scheduleDartPackageRootsUpdate(myProject);
+        }
+      }
+    });
+  }
+
+  @NotNull
+  public static ModificationTracker getProjectRootsModificationTracker(@NotNull final Project project) {
+    if (project.isDefault()) {
+      return ModificationTracker.NEVER_CHANGED;
+    }
+
+    // standard ProjectRootManager (that is a ModificationTracker itself) doesn't work as its modificationCount is not incremented when library root is deleted
+    final DartProjectComponent component = project.getComponent(DartProjectComponent.class);
+    assert component != null;
+    return component.myProjectRootsModificationTracker;
+  }
+
+  public void projectOpened() {
+    StartupManager.getInstance(myProject).runWhenProjectIsInitialized(() -> {
+      DartiumUtil.resetDartiumFlags();
+
+      final Collection<VirtualFile> pubspecYamlFiles =
+        FilenameIndex.getVirtualFilesByName(myProject, PUBSPEC_YAML, GlobalSearchScope.projectScope(myProject));
+
+      for (VirtualFile pubspecYamlFile : pubspecYamlFiles) {
+        final Module module = ModuleUtilCore.findModuleForFile(pubspecYamlFile, myProject);
+        if (module != null && FileTypeIndex.containsFileOfType(DartFileType.INSTANCE, module.getModuleContentScope())) {
+          excludeBuildAndPackagesFolders(module, pubspecYamlFile);
+        }
+      }
+    });
+  }
+
+  public static void commitModifiableModels(@NotNull final Project project, @NotNull final Collection<ModifiableRootModel> modelsToCommit) {
+    if (!modelsToCommit.isEmpty()) {
+      try {
+        ModifiableModelCommitter.multiCommit(modelsToCommit, ModuleManager.getInstance(project).getModifiableModel());
+      }
+      finally {
+        for (ModifiableRootModel model : modelsToCommit) {
+          if (!model.isDisposed()) {
+            model.dispose();
+          }
+        }
+      }
+    }
+  }
+
+  public static void excludeBuildAndPackagesFolders(final @NotNull Module module, final @NotNull VirtualFile pubspecYamlFile) {
+    final VirtualFile root = pubspecYamlFile.getParent();
+    final VirtualFile contentRoot =
+      root == null ? null : ProjectRootManager.getInstance(module.getProject()).getFileIndex().getContentRootForFile(root);
+    if (contentRoot == null) return;
+
+    // http://pub.dartlang.org/doc/glossary.html#entrypoint-directory
+    // Entrypoint directory: A directory inside your package that is allowed to contain Dart entrypoints.
+    // Pub will ensure all of these directories get a “packages” directory, which is needed for “package:” imports to work.
+    // Pub has a whitelist of these directories: benchmark, bin, example, test, tool, and web.
+    // Any subdirectories of those (except bin) may also contain entrypoints.
+    //
+    // the same can be seen in the pub tool source code: [repo root]/sdk/lib/_internal/pub/lib/src/entrypoint.dart
+
+    final Collection<String> oldExcludedUrls =
+      ContainerUtil.filter(ModuleRootManager.getInstance(module).getExcludeRootUrls(), new Condition<String>() {
+        final String rootUrl = root.getUrl();
+
+        public boolean value(final String url) {
+          if (url.equals(rootUrl + "/.pub")) return true;
+          if (url.equals(rootUrl + "/build")) return true;
+          if (url.equals(rootUrl + "/packages")) return true;
+
+          // excluded subfolder of the root 'packages' folder (older versions of the Dart plugin)
+          if (url.startsWith(root + "/packages/")) return true;
+
+          if (url.endsWith("/packages") && (url.startsWith(rootUrl + "/bin/") ||
+                                            url.startsWith(rootUrl + "/benchmark/") ||
+                                            url.startsWith(rootUrl + "/example/") ||
+                                            url.startsWith(rootUrl + "/test/") ||
+                                            url.startsWith(rootUrl + "/tool/") |
+                                            url.startsWith(rootUrl + "/web/"))) {
+            return true;
+          }
+
+          return false;
+        }
+      });
+
+    final Set<String> newExcludedUrls = collectFolderUrlsToExclude(module, pubspecYamlFile, true);
+
+    if (oldExcludedUrls.size() != newExcludedUrls.size() || !newExcludedUrls.containsAll(oldExcludedUrls)) {
+      ModuleRootModificationUtil.updateExcludedFolders(module, contentRoot, oldExcludedUrls, newExcludedUrls);
+    }
+  }
+
+  public static Set<String> collectFolderUrlsToExclude(@NotNull final Module module,
+                                                       @NotNull final VirtualFile pubspecYamlFile,
+                                                       final boolean withDotPubAndBuild) {
+    final THashSet<String> newExcludedPackagesUrls = new THashSet<>();
+    final ProjectFileIndex fileIndex = ProjectRootManager.getInstance(module.getProject()).getFileIndex();
+    final VirtualFile root = pubspecYamlFile.getParent();
+
+    if (withDotPubAndBuild) {
+      newExcludedPackagesUrls.add(root.getUrl() + "/.pub");
+      newExcludedPackagesUrls.add(root.getUrl() + "/build");
+    }
+
+    newExcludedPackagesUrls.add(root.getUrl() + "/packages");
+
+    final VirtualFile binFolder = root.findChild("bin");
+    if (binFolder != null && binFolder.isDirectory() && fileIndex.isInContent(binFolder)) {
+      newExcludedPackagesUrls.add(binFolder.getUrl() + "/packages");
+    }
+
+    appendPackagesFolders(newExcludedPackagesUrls, root.findChild("benchmark"), fileIndex);
+    appendPackagesFolders(newExcludedPackagesUrls, root.findChild("example"), fileIndex);
+    appendPackagesFolders(newExcludedPackagesUrls, root.findChild("test"), fileIndex);
+    appendPackagesFolders(newExcludedPackagesUrls, root.findChild("tool"), fileIndex);
+    appendPackagesFolders(newExcludedPackagesUrls, root.findChild("web"), fileIndex);
+
+    return newExcludedPackagesUrls;
+  }
+
+  private static void appendPackagesFolders(final @NotNull Collection<String> excludedPackagesUrls,
+                                            final @Nullable VirtualFile folder,
+                                            final @NotNull ProjectFileIndex fileIndex) {
+    if (folder == null) return;
+
+    VfsUtilCore.visitChildrenRecursively(folder, new VirtualFileVisitor() {
+      @NotNull
+      public Result visitFileEx(@NotNull final VirtualFile file) {
+        if (!fileIndex.isInContent(file)) {
+          return SKIP_CHILDREN;
+        }
+
+        if (file.isDirectory()) {
+          if ("packages".equals(file.getName())) {
+            return SKIP_CHILDREN;
+          }
+          else {
+            excludedPackagesUrls.add(file.getUrl() + "/packages");
+          }
+        }
+
+        return CONTINUE;
+      }
+    });
+  }
+}
