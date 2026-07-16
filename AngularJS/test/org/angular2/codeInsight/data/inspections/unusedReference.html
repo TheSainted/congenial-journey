@@ -1,0 +1,11 @@
+<div #refUsedInTS></div>
+<div ref-anotherRefUsedInTS></div>
+<div #refUsedLocally></div>
+{{ refUsedLocally }}
+<div ref-anotherRefUsed></div>
+{{ anotherRefUsed }}
+<div #<warning descr="Unused local variable notUsedRef">notUsedRef</warning>></div>
+<div ref-<warning descr="Unused local variable anotherNotUsedRef">anotherNotUsedRef</warning>></div>
+
+<div *ngIf="true"> First <a #innerRef/> </div>
+<div *ngIf="true"> Second <a #<warning descr="Unused local variable innerRef">innerRef</warning>/> </div>
