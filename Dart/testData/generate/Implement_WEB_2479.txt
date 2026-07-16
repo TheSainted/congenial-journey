@@ -1,0 +1,13 @@
+abstract class Animal {
+  void speak(String say);
+}
+
+class Dog implements Animal {
+  String name;
+
+  void speak(String say) {
+    <caret>
+  }
+
+  Dog(this.name);
+}
