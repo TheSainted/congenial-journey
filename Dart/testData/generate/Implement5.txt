@@ -1,0 +1,10 @@
+abstract class I {
+  get foo() => 239;
+  set foo(x);
+}
+
+class Foo extends I {
+  set foo(x) {
+    <caret>
+  }
+}
