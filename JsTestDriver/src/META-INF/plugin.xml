@@ -1,0 +1,67 @@
+<!--
+ * Copyright 2012 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+-->
+<idea-plugin version="2" xmlns="http://plugins.intellij.net/plugin.dtd"
+             url="http://confluence.jetbrains.net/display/WI/JsTestDriver+IntelliJ+plugin" xmlns:xi="http://www.w3.org/2001/XInclude">
+  <name>JSTestDriver Plugin</name>
+  <description>Allows running, debugging JavaScript unit tests and measure test coverage.</description>
+  <version>999.999</version>
+  <vendor logo="/com/google/jstestdriver/idea/icons/JsTestDriver.png"
+          url="http://code.google.com/p/js-test-driver/"
+          email="js-test-driver@googlegroups.com">Google; JetBrains</vendor>
+  <idea-version since-build="121.351" until-build="121.999"/>
+
+  <extensionPoints>
+    <extensionPoint qualifiedName="com.google.jstestdriver.idea.jsCallTemplate" interface="com.google.jstestdriver.idea.assertFramework.codeInsight.JsCallTemplateContextProvider"/>
+  </extensionPoints>
+
+  <depends>com.intellij.modules.lang</depends>
+
+  <depends optional="true" config-file="jstd-yaml.xml">org.jetbrains.plugins.yaml</depends>
+  <depends optional="true" config-file="jstd-yaml.xml">com.intellij.modules.yaml</depends>
+
+  <depends optional="true" config-file="jstd-javascript.xml">JavaScript</depends>
+
+  <depends optional="true" config-file="jstd-coverage.xml">Coverage</depends>
+  <depends optional="true" config-file="jstd-coverage.xml">com.intellij.modules.coverage</depends>
+
+  <depends optional="true" config-file="jstd-javascript-debugger.xml">JavaScriptDebugger</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+    <fileTypeFactory implementation="com.google.jstestdriver.idea.config.JstdConfigFileTypeFactory"/>
+    <configurationType implementation="com.google.jstestdriver.idea.execution.JstdConfigurationType"/>
+    <programRunner implementation="com.google.jstestdriver.idea.execution.JstdRunProgramRunner"/>
+    <configurationProducer implementation="com.google.jstestdriver.idea.execution.JstdRuntimeConfigurationProducer"/>
+    <applicationService serviceImplementation="com.google.jstestdriver.idea.server.JstdServerState"/>
+    <projectService serviceImplementation="com.google.jstestdriver.idea.server.ui.JstdToolWindowManager"/>
+    <fileBasedIndex implementation="com.google.jstestdriver.idea.config.JstdTestFilePathIndex"/>
+    <fileBasedIndex implementation="com.google.jstestdriver.idea.assertFramework.JsTestFileByTestNameIndex"/>
+    <toolWindow id="JsTestDriver Server"
+                anchor="bottom"
+                secondary="true"
+                icon="/com/google/jstestdriver/idea/icons/toolWindowTestDriver.png"
+                factoryClass="com.google.jstestdriver.idea.server.ui.JstdToolWindowManager$Factory"
+                canCloseContents="false"
+                conditionClass="com.google.jstestdriver.idea.server.ui.JstdToolWindowManager$ToolWindowCondition"
+    />
+  </extensions>
+
+  <change-notes>
+    <![CDATA[
+Plugin version: ${version}, <a href="http://confluence.jetbrains.com/display/WI/Patched+JsTestDriver-1.3.5">patched JsTestDriver-1.3.5</a>
+  ]]>
+  </change-notes>
+</idea-plugin>
