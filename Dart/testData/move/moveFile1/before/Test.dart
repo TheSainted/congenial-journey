@@ -1,0 +1,1 @@
+part 'Foo.dart';
