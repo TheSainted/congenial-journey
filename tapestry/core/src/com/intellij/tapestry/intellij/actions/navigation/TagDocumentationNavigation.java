@@ -1,0 +1,70 @@
+package com.intellij.tapestry.intellij.actions.navigation;
+
+import com.intellij.openapi.actionSystem.AnAction;
+import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.actionSystem.CommonDataKeys;
+import com.intellij.openapi.actionSystem.LangDataKeys;
+import com.intellij.openapi.editor.Editor;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.wm.ToolWindow;
+import com.intellij.openapi.wm.ToolWindowManager;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.psi.xml.XmlTag;
+import com.intellij.tapestry.core.model.presentation.TapestryComponent;
+import com.intellij.tapestry.intellij.toolwindow.TapestryToolWindow;
+import com.intellij.tapestry.intellij.toolwindow.TapestryToolWindowFactory;
+import com.intellij.tapestry.intellij.util.TapestryUtils;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.Collections;
+
+/**
+ * Allows navigation from a tag to it's corresponding documentation.
+ */
+public class TagDocumentationNavigation extends AnAction {
+  @Override
+  public void update(@NotNull AnActionEvent e) {
+    e.getPresentation().setEnabled(getTapestryComponent(e) != null);
+  }
+
+  /**
+   * {@inheritDoc}
+   */
+  @Override
+  public void actionPerformed(@NotNull AnActionEvent event) {
+
+    Project project = (Project)event.getDataContext().getData(CommonDataKeys.PROJECT.getName());
+    if (project == null) return;
+    Module module = (Module)event.getDataContext().getData(LangDataKeys.MODULE.getName());
+
+    TapestryComponent component = getTapestryComponent(event);
+    if (component == null) return;
+
+    ToolWindow toolWindow = ToolWindowManager.getInstance(project).getToolWindow(TapestryToolWindowFactory.TAPESTRY_TOOLWINDOW_ID);
+    TapestryToolWindow metatoolWindow = TapestryToolWindowFactory.getToolWindow(project);
+
+    if (!metatoolWindow.getMainPanel().isDisplayable() && toolWindow != null) {
+      toolWindow.show(null);
+    }
+
+    metatoolWindow.update(module, component, Collections.singletonList(component.getElementClass()));
+  }
+
+  @Nullable
+  private static TapestryComponent getTapestryComponent(AnActionEvent event) {
+    Editor editor = (Editor)event.getDataContext().getData(CommonDataKeys.EDITOR.getName());
+    PsiFile psiFile = ((PsiFile)event.getDataContext().getData(CommonDataKeys.PSI_FILE.getName()));
+
+    if (editor == null || psiFile == null) return null;
+
+    int caretOffset = editor.getCaretModel().getOffset();
+    XmlTag tag = PsiTreeUtil.getParentOfType(psiFile.findElementAt(caretOffset), XmlTag.class);
+
+    if (TapestryUtils.getComponentIdentifier(tag) == null) return null;
+
+    return TapestryUtils.getTypeOfTag(tag);
+  }
+}
