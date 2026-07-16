@@ -1,0 +1,69 @@
+<idea-plugin version="2">
+  <id>com.github.masahirosuzuka.PhoneGapIntelliJPlugin</id>
+  <name>PhoneGap/Cordova Plugin</name>
+  <version>999.999</version>
+  <vendor email="masahiro.suzuka@gmail.com">masahirosuzuka, JetBrains</vendor>
+
+  <depends optional="true" config-file="javascript-plugin.xml">JavaScript</depends>
+
+
+  <description><![CDATA[
+        <h4>PhoneGap/Cordova integration for InteliJ Platform.<h4>
+        <p>* PhoneGap/Cordova Project wizard</p>
+        <p>* Run PhoneGap/Cordova application from IntelliJ toolbar</p>
+        <p>* Code completion for event types</p>
+        <p>* Ionic support</p>
+        <p>See README.md</p>
+        <a href="https://github.com/masahirosuzuka/phonegap-intelliJ-plugin">masahirsuzuka/PhoneGapIntelliJPlugin</a>
+    ]]></description>
+
+  <change-notes><![CDATA[
+    <p>v0.8.2 Make work on Windows && Change jvm 1.6 -> 1.7</p>
+    <p>v0.8.1 Fix request jvm version</p>
+    <p>v0.8.0 Code complements</p>
+    <p>v0.7.0 Cordova support</p>
+    <p>v0.6.0 Ripple emulator support</p>
+    <p>v0.5.1 Bug fix</p>
+    <p>v0.5.0 iOS Support</p>
+    <p>v0.4.1 External tool(NodeJS and Android SDK) detector && fix always output "PhoneGap platform is missing" bug</p>
+    <p>v0.3.3 Fix request jvm version 1.7 -> 1.6 (Error:Unsupported major.minor version 51.0)</p>
+    <p>v0.3.2 Fix target Platform</p>
+    <p>v0.3.1 Bug fix</p>
+    <p>v0.3.0 Project Builder (Dev)</p>
+    <p>v0.2 Project Importer</p>
+    <p>v0.1 RunConfigure</p>
+    ]]>
+  </change-notes>
+
+  <idea-version since-build="138.1498"/>
+
+  <depends>com.intellij.modules.lang</depends>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <configurationType
+        implementation="com.github.masahirosuzuka.PhoneGapIntelliJPlugin.runner.PhoneGapConfigurationType"/>
+    <!--<programRunner implementation="com.github.masahirosuzuka.PhoneGapIntelliJPlugin.runner.PhoneGapRunner"/>-->
+
+    <applicationService serviceInterface="com.github.masahirosuzuka.PhoneGapIntelliJPlugin.settings.PhoneGapSettings"
+                        serviceImplementation="com.github.masahirosuzuka.PhoneGapIntelliJPlugin.settings.PhoneGapSettings"/>
+
+    <directoryProjectGenerator
+        implementation="com.github.masahirosuzuka.PhoneGapIntelliJPlugin.ProjectBuilder.PhoneGapProjectTemplateGenerator"/>
+
+    <projectTemplatesFactory implementation="com.github.masahirosuzuka.PhoneGapIntelliJPlugin.ProjectBuilder.PhoneGapTemplatesFactory"/>
+
+    <projectConfigurable provider="com.github.masahirosuzuka.PhoneGapIntelliJPlugin.PhoneGapConfigurationProvider"/>
+    <stepsBeforeRunProvider implementation="com.github.masahirosuzuka.PhoneGapIntelliJPlugin.runner.PhoneGapAddPlatformBeforeRun"/>
+    <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+  </extensions>
+
+  <project-components>
+    <component>
+      <implementation-class>com.github.masahirosuzuka.PhoneGapIntelliJPlugin.externalToolsDetector.ExternalToolsDetector</implementation-class>
+    </component>
+    <component>
+      <implementation-class>com.github.masahirosuzuka.PhoneGapIntelliJPlugin.PhoneGapProjectComponent</implementation-class>
+    </component>
+  </project-components>
+
+</idea-plugin>
