@@ -1,0 +1,15 @@
+interface I {
+  get foo();
+  set foo(x);
+}
+
+class Foo implements I {
+  get foo() {
+    <spaces>
+  }
+
+  set foo(x) {
+    <caret>
+  }
+
+}

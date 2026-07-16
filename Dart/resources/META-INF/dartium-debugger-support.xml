@@ -1,0 +1,11 @@
+<idea-plugin version="2">
+  <extensions defaultExtensionNs="com.jetbrains">
+    <javaScriptBreakpointAwareFileType fileType="Dart"/>
+  </extensions>
+  <extensions defaultExtensionNs="com.intellij">
+    <project.converterProvider implementation="com.jetbrains.lang.dart.ide.DartRunConfigurationConverterProvider"/>
+  </extensions>
+  <extensions defaultExtensionNs="JavaScriptDebugger">
+    <engine implementation="com.jetbrains.lang.dart.ide.runner.client.DartiumDebuggerEngine" />
+  </extensions>
+</idea-plugin>
