@@ -1,0 +1,10 @@
+// "Create method 'foo2'" "true"
+class Sub7 {
+/**
+* Some Foo doc
+*/
+private function foo() : void
+{
+foo<caret>2(); 
+}
+}
