@@ -1,0 +1,5 @@
+{
+  "rules": {
+    <caret><EOLError descr="':' expected, got '}'"></EOLError>
+  }
+}
