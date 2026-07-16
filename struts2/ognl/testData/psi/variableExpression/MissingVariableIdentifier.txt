@@ -1,0 +1,7 @@
+OgnlFile:MissingVariableIdentifier.ognl
+  PsiElement(%{)('%{')
+  VARIABLE_EXPRESSION
+    PsiElement(#)('#')
+  PsiErrorElement:IDENTIFIER or '[' expected, got '}'
+    <empty list>
+  PsiElement(EXPRESSION_END)('}')
