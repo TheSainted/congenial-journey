@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--
+  ~ Copyright 2010 The authors
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<idea-plugin url="http://confluence.jetbrains.net/display/CONTEST/Struts2Plugin" version="2">
+  <id>com.intellij.struts2</id>
+  <name>Struts 2</name>
+  <description>Provides full integration of Apache Struts 2.</description>
+
+  <change-notes>
+    <![CDATA[
+  Please see <a href="http://confluence.jetbrains.net/display/CONTEST/Struts2PluginChangeNotes">Struts2PluginChangeNotes</a>.
+  ]]>
+  </change-notes>
+
+  <version>1.0</version>
+  <category>Web/JavaEE Technologies</category>
+
+  <!-- required dependencies -->
+  <depends>com.intellij.javaee</depends>
+
+  <!-- optional dependencies -->
+  <depends optional="true">HtmlTools</depends>
+  <depends optional="true" config-file="struts2-freemarker.xml">com.intellij.freemarker</depends>
+  <depends optional="true" config-file="struts2-javascript.xml">JavaScript</depends>
+  <depends optional="true" config-file="struts2-spring.xml">com.intellij.spring</depends>
+  <depends optional="true" config-file="struts2-groovy.xml">org.intellij.groovy</depends>
+  <depends optional="true" config-file="struts2-tiles.xml">StrutsAssistant</depends>
+
+  <vendor email="yann.cebron@googlemail.com">Yann Cébron</vendor>
+
+  <!-- published extension points -->
+  <extensionPoints>
+    <extensionPoint name="constantContributor"
+                    interface="com.intellij.struts2.model.constant.StrutsConstantContributor"/>
+    <extensionPoint name="constantValueClassContributor"
+                    interface="com.intellij.struts2.model.constant.ConstantValueConverterClassContributor"/>
+    <extensionPoint name="resultContributor"
+                    interface="com.intellij.struts2.dom.struts.impl.path.StrutsResultContributor"/>
+    <extensionPoint name="classContributor"
+                    interface="com.intellij.struts2.dom.ExtendableClassConverter$ExtendableClassConverterContributor"/>
+  </extensionPoints>
+
+  <extensions defaultExtensionNs="com.intellij">
+    <errorHandler implementation="com.intellij.diagnostic.ITNReporter"/>
+    <facetType implementation="com.intellij.struts2.facet.StrutsFacetType"/>
+    <psi.referenceContributor implementation="com.intellij.struts2.reference.StrutsReferenceContributor"/>
+    <psi.referenceContributor implementation="com.intellij.struts2.reference.StrutsUITaglibReferenceContributor"/>
+    <psi.referenceContributor implementation="com.intellij.struts2.reference.StrutsJQueryTaglibReferenceContributor"/>
+    <psi.referenceContributor implementation="com.intellij.struts2.reference.StrutsJQueryRichtextTaglibReferenceContributor"/>
+
+    <iconProvider implementation="com.intellij.struts2.Struts2IconProvider"/>
+
+    <inspectionToolProvider implementation="com.intellij.struts2.StrutsInspectionToolProvider"/>
+
+    <standardResourceProvider implementation="com.intellij.struts2.Struts2ResourceProvider"/>
+
+    <fileTemplateGroup implementation="com.intellij.struts2.StrutsFileTemplateGroupDescriptorFactory"/>
+
+    <frameworkSupport implementation="com.intellij.struts2.facet.StrutsFrameworkSupportProvider"/>
+
+
+    <!-- struts.xml -->
+    <dom.fileDescription implementation="com.intellij.struts2.dom.struts.Struts2DomFileDescription"/>
+
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.struts.action.Action"
+                        implementationClass="com.intellij.struts2.dom.struts.impl.ActionImpl"/>
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.struts.constant.Constant"
+                        implementationClass="com.intellij.struts2.dom.struts.constant.ConstantImpl"/>
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.struts.strutspackage.GlobalResult"
+                        implementationClass="com.intellij.struts2.dom.struts.impl.GlobalResultImpl"/>
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.struts.strutspackage.Interceptor"
+                        implementationClass="com.intellij.struts2.dom.struts.impl.InterceptorImpl"/>
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.struts.strutspackage.InterceptorRef"
+                        implementationClass="com.intellij.struts2.dom.struts.impl.InterceptorRefImpl"/>
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.struts.strutspackage.InterceptorStack"
+                        implementationClass="com.intellij.struts2.dom.struts.impl.InterceptorStackImpl"/>
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.params.Param"
+                        implementationClass="com.intellij.struts2.dom.params.ParamImpl"/>
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.struts.action.Result"
+                        implementationClass="com.intellij.struts2.dom.struts.impl.ResultImpl"/>
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.struts.strutspackage.StrutsPackage"
+                        implementationClass="com.intellij.struts2.dom.struts.impl.StrutsPackageImpl"/>
+
+    <typeName className="com.intellij.struts2.dom.struts.action.Action" name="Struts Action"/>
+    <typeName className="com.intellij.struts2.dom.struts.strutspackage.Interceptor" name="Interceptor"/>
+    <typeName className="com.intellij.struts2.dom.struts.strutspackage.InterceptorStack" name="Interceptor Stack"/>
+    <typeName className="com.intellij.struts2.dom.struts.strutspackage.ResultType" name="Result Type"/>
+    <typeName className="com.intellij.struts2.dom.struts.strutspackage.StrutsPackage" name="Struts Package"/>
+    <typeName className="com.intellij.struts2.dom.struts.strutspackage.GlobalResult" name="Global ResultXX"/>
+    <typeName className="com.intellij.struts2.dom.struts.impl.GlobalResultImpl" name="Global ResultYY"/>
+
+    <typeIcon className="com.intellij.struts2.dom.struts.Bean" icon="/resources/icons/coffeebean.png"/>
+    <typeIcon className="com.intellij.struts2.dom.struts.constant.Constant" icon="/nodes/parameter.png"/>
+    <typeIcon className="com.intellij.struts2.dom.struts.Include" icon="/resources/icons/import1.png"/>
+    <typeIcon className="com.intellij.struts2.dom.struts.strutspackage.ResultType" icon="/resources/icons/presentation.png"/>
+
+    <annotator language="XML" implementationClass="com.intellij.struts2.annotators.StrutsFileSetCheckingAnnotator"/>
+    <compiler.inspectionValidator implementation="com.intellij.struts2.dom.inspection.Struts2ModelValidator"/>
+
+    <projectService serviceInterface="com.intellij.struts2.dom.struts.model.StrutsManager"
+                    serviceImplementation="com.intellij.struts2.dom.struts.model.StrutsManagerImpl"/>
+
+    <gotoSymbolContributor implementation="com.intellij.struts2.gotosymbol.GoToActionSymbolProvider"/>
+    <gotoSymbolContributor implementation="com.intellij.struts2.gotosymbol.GoToPackageSymbolProvider"/>
+
+    <xmlStructureViewBuilderProvider
+        implementation="com.intellij.struts2.structure.StrutsStructureViewBuilderProvider"/>
+
+    <fileEditorProvider implementation="com.intellij.struts2.graph.fileEditor.Struts2GraphFileEditorProvider"/>
+
+    <struts2.resultContributor
+        implementation="com.intellij.struts2.dom.struts.impl.path.DispatchPathResultContributor"/>
+    <struts2.resultContributor
+        implementation="com.intellij.struts2.dom.struts.impl.path.ActionPathResultContributor"/>
+    <struts2.resultContributor
+        implementation="com.intellij.struts2.dom.struts.impl.path.ActionChainOrRedirectResultContributor"/>
+
+
+    <projectService serviceInterface="com.intellij.struts2.model.constant.StrutsConstantManager"
+                    serviceImplementation="com.intellij.struts2.model.constant.StrutsConstantManagerImpl"/>
+    <struts2.constantContributor
+        implementation="com.intellij.struts2.model.constant.contributor.StrutsCoreConstantContributor"/>
+    <struts2.constantContributor
+        implementation="com.intellij.struts2.model.constant.contributor.StrutsConventionPluginConstantContributor"/>
+    <struts2.constantContributor
+        implementation="com.intellij.struts2.model.constant.contributor.StrutsOSGiPluginConstantContributor"/>
+    <struts2.constantContributor
+        implementation="com.intellij.struts2.model.constant.contributor.StrutsSpringPluginConstantContributor"/>
+    <struts2.constantContributor
+        implementation="com.intellij.struts2.model.constant.contributor.StrutsRESTPluginConstantContributor"/>
+
+    <!-- Struts-JAM -->
+    <semContributor implementation="com.intellij.struts2.model.jam.StrutsSemContributor"/>
+
+    <!-- validation.xml/validator-config.xml -->
+    <dom.fileDescription implementation="com.intellij.struts2.dom.validator.ValidatorDomFileDescription"/>
+
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.validator.FieldValidator"
+                        implementationClass="com.intellij.struts2.dom.validator.impl.FieldValidatorImpl"/>
+    <dom.implementation interfaceClass="com.intellij.struts2.dom.validator.Validator"
+                        implementationClass="com.intellij.struts2.dom.validator.impl.ValidatorImpl"/>
+
+    <typeName className="com.intellij.struts2.dom.validator.config.ValidatorConfig" name="Validator"/>
+
+    <typeIcon className="com.intellij.struts2.dom.validator.Field" icon="/nodes/field.png"/>
+    <typeIcon className="com.intellij.struts2.dom.validator.FieldValidator" icon="/resources/icons/validation.png"/>
+    <typeIcon className="com.intellij.struts2.dom.validator.Message" icon="/resources/icons/message.png"/>
+    <typeIcon className="com.intellij.struts2.dom.validator.config.ValidatorConfig" icon="/resources/icons/validation.png"/>
+
+    <compiler.inspectionValidator implementation="com.intellij.struts2.dom.inspection.ValidatorModelValidator"/>
+
+    <projectService serviceInterface="com.intellij.struts2.dom.validator.ValidatorManager"
+                    serviceImplementation="com.intellij.struts2.dom.validator.ValidatorManagerImpl"/>
+
+    <dom.fileDescription implementation="com.intellij.struts2.dom.validator.ValidatorConfigDomFileDescription"/>
+
+    <xmlStructureViewBuilderProvider
+        implementation="com.intellij.struts2.structure.ValidationStructureViewBuilderProvider"/>
+
+
+    <!-- JAVA -->
+    <annotator language="JAVA" implementationClass="com.intellij.struts2.annotators.ActionJavaAnnotator"/>
+
+
+    <!-- JSP -->
+    <annotator language="JSP" implementationClass="com.intellij.struts2.annotators.JspActionAnnotator"/>
+
+    <javaee.web.customServletReferenceProvider
+        implementation="com.intellij.struts2.reference.jsp.ActionLinkReferenceProvider"/>
+    <javaee.web.deployedFileUrlConverter implementation="com.intellij.struts2.preview.Struts2UrlConverter"/>
+
+    <!-- inject CSS into Struts UI tags -->
+    <multiHostInjector implementation="com.intellij.struts2.jsp.TaglibCssInlineStyleInjector"/>
+  </extensions>
+
+  <application-components>
+    <component>
+      <implementation-class>com.intellij.struts2.StrutsApplicationComponent</implementation-class>
+    </component>
+  </application-components>
+
+</idea-plugin>
