@@ -1,0 +1,1360 @@
+{
+  "title": "JSON schema for the TSLint configuration files",
+  "$schema": "http://json-schema.org/draft-04/schema#",
+
+  "type": "object",
+  "additionalProperties": true,
+
+  "definitions": {
+    "switchedOff": {"type": "boolean"},
+    "switchable": {"type": "boolean"},
+    "space-option": {"type": "string", "enum": ["space", "nospace", "onespace"]},
+    "booleanWithInteger": {
+      "type": "array",
+      "items": [
+        {"type": "boolean"},
+        {"type": "number"}
+      ],
+      "additionalItems": false
+    },
+    "withOptionalIntegerParam": {
+      "oneOf": [
+        {"type": "boolean"},
+        {"$ref": "#/definitions/booleanWithInteger"}
+      ]
+    },
+    "alwaysNever": {
+      "type": "string",
+      "enum": ["always", "never"]
+    },
+    "space-object": {
+      "type": "object",
+      "properties": {
+        "call-signature": {
+          "$ref": "#/definitions/space-option"
+        },
+        "index-signature": {
+          "$ref": "#/definitions/space-option"
+        },
+        "parameter": {
+          "$ref": "#/definitions/space-option"
+        },
+        "property-declaration": {
+          "$ref": "#/definitions/space-option"
+        },
+        "variable-declaration": {
+          "$ref": "#/definitions/space-option"
+        }
+      }, "additionalProperties": false
+    },
+    "completed-docs-privacies-locations" : {
+      "type": "object",
+      "properties": {
+        "locations": {
+          "type": "array",
+          "items": {"enum": [
+            "all",
+            "instance",
+            "static"
+          ],
+          "type": "string"}
+        },
+        "privacies": {
+          "type": "array",
+          "items": {"enum": [
+            "all",
+            "private",
+            "protected",
+            "public"
+          ],
+            "type": "string"}
+        }
+      }
+    },
+    "completed-docs-visibilities" : {
+      "type": "object",
+      "properties": {
+        "visibilities": {
+          "type": "array",
+          "items": {"enum": [
+            "all",
+            "exported",
+            "internal"
+          ],
+            "type": "string"}
+        }
+      }
+    },
+    "ruledefinitions": {
+      "properties": {
+        "adjacent-overload-signatures": {
+          "description": "Enforces function overloads to be consecutive",
+          "$ref": "#/definitions/switchable"
+        },
+        "align": {
+          "description": "Enforces vertical alignment",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "parameters", "arguments", "statements"]
+              }}
+          ]
+        },
+        "array-type":{
+          "description": "Requires using either ‘T[]’ or ‘Array' for arrays",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "array", "generic", "array-simple"]
+              }}
+          ]
+        },
+        "arrow-parens":{
+          "description": "Requires parentheses around the parameters of arrow function definitions",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "ban-single-arg-parens"]
+              }}
+          ]
+        },
+        "arrow-return-shorthand":{
+          "description": "Suggests to convert () => { return x; } to () => x",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "uniqueItems": true,
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "multiline"]
+              }}
+          ]
+        },
+        "await-promise":{
+          "description": "Warns for an awaited value that is not a Promise",
+          "$ref": "#/definitions/switchable"
+        },
+        "ban": {
+          "description": "Bans the use of specific functions",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {"type": "array",
+                    "items": {
+                    "type": "string",
+                    "minItems": 1, "maxItems": 3
+                  }}
+                ]
+              }
+            }]},
+        "ban-comma-operator": {
+          "description": "Bans the comma operator",
+          "type": "boolean"
+        },
+        "ban-types": {
+          "description": "Bans specific types from being used. Does not ban the corresponding runtime objects from being used",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {"type": "array",
+                    "items": {
+                    "type": "string",
+                    "minItems": 1, "maxItems": 2
+                  }}
+                ]
+              }
+            }]},
+        "binary-expression-operand-order":{
+          "description": "In a binary expression, a literal should always be on the right-hand side if possible",
+          "type": "boolean"
+        },
+        "callable-types":{
+          "description": "An interface or literal type with just a call signature can be written as a function type",
+          "$ref": "#/definitions/switchable"
+        },
+        "class-name": {
+          "description": "Enforces PascalCased class and interface names",
+          "type": "boolean"
+        },
+        "comment-format": {
+          "description": "Enforces rules for single-line comments",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {"type": "string", "enum": ["check-space", "check-lowercase", "check-uppercase"]},
+                  {"type": "object",
+                    "properties": {
+                      "ignore-words": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "ignore-pattern": {
+                        "type": "string"
+                      }
+                    },
+                    "minProperties": 1,
+                    "maxProperties": 1
+                  }
+                ]
+              },
+              "minLength": 1,
+              "maxLength": 4
+            }
+          ]
+        },
+        "completed-docs": {
+          "description": "Enforces documentation for important items be filled out",
+          "oneOf": [
+            {"type": "boolean"},
+            {"type": "array",
+              "uniqueItems": true,
+              "items": {"type": ["boolean", "string"], "enum": [true, "classes", "functions", "methods", "properties"]},
+              "minItems": 2
+            },
+            {"type": "array",
+              "items": [
+                {"type": "boolean", "enum": [true]},
+                {"type": "object",
+                "properties": {
+                  "methods": {"$ref": "#/definitions/completed-docs-privacies-locations"},
+                  "properties": {"$ref": "#/definitions/completed-docs-privacies-locations"},
+                  "classes": {"$ref": "#/definitions/completed-docs-visibilities"},
+                  "enums": {"$ref": "#/definitions/completed-docs-visibilities"},
+                  "functions": {"$ref": "#/definitions/completed-docs-visibilities"},
+                  "interfaces": {"$ref": "#/definitions/completed-docs-visibilities"},
+                  "namespaces": {"$ref": "#/definitions/completed-docs-visibilities"},
+                  "types": {"$ref": "#/definitions/completed-docs-visibilities"},
+                  "variables": {"$ref": "#/definitions/completed-docs-visibilities"}
+                }}
+              ]}
+          ]
+        },
+        "curly": {
+          "description": "Enforces braces for if/for/do/while statements",
+          "type": "boolean"
+        },
+        "cyclomatic-complexity": {
+          "description": "Enforces a threshold of cyclomatic complexity",
+          "$ref": "#/definitions/withOptionalIntegerParam"
+        },
+        "deprecation": {
+          "description": "Warns when deprecated APIs are used"
+        },
+        "encoding": {
+          "description": "Enforces UTF-8 file encoding",
+          "type": "boolean"
+        },
+        "eofline": {
+          "description": "Enforces the file to end with a newline",
+          "type": "boolean"
+        },
+        "file-header": {
+          "description": "Enforces a certain header comment for all files, matched by a regular expression",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "minItems": 1,
+                "maxItems": 2
+              }}
+          ]
+        },
+        "forin": {
+          "description": "Enforces a for...in  statement to be filtered with an if statement",
+          "type": "boolean"
+        },
+        "import-blacklist": {
+          "description": "Disallows importing the specified modules directly via import and require. Instead only sub modules may be imported from that module",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "minItems": 1,
+                "maxItems": 2
+              }}
+          ]
+        },
+        "import-spacing": {
+          "description": "Ensures proper spacing between import statement keywords",
+          "type": "boolean"
+        },
+        "indent": {
+          "description": "Enforces indentation with tabs or spaces",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "tabs", "spaces"]
+              }}
+          ]
+        },
+        "interface-name": {
+          "description": "Requires interface names to begin with a capital ‘I’",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "always-prefix", "never-prefix"]
+              }}
+          ]
+        },
+        "interface-over-type-literal": {
+          "description": "Prefer an interface declaration over a type literal (type T = { ... })",
+          "type": "boolean"
+        },
+        "jsdoc-format": {
+          "description": "Enforces basic format rules for JSDoc comments",
+          "type": "boolean"
+        },
+        "label-position": {
+          "description": "Only allows labels in sensible locations",
+          "type": "boolean"
+        },
+        "linebreak-style": {
+          "description": "Enforces a consistent linebreak style",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "LF", "CRLF"]
+              }, "maxItems": 2
+            }
+          ]
+        },
+        "match-default-export-name": {
+          "description": "Requires that a default import have the same name as the declaration it imports. Does nothing for anonymous default exports.",
+          "type": "boolean"
+        },
+        "max-classes-per-file": {
+          "description": "A file may not contain more than the specified number of classes",
+          "$ref": "#/definitions/booleanWithInteger"
+        },
+        "max-file-line-count": {
+          "description": "Requires files to remain under a certain number of lines",
+          "$ref": "#/definitions/booleanWithInteger"
+        },
+        "max-line-length": {
+          "description": "Requires lines to be under a certain max length",
+          "$ref": "#/definitions/booleanWithInteger"
+        },
+        "member-access": {
+          "description": "Requires explicit visibility declarations for class members",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "check-accessor", "check-constructor"]
+              }}
+          ]
+        },
+        "member-ordering": {
+          "description": "Enforces member ordering",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {
+              "type": "array",
+              "items": [
+                {
+                  "type": "boolean",
+                  "enum": [true]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "order": {
+                      "oneOf": [
+                        {
+                          "type": "string",
+                          "enum": [
+                            "fields-first",
+                            "instance-sandwich",
+                            "statics-first"
+                          ]
+                        },
+                        {
+                          "type": "array",
+                          "items": {
+                            "type": "string",
+                            "enum": [
+                              "public-static-field",
+                              "public-static-method",
+                              "protected-static-field",
+                              "protected-static-method",
+                              "private-static-field",
+                              "private-static-method",
+                              "public-instance-field",
+                              "protected-instance-field",
+                              "private-instance-field",
+                              "public-constructor",
+                              "protected-constructor",
+                              "private-constructor",
+                              "public-instance-method",
+                              "protected-instance-method",
+                              "private-instance-method"
+                            ]
+                          },
+                          "uniqueItems": true
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "new-parens": {
+          "description": "Requires parentheses when invoking a constructor via the new keyword",
+          "type": "boolean"
+        },
+        "newline-before-return": {
+          "description": "Enforces blank line before return when not the only line in the block",
+          "type": "boolean"
+        },
+        "no-angle-bracket-type-assertion": {
+          "description": "Requires the use of as Type for type assertions instead of <Type>",
+          "type": "boolean"
+        },
+        "no-any": {
+          "description": "Disallows usages of any as a type declaration",
+          "type": "boolean"
+        },
+        "no-arg": {
+          "description": "Disallows use of arguments.callee",
+          "type": "boolean"
+        },
+        "no-bitwise": {
+          "description": "Disallows bitwise operators",
+          "type": "boolean"
+        },
+        "no-boolean-literal-compare": {
+          "description": "Warns on comparison to a boolean literal, as in x === true",
+          "type": "boolean"
+        },
+        "no-conditional-assignment": {
+          "description": "Disallows any type of assignment in any conditionals. This applies to do-while, for, if, and while statements.",
+          "type": "boolean"
+        },
+        "no-consecutive-blank-lines": {
+          "description": "Disallows one or more blank lines in a row",
+          "oneOf": [
+            {"type": "boolean"},
+            {"$ref": "#/definitions/withOptionalIntegerParam"}
+          ]
+        },
+        "no-console": {
+          "description": "Bans the use of specified console methods",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items":
+              {
+                "type": ["boolean", "string"]
+              }}
+          ]
+        },
+        "no-construct": {
+          "description": "Disallows access to the constructors of String, Number and Boolean",
+          "type": "boolean"
+        },
+        "no-debugger": {
+          "description": "Disallows debugger statements",
+          "type": "boolean"
+        },
+        "no-default-export": {
+          "description": "Disallows default exports in ES6-style modules",
+          "type": "boolean"
+        },
+        "no-duplicate-imports": {
+          "description": "Disallows multiple import statements from the same module",
+          "type": "boolean"
+        },
+        "no-duplicate-switch-case": {
+          "description": "Prevents duplicate cases in switch statements",
+          "type": "boolean"
+        },
+        "no-duplicate-super": {
+          "description": "Warns if ‘super()’ appears twice in a constructor",
+          "type": "boolean"
+        },
+        "no-duplicate-variable": {
+          "description": "Disallows duplicate variable declarations in the same block scope",
+          "type": "boolean"
+        },
+        "no-empty": {
+          "description": "Disallows empty blocks",
+          "type": "boolean"
+        },
+        "no-empty-interface": {
+          "description": "Forbids empty interfaces",
+          "type": "boolean"
+        },
+        "no-eval": {
+          "description": "Disallows eval function invocations",
+          "type": "boolean"
+        },
+        "no-floating-promises": {
+          "description": "Promises returned by functions must be handled appropriately",
+          "oneOf": [
+            {"type": "boolean"},
+            {"type": "array",
+             "items": {
+               "oneOf": [
+                 {
+                   "type": "boolean",
+                   "enum": [true]
+                 },
+                 {
+                   "type": "string"
+                 }
+               ]
+             }}
+          ]
+        },
+        "no-for-in-array": {
+          "description": "Disallows iterating over an array with a for-in loop",
+          "type": "boolean"
+        },
+        "no-implicit-dependencies": {
+          "description": "Disallows importing modules that are not listed as dependency in the project’s package.json.\nDisallows importing transient dependencies and modules installed above your package’s root directory.",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": ["dev", "optional"]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "no-import-side-effect": {
+          "description": "Avoid import statements with side-effect",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {
+              "type": "array",
+              "items": [
+                {
+                  "type": "boolean",
+                  "enum": [true]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "ignore-module": {"type": "string"}
+                  }
+                }
+              ],
+              "additionalItems": false
+            }
+          ]
+        },
+        "no-inferrable-types": {
+          "description": "Disallows explicit type declarations for variables or parameters initialized to a number, string, or boolean",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": ["ignore-params", "ignore-properties"]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "no-inferred-empty-object-type": {
+          "description": "Disallow type inference of {} (empty object type) at function and constructor call sites",
+          "type": "boolean"
+        },
+        "no-internal-module": {
+          "description": "Disallows internal module, use namespace instead",
+          "type": "boolean"
+        },
+        "no-invalid-template-strings": {
+          "description": "Warns on use of ${ in non-template strings"
+        },
+        "no-invalid-this": {
+          "description": "Disallows using the this keyword outside of classes",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": ["check-function-in-method"]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "no-irregular-whitespace": {
+          "description": "Disallow irregular whitespace outside of strings and comments"
+        },
+        "no-magic-numbers": {
+          "description": "Disallows the use constant number values outside of variable assignments",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "integer"
+                  }
+                ]
+              },
+              "minItems": 2
+            }
+          ]
+        },
+        "no-mergeable-namespace": {
+          "description": "Disallows mergeable namespaces in the same file",
+          "type": "boolean"
+        },
+        "no-misused-new": {
+          "description": "Warns on apparent attempts to define constructors for interfaces or new for classes",
+          "type": "boolean"
+        },
+        "no-namespace": {
+          "description": "Disallows use of internal module S and namespace S",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": ["allow-declarations"]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "no-non-null-assertion": {
+          "description": "Disallows non-null assertions",
+          "type": "boolean"
+        },
+        "no-null-keyword": {
+          "description": "Disallows use of the null keyword literal",
+          "type": "boolean"
+        },
+        "no-object-literal-type-assertion": {
+          "description": "Forbids an object literal to appear in a type assertion expression"
+        },
+        "no-parameter-properties": {
+          "description": "Disallows parameter properties in class constructors",
+          "type": "boolean"
+        },
+        "no-parameter-reassignment": {
+          "description": "Disallows reassigning parameters",
+          "type": "boolean"
+        },
+        "no-redundant-jsdoc": {
+          "description": "Forbids JSDoc which duplicates TypeScript functionality",
+          "type": "boolean"
+        },
+        "no-reference": {
+          "description": "Disallows /// <reference path=> imports (use ES6-style imports instead)",
+          "type": "boolean"
+        },
+        "no-reference-import": {
+          "description": "Don’t if you import “foo” anyway"
+        },
+        "no-require-imports": {
+          "description": "Disallows invocation of require()",
+          "type": "boolean"
+        },
+        "no-return-await": {
+          "description": "Disallows unnecessary return await",
+          "type": "boolean"
+        },
+        "no-shadowed-variable": {
+          "description": "Disallows shadowing variable declarations",
+          "type": "boolean"
+        },
+        "no-sparse-arrays": {
+          "description": "Forbids array literals to contain missing elements"
+        },
+        "no-string-literal": {
+          "description": "Disallows object access via string literals",
+          "type": "boolean"
+        },
+        "no-string-throw": {
+          "description": "Flags throwing plain strings or concatenations of strings because only Errors produce proper stack traces",
+          "type": "boolean"
+        },
+        "no-submodule-imports": {
+          "description": "Disallows importing any submodule",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {"type": "string"}
+                ]
+              }
+            }
+          ]
+        },
+        "no-switch-case-fall-through": {
+          "description": "Disallows falling through case statements",
+          "type": "boolean"
+        },
+        "no-this-assignment": {
+          "description": "Disallows unnecessary references to this",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "object",
+                    "properties": {
+                      "allowed-names": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "allow-destructuring": {
+                        "type": "boolean"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "no-trailing-whitespace": {
+          "description": "Disallows trailing whitespace at the end of a line",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": ["ignore-comments", "ignore-jsdoc"]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "no-unbound-method": {
+          "description": "Warns when a method is used as outside of a method call",
+          "type": "boolean"
+        },
+        "no-unnecessary-callback-wrapper": {
+          "description": "Replaces x => f(x) with just f. To catch more cases, enable only-arrow-functions and arrow-return-shorthand too"
+        },
+        "no-unnecessary-class": {
+          "description": "Disallows classes that are not strictly necessary",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": ["allow-constructor-only", "allow-empty-class", "allow-static-only"]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "no-unnecessary-initializer": {
+          "description": "Forbids a ‘var’/’let’ statement or destructuring initializer to be initialized to ‘undefined’",
+          "type": "boolean"
+        },
+        "no-unnecessary-qualifier": {
+          "description": "Warns when a namespace qualifier (A.x) is unnecessary",
+          "type": "boolean"
+        },
+        "no-unnecessary-type-assertion": {
+          "description": "Warns if a type assertion does not change the type of an expression"
+        },
+        "no-unsafe-any": {
+          "description": "Warns when using an expression of type ‘any’ in an unsafe way",
+          "type": "boolean"
+        },
+        "no-unsafe-finally": {
+          "description": "Disallows control flow statements, such as return, continue, break and throws in finally blocks",
+          "type": "boolean"
+        },
+        "no-unused-expression": {
+          "description": "Disallows unused expression statements",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": [
+                      "allow-fast-null-checks",
+                      "allow-new",
+                      "allow-tagged-template"
+                    ]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "no-unused-variable": {
+          "description": "Disallows unused imports, variables, functions and private class members",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": ["check-parameters", "react"]
+                  },
+                  {
+                    "type": "object",
+                    "properties": {
+                      "ignore-pattern": {"type": "string"}
+                    }, "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "no-use-before-declare": {
+          "description": "Disallows usage of variables before their declaration",
+          "type": "boolean"
+        },
+        "no-var-keyword": {
+          "description": "Disallows usage of the var keyword, use let or const instead",
+          "type": "boolean"
+        },
+        "no-var-requires": {
+          "description": "Disallows the use of require statements except in import statements",
+          "type": "boolean"
+        },
+        "no-void-expression": {
+          "description": "Requires expressions of type void to appear in statement position",
+          "type": "boolean"
+        },
+        "number-literal-format": {
+          "description": "Checks that decimal literals should begin with ‘0.’ instead of just ‘.’, and should not end with a trailing ‘0’"
+        },
+        "object-literal-key-quotes": {
+          "description": "Enforces consistent object literal property quote style",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": ["always",
+                      "as-needed",
+                      "consistent",
+                      "consistent-as-needed"]
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "object-literal-shorthand": {
+          "type": "boolean",
+          "description": "Enforces use of ES6 object literal shorthand when possible"
+        },
+        "object-literal-sort-keys": {
+          "type": "boolean",
+          "description": "Requires keys in object literals to be sorted alphabetically"
+        },
+        "one-line": {
+          "description": "Enforces the specified tokens to be on the same line as the expression preceding it",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "check-catch",
+                  "check-finally",
+                  "check-else",
+                  "check-open-brace",
+                  "check-whitespace"]
+              }}
+          ]
+        },
+        "one-variable-per-declaration": {
+          "description": "Disallows multiple variable definitions in the same declaration statement",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "ignore-for-loop"]
+              }}
+          ]
+        },
+        "only-arrow-functions": {
+          "description": "Disallows traditional (non-arrow) function expressions",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "allow-declarations", "allow-named-functions"]
+              }}
+          ]
+        },
+        "ordered-imports": {
+          "description": "Requires that import statements be alphabetized",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "object",
+                    "properties": {
+                      "import-sources-order": {
+                        "type": "string",
+                        "enum": [
+                          "case-insensitive",
+                          "lowercase-first",
+                          "lowercase-last",
+                          "any"
+                        ]
+                      },
+                      "named-imports-order": {
+                        "type": "string",
+                        "enum": [
+                          "case-insensitive",
+                          "lowercase-first",
+                          "lowercase-last",
+                          "any"
+                        ]
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "prefer-conditional-expression": {
+          "description": "Recommends to use a conditional expression instead of assigning to the same thing in each branch of an if statement",
+          "type": "boolean"
+        },
+        "prefer-const": {
+          "description": "Requires that variable declarations use const instead of let if possible",
+          "type": "boolean"
+        },
+        "prefer-for-of": {
+          "description": "Recommends a ‘for-of’ loop over a standard ‘for’ loop if the index is only used to access the array being iterated",
+          "type": "boolean"
+        },
+        "prefer-function-over-method": {
+          "description": "Warns for class methods that do not use ‘this’",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "allow-public", "allow-protected"]
+              }}
+          ]
+        },
+        "prefer-method-signature": {
+          "description": "Prefer foo(): void over foo: () => void in interfaces and types",
+          "type": "boolean"
+        },
+        "prefer-object-spread": {
+          "description": "Enforces the use of the ES2015 object spread operator over `Object.assign()` where appropriate",
+          "type": "boolean"
+        },
+        "prefer-switch": {
+          "description": "Prefer a switch statement to an if statement with simple === comparisons",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "object",
+                    "properties": {
+                      "min-cases": {
+                        "type": "integer"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                ]
+              }
+            }
+          ]
+        },
+        "prefer-template": {
+          "description": "Prefer a template expression over string literal concatenation",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": {
+                "oneOf": [
+                  {"type": "boolean", "enum": [true]},
+                  {
+                    "type": "string",
+                    "enum": ["allow-single-concat"]                  }
+                ]
+              }
+            }
+          ]
+        },
+        "promise-function-async": {
+          "description": "Requires any function or method that returns a promise to be marked async",
+          "type": "boolean"
+        },
+        "quotemark": {
+          "description": "Enforces consistent single or double quoted string literals",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "single", "double", "jsx-single", "jsx-double", "avoid-escape"]
+              }}
+          ]
+        },
+        "radix": {
+          "description": "Requires the radix parameter to be specified when calling parseInt",
+          "type": "boolean"
+        },
+        "restrict-plus-operands": {
+          "description": "When adding two variables, operands must both be of type number or of type string",
+          "type": "boolean"
+        },
+        "return-undefined": {
+          "descriptor": "Prefer return; in void functions and return undefined; in value-returning functions"
+        },
+        "semicolon": {
+          "description": "Enforces semicolons at the end of every statement",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {
+              "type": "array",
+              "items": [
+                {"type": "boolean"},
+                {"type": "string", "enum": ["always", "never"]},
+                {"type": "string", "enum": ["ignore-interfaces"]}
+              ], "additionalItems": false
+            }
+          ]
+        },
+        "space-before-function-paren": {
+          "description": "Require or disallow a space before function parenthesis",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {
+              "type": "array",
+              "items": [
+                {"type": "boolean"},
+                {"$ref": "#/definitions/alwaysNever"}
+              ], "additionalItems": false
+            },
+            {
+              "type": "array",
+              "items": [
+                {"type": "boolean"},
+                {"type": "object", "properties": {
+                  "anonymous": {"$ref": "#/definitions/alwaysNever"},
+                  "asyncArrow": {"$ref": "#/definitions/alwaysNever"},
+                  "constructor": {"$ref": "#/definitions/alwaysNever"},
+                  "method": {"$ref": "#/definitions/alwaysNever"},
+                  "named": {"$ref": "#/definitions/alwaysNever"}
+                }}
+              ], "additionalItems": false
+            }
+          ]
+        },
+        "space-within-parens": {
+          "description": "Enforces spaces within parentheses or disallow them",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": [
+                {"type": "boolean"},
+                {"type": "integer"}
+              ], "additionalItems": false
+            }
+          ]
+        },
+        "strict-boolean-expressions": {
+          "description": "Restricts the types allowed in boolean expressions. By default only booleans are allowed",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "allow-null-union",
+                  "allow-undefined-union",
+                  "allow-string",
+                  "allow-number",
+                  "allow-mix"]
+              }}
+          ]
+        },
+        "strict-type-predicates": {
+          "description": "Warns for type predicates that are always true or always false",
+          "type": "boolean"
+        },
+        "switch-default": {
+          "description": "Require a default case in all switch statements",
+          "type": "boolean"
+        },
+        "switch-final-break": {
+          "description": "",
+          "oneOf": [
+            {"type": "boolean"},
+            {
+              "type": "array",
+              "items": [
+                {"type": "boolean"},
+                {"$ref": "#/definitions/alwaysNever"}
+              ],
+              "additionalItems": false
+            }]
+        },
+        "trailing-comma": {
+          "description": "Requires or disallows trailing commas in array and object literals, destructuring assignments and named imports",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": [
+                {"type": "boolean"},
+                {"type": "object",
+                  "properties": {
+                    "multiline": {"$ref": "#/definitions/alwaysNever"},
+                    "singleline": {"$ref": "#/definitions/alwaysNever"}
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        "triple-equals": {
+          "description": "Requires === and !== in place of == and !=",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "allow-null-check", "allow-undefined-check"]
+              }}
+          ]
+        },
+        "type-literal-delimiter": {
+          "description": "Checks that type literal members are separated by semicolons, enforces a trailing semicolon for multiline type literals",
+          "type": "boolean"
+        },
+        "typedef": {
+          "description": "Enforces type definitions to exist",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "call-signature",
+                  "arrow-call-signature",
+                  "parameter",
+                  "arrow-parameter",
+                  "property-declaration",
+                  "variable-declaration",
+                  "member-variable-declaration",
+                  "object-destructuring",
+                  "array-destructuring"]
+              }}
+          ]
+        },
+        "typedef-whitespace": {
+          "description": "Requires or disallows whitespace for type definitions",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {
+              "type": "array",
+              "items": [
+                {
+                  "type": "boolean",
+                  "enum": [true]
+                },
+                {
+                  "$ref": "#/definitions/space-object"
+                },
+                {
+                  "$ref": "#/definitions/space-object"
+                }
+              ]
+            }
+          ]
+        },
+        "typeof-compare": {
+          "description": "Makes sure result of typeof is compared to correct string values",
+          "type": "boolean"
+        },
+        "unified-signatures": {
+          "description": "Warns for any two overloads that could be unified into one by using a union or an optional/rest parameter",
+          "type": "boolean"
+        },
+        "use-default-type-parameter": {
+          "description": "Warns if an explicitly specified type argument is the default for that type parameter",
+          "type": "boolean"
+        },
+        "use-isnan": {
+          "description": "Enforces use of the isNaN() function to check for NaN references instead of a comparison to the NaN constant",
+          "type": "boolean"
+        },
+        "variable-name": {
+          "description": "Checks variable names for various errors",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "check-format",
+                  "allow-leading-underscore",
+                  "allow-trailing-underscore",
+                  "allow-pascal-case",
+                  "ban-keywords"]
+              }}
+          ]
+        },
+        "whitespace": {
+          "description": "Enforces whitespace style conventions",
+          "oneOf": [
+            {"$ref": "#/definitions/switchedOff"},
+            {"type": "array",
+              "items": {
+                "type": ["boolean", "string"],
+                "enum": [true, "check-branch",
+                  "check-decl",
+                  "check-operator",
+                  "check-module",
+                  "check-separator",
+                  "check-type",
+                  "check-typecast",
+                  "check-preblock"]
+              }}
+          ]
+        }
+      },
+      "type": "object"
+    }
+  },
+
+  "properties": {
+    "rules": {
+      "description": "Rules for .ts and .tsx files",
+      "$ref": "#/definitions/ruledefinitions"
+    },
+    "jsRules": {
+      "description": "Rules for .js and .jsx files",
+      "$ref": "#/definitions/ruledefinitions"
+    },
+    "extends": {
+      "description": "A path(s) to another configuration file which to extend",
+      "oneOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "rulesDirectory": {
+      "description": "A path(s) to a directory of custom rules",
+      "oneOf": [
+        {"type": "string"},
+        {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    }
+  }
+}
