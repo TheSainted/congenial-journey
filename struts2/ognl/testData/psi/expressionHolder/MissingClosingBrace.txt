@@ -1,0 +1,7 @@
+OgnlFile:MissingClosingBrace.ognl
+  PsiElement(%{)('%{')
+  PsiWhiteSpace(' ')
+  REFERENCE_EXPRESSION
+    PsiElement(IDENTIFIER)('a')
+  PsiErrorElement:'(', '.', <operator>, '?', '@', EXPRESSION_END or '[' expected, unexpected end of file
+    <empty list>
