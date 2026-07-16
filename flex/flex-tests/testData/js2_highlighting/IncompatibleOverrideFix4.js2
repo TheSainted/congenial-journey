@@ -1,0 +1,12 @@
+package {
+class <error>FooBase</error> {
+    function foo() {}
+}
+}
+
+package {
+class Foo extends FooBase {
+    override function foo():<error descr="Incompatible override, should have return type ''">int</error> {
+    }
+}
+}
